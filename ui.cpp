@@ -4,9 +4,6 @@
 #include <string>
 #include <sstream>
 
-#include <GLUT/glut.h>      // GLUT + OpenGL
-#include <OpenGL/gl3.h>     // Core OpenGL 3.x+
-
 #include "AssetLoader.h"
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"

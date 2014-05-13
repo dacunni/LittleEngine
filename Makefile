@@ -9,8 +9,11 @@ HDR = \
     Color.h \
     Container.h \
     FlatContainer.h \
+    GPUMesh.h \
+    GPUPointCloud.h \
     Material.h \
     Matrix.h \
+    OpenGLUtil.h \
     RandomNumberGenerator.h \
     Ray.h \
     Scene.h \
@@ -24,7 +27,8 @@ HDR = \
     TriangleMesh.h \
     Vector.h
 
-OBJ = \
+
+leOBJ = \
     AmbientOcclusionShader.o \
     Artifacts.o \
 	AssetLoader.o \
@@ -33,7 +37,10 @@ OBJ = \
 	BoundingVolume.o \
 	Container.o \
 	FlatContainer.o \
+    GPUMesh.o \
+    GPUPointCloud.o \
 	Matrix.o \
+    OpenGLUtil.o \
 	RandomNumberGenerator.o \
 	Ray.o \
 	Scene.o \
@@ -45,8 +52,6 @@ OBJ = \
 	Transform.o \
 	TriangleMesh.o \
 	Vector.o \
-
-leOBJ = $(OBJ) \
 	ui.o
 
 INC = -I/usr/local/include/ImageMagick-6
