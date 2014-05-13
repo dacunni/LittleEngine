@@ -1,7 +1,6 @@
 
 HDR = \
     AmbientOcclusionShader.h \
-    Artifacts.h \
     AssetLoader.h \
     AxisAlignedSlab.h \
     BasicDiffuseSpecularShader.h \
@@ -30,7 +29,6 @@ HDR = \
 
 leOBJ = \
     AmbientOcclusionShader.o \
-    Artifacts.o \
 	AssetLoader.o \
 	AxisAlignedSlab.o \
     BasicDiffuseSpecularShader.o \
