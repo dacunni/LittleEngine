@@ -56,8 +56,14 @@ void buildPointCloud( void )
     Vector4 dir( 1.0, 1.0, 0 );
     dir.normalize();
     for( int i = 0; i < num_points; i++ ) {
+#if 1
+        p.x = rng.uniformRange( -3.0, -2.0 );
+        p.y = rng.uniformRange( -1.0, 1.0 );
+        p.z = rng.uniformRange( -6.0, -10.0 );
+#else
         rng.uniformSurfaceUnitSphere( p );     
         //rng.uniformSurfaceUnitHalfSphere( dir, p );     
+#endif
         points.push_back( p );
     }
     gpu_point_cloud.setPointSize( 1 );
@@ -70,6 +76,12 @@ void repaintViewport( void )
     glClearColor( 0.2, 0.2, 0.3, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_DEPTH_TEST );
+
+    Matrix4x4 projection;
+    //projection.glProjectionSymmetric( 0.5, 0.5, 0.5, 100.0 );
+    projection.glProjection( -0.25, 0.25,
+                             -0.25, 5.25,
+                             0.5, 100.0 );
 
     if( mesh ) {
         if( mesh_shader_program != 0 ) {
@@ -84,6 +96,12 @@ void repaintViewport( void )
             //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
             //glFrontFace( GL_CCW );
             //glEnable(GL_CULL_FACE);
+
+            GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
+            GL_WARN_IF_ERROR();
+            //printf("projection -> uniform %d\n", proj_loc);
+            glUniformMatrix4fv( proj_loc, 1, GL_FALSE, projection.data );
+            GL_WARN_IF_ERROR();
             gpu_mesh.bind();
             gpu_mesh.draw();
         }
@@ -98,9 +116,11 @@ void repaintViewport( void )
     }
 
     if( gpu_point_cloud.uploaded() ) {
-        //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
+        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
+        GL_WARN_IF_ERROR();
+        glUniformMatrix4fv( proj_loc, 1, GL_FALSE, projection.data );
         gpu_point_cloud.bind();
-        //gpu_point_cloud.draw();
+        gpu_point_cloud.draw();
     }
 
     glDisable( GL_DEPTH_TEST );
@@ -227,10 +247,10 @@ int main (int argc, char * const argv[])
 
     // bunnies
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-    //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
+    mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
-    mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
+    //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );

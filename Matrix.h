@@ -38,8 +38,15 @@ public:
 	{
 		return data[r * 4 + c];
 	}
+
+    void asGLFormat( float * arr ) const;
     
 	void identity();
+
+    void glProjectionSymmetric( float width, float height, float near, float far );
+    void glProjection( float left, float right, 
+                       float bottom, float top, 
+                       float near, float far );
 	
 	void print();
 	
@@ -58,6 +65,8 @@ void scale( const Matrix4x4 & A, float s, Matrix4x4 & R );
 
 // FIXME - not really an inverse unless you make assumptions about the matrix
 void inverse( const Matrix4x4 & A, Matrix4x4 & R );
+
+void transpose( const Matrix4x4 & A, Matrix4x4 & R );
 
 
 #endif

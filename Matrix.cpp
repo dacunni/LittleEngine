@@ -10,6 +10,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include <algorithm>
+
 #include "Matrix.h"
 
 Matrix4x4::Matrix4x4( float d00, float d01, float d02, float d03,
@@ -35,6 +37,17 @@ Matrix4x4::Matrix4x4( float d00, float d01, float d02, float d03,
 	at( 3, 3 ) = d33;		
 }
 
+void Matrix4x4::asGLFormat( float * arr ) const
+{
+    Matrix4x4 t;
+
+    transpose( *this, t );
+
+    for( int i = 0; i < 16; i++ ) {
+        arr[i] = data[i];
+    }
+}
+
 void Matrix4x4::identity() 
 {
 	for( int r = 0; r < 4; r++ ) {
@@ -42,6 +55,54 @@ void Matrix4x4::identity()
 			at( r, c ) = (r == c ? 1.0 : 0.0);
 		}
 	}
+}
+
+// Symmetric frustum OpenGL projection matrix construction
+// Based on "OpenGL Projection Matrix" article at
+// http://www.songho.ca/opengl/gl_projectionmatrix.html
+void Matrix4x4::glProjectionSymmetric( float width, float height, float near, float far )
+{
+    if( width < 0.0f )
+        width = -width;
+    if( height < 0.0f )
+        height = -height;
+    if( far < near )
+        std::swap( near, far );
+
+    identity();
+    at( 0, 0 ) = near / (0.5 * width);
+    at( 1, 1 ) = near / (0.5 * height);
+    at( 2, 2 ) = -(far + near) / (far - near);
+    at( 2, 3 ) = -2.0f * far * near / (far - near);
+    at( 3, 2 ) = -1.0f;
+    at( 3, 3 ) = 0.0f;
+}
+
+// General purpose OpenGL projection matrix construction
+// Based on "OpenGL Projection Matrix" article at
+// http://www.songho.ca/opengl/gl_projectionmatrix.html
+// FIXME - something doesn't seem quite right here
+//         it behaves symmetrically in y even when top != -bottom
+void Matrix4x4::glProjection( float left, float right, 
+                              float bottom, float top, 
+                              float near, float far )
+{
+    if( right < left )
+        std::swap( left, right );
+    if( top < bottom )
+        std::swap( bottom, top );
+    if( far < near )
+        std::swap( near, far );
+
+    identity();
+    at( 0, 0 ) = 2.0f * near / (right - left);
+    at( 0, 2 ) = (right + left) / (right - left);
+    at( 1, 1 ) = 2.0f * near / (top - bottom);
+    at( 1, 2 ) = (top + bottom) / (top - bottom);
+    at( 2, 2 ) = -(far + near) / (far - near);
+    at( 2, 3 ) = -2.0f * far * near / (far - near);
+    at( 3, 2 ) = -1.0f;
+    at( 3, 3 ) = 0.0f;
 }
 
 void Matrix4x4::print()
@@ -116,5 +177,13 @@ void inverse( const Matrix4x4 & A, Matrix4x4 & R )
 	R.at( 3, 3 ) = 1.0f;
 }
 
+void transpose( const Matrix4x4 & A, Matrix4x4 & R )
+{
+    for( int i = 0; i < 4; i++ ) {
+        for( int j = 0; j < 4; j++ ) {
+            R.at( i, j ) = A.at( j, i );
+        }
+    }
+}
 
 
