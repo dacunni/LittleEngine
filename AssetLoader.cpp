@@ -61,9 +61,11 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
         trimesh->vertices[vi][0] *= scale;
         trimesh->vertices[vi][1] *= scale;
         trimesh->vertices[vi][2] *= scale;
+#if 0
         trimesh->vertices[vi][0] += 0.0;
         trimesh->vertices[vi][1] += -1.0;
         trimesh->vertices[vi][2] += -5.0;
+#endif
         //printf("V %f %f %f\n", v.x, v.y, v.z); // TEMP
         // TEMP <<<
     }

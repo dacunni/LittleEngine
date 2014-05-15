@@ -38,7 +38,7 @@ void GPUMesh::upload( TriangleMesh & mesh )
     // upload positions
     glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &mesh.vertices[0].x );
     GL_WARN_IF_ERROR();
-    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, 0 );
+    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0 );
     glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
     // upload normals
     glBufferSubData( GL_ARRAY_BUFFER, vsize, nsize, &mesh.normals[0].x );

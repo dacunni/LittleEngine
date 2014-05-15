@@ -1,6 +1,5 @@
 #version 410
 
-//in vec4 vNormal;
 out vec4 color;
  
 void main()

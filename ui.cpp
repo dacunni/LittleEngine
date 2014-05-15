@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "AssetLoader.h"
+#include "Transform.h"
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"
 #include "GPUMesh.h"
@@ -22,6 +23,10 @@ GPUPointCloud gpu_point_cloud;
 GLuint mesh_shader_program = 0;
 GLuint point_cloud_shader_program = 0;
 
+int anim_timeout_millis = 33;
+float anim_rotation = 0.0f;
+float anim_rot_step = 0.03;
+
 void viewportReshaped( int width, int height ) 
 {
     //printf("reshape: %d x %d\n", width, height);
@@ -29,20 +34,6 @@ void viewportReshaped( int width, int height )
     window_height = height;
     glViewport( 0, 0, window_width, window_height );
     GL_WARN_IF_ERROR();
-}
-
-void drawMesh( TriangleMesh & mesh ) 
-{
-    for( int tri = 0; tri < mesh.triangles.size(); tri++ ) {
-        TriangleMesh::IndexTriangle vert_indices = mesh.triangles[tri];
-
-        for( int vi = 0; vi < 3; vi++ ) {
-            glVertex3f( mesh.vertices[ vert_indices.vi[vi] ].x,
-                        mesh.vertices[ vert_indices.vi[vi] ].y,
-                        mesh.vertices[ vert_indices.vi[vi] ].z );
-
-        }
-    }
 }
 
 void buildPointCloud( void ) 
@@ -70,6 +61,12 @@ void buildPointCloud( void )
     gpu_point_cloud.upload( points );
 }
 
+void animTimerCallback( int value )
+{
+    anim_rotation += anim_rot_step;
+    glutPostRedisplay();
+}
+
 void repaintViewport( void ) 
 {
     //printf("repaint\n");
@@ -78,10 +75,22 @@ void repaintViewport( void )
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    //projection.glProjectionSymmetric( 0.5, 0.5, 0.5, 100.0 );
-    projection.glProjection( -0.25, 0.25,
-                             -0.25, 5.25,
-                             0.5, 100.0 );
+    Transform model_rotation;
+    Transform model_translation;
+    Transform model_view;
+
+    projection.glProjectionSymmetric( 0.25, 0.2, 0.5, 100.0 );
+
+    model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
+    //model_rotation = makeRotation( 0.0, Vector4( 0, 1, 0 ) );
+    model_translation = makeTranslation( Vector4( 0, -1.0, -5.0 ) );
+    model_view = compose( model_translation, model_rotation );
+
+    Matrix4x4 model_view_projection;
+    mult( projection, model_view.fwd, model_view_projection );
+    //mult( model_view.fwd, projection, model_view_projection );
+    //model_view_projection = projection;
+    //model_view_projection.at( 0, 3 ) += 3.0;
 
     if( mesh ) {
         if( mesh_shader_program != 0 ) {
@@ -99,8 +108,10 @@ void repaintViewport( void )
 
             GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
             GL_WARN_IF_ERROR();
-            //printf("projection -> uniform %d\n", proj_loc);
-            glUniformMatrix4fv( proj_loc, 1, GL_FALSE, projection.data );
+            GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
+            GL_WARN_IF_ERROR();
+            glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
+            glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
             GL_WARN_IF_ERROR();
             gpu_mesh.bind();
             gpu_mesh.draw();
@@ -116,15 +127,21 @@ void repaintViewport( void )
     }
 
     if( gpu_point_cloud.uploaded() ) {
-        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
+        GLint proj_loc = glGetUniformLocation( point_cloud_shader_program, "projection" );
         GL_WARN_IF_ERROR();
-        glUniformMatrix4fv( proj_loc, 1, GL_FALSE, projection.data );
+        //GLint mv_loc = glGetUniformLocation( point_cloud_shader_program, "model_view" );
+        GL_WARN_IF_ERROR();
+        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
+        GL_WARN_IF_ERROR();
+        //glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
+        GL_WARN_IF_ERROR();
         gpu_point_cloud.bind();
         gpu_point_cloud.draw();
     }
 
     glDisable( GL_DEPTH_TEST );
     glutSwapBuffers();
+    glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
 }
 
 const char * shaderTypeAsString( GLuint type )
@@ -192,8 +209,6 @@ GLuint createShaders( const char * vs, const char * fs )
         glAttachShader( shader_program, vertex_shader );
     if( fragment_shader != 0 ) 
         glAttachShader( shader_program, fragment_shader );
-    glBindAttribLocation( shader_program, 0, "position" );
-    glBindAttribLocation( shader_program, 1, "normal" );
     glLinkProgram( shader_program );
 
     glGetProgramiv( shader_program, GL_LINK_STATUS, &program_status ); 
@@ -247,10 +262,10 @@ int main (int argc, char * const argv[])
 
     // bunnies
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-    mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
+    //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
-    //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
+    mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );
