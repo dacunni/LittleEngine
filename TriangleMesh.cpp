@@ -171,12 +171,10 @@ void makeTriangleMeshTetrahedron( TriangleMesh & mesh )
     mesh.vertices.resize( 4 );
     mesh.triangles.resize( 4 );
     
-    float zoffset = -7.0; // TEMP
-    
-    mesh.vertices[0] = Vector4( 0.0, 0.5, 0.0 + zoffset );
-    mesh.vertices[1] = Vector4( -0.5, -0.5, 0.0 + zoffset );
-    mesh.vertices[2] = Vector4( 0.5, -0.5, 0.0 + zoffset );
-    mesh.vertices[3] = Vector4( 0.0, 0.0, 1.0 + zoffset );
+    mesh.vertices[0] = Vector4( 0.0, 0.5, 0.0 );
+    mesh.vertices[1] = Vector4( -0.5, -0.5, 0.0 );
+    mesh.vertices[2] = Vector4( 0.5, -0.5, 0.0 );
+    mesh.vertices[3] = Vector4( 0.0, 0.0, 1.0 );
     
     // TODO - make the winding order consistent
     mesh.triangles[0].vi[0] = 0;
@@ -191,6 +189,11 @@ void makeTriangleMeshTetrahedron( TriangleMesh & mesh )
     mesh.triangles[3].vi[0] = 0;
     mesh.triangles[3].vi[1] = 3;
     mesh.triangles[3].vi[2] = 2;
+}
+
+void makeTriangleMeshCube( TriangleMesh & mesh )
+{
+    // IMPLEMENT ME
 }
 
 void makeTriangleMeshGroundPlatform( TriangleMesh & mesh, float size )

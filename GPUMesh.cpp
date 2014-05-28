@@ -33,6 +33,9 @@ void GPUMesh::upload( TriangleMesh & mesh )
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     GLsizeiptr vsize = mesh.vertices.size() * sizeof(float) * 4;
     GLsizeiptr nsize = mesh.normals.size() * sizeof(float) * 4;
+    printf("vsize = %ld\n", vsize); // TEMP
+    printf("nsize = %ld\n", nsize); // TEMP
+    printf("tris  = %ld\n", mesh.triangles.size()); // TEMP
     // allocate some space for all of our attributes
     glBufferData( GL_ARRAY_BUFFER, vsize + nsize, NULL, GL_STATIC_DRAW );
     // upload positions
@@ -71,7 +74,13 @@ void GPUMesh::bind()
 void GPUMesh::draw()
 {
     if( vao ) {
-        glDrawArrays( GL_TRIANGLES, 0, num_vertices );
+        if( ibo ) {
+            glDrawElements( GL_TRIANGLES, num_vertices, GL_UNSIGNED_INT, NULL );
+        }
+        else {
+            // If we don't have an index buffer object, just assume we can use the vertices in order
+            glDrawArrays( GL_TRIANGLES, 0, num_vertices );
+        }
         GL_WARN_IF_ERROR();
     }
 }

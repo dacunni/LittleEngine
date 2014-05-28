@@ -47,6 +47,7 @@ public:
 };
 
 void makeTriangleMeshTetrahedron( TriangleMesh & mesh );
+void makeTriangleMeshCube( TriangleMesh & mesh );
 void makeTriangleMeshGroundPlatform( TriangleMesh & mesh, float size );
 
 class TriangleMeshAccelerator : public Traceable

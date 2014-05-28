@@ -84,6 +84,7 @@ void repaintViewport( void )
     model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
     //model_rotation = makeRotation( 0.0, Vector4( 0, 1, 0 ) );
     model_translation = makeTranslation( Vector4( 0, -1.0, -5.0 ) );
+    //model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
     model_view = compose( model_translation, model_rotation );
 
     Matrix4x4 model_view_projection;
@@ -266,6 +267,9 @@ int main (int argc, char * const argv[])
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
     mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
+
+    //mesh = new TriangleMesh();
+    //makeTriangleMeshTetrahedron( *mesh );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );
