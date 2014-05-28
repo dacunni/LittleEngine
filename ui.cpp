@@ -13,8 +13,8 @@
 #include "RandomNumberGenerator.h"
 #include "BoundingVolume.h"
 
-int window_width = 350;
-int window_height = 350;
+int window_width = 512;
+int window_height = 512;
 
 TriangleMesh * mesh = nullptr;
 GPUMesh gpu_mesh;
@@ -264,8 +264,8 @@ int main (int argc, char * const argv[])
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
     //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
-    //mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
-    mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
+    mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
+    //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );
