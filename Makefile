@@ -62,12 +62,21 @@ leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
 
 all: le
 
-le: $(leOBJ)
-	ld -o le $(leOBJ) $(leLDXXFLAGS)
+# Stash object files away in a separate directory so we don't have 
+# to look at them
+OBJDIR = objs
+leOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(leOBJ))
+$(leOBJ_IN_DIR): | $(OBJDIR)
+$(OBJDIR):
+	mkdir $(OBJDIR)
 
-.cpp.o: $(HDR)
+le: $(leOBJ_IN_DIR)
+	ld $(leOBJ_IN_DIR) -o $@ $(leLDXXFLAGS)
+
+$(OBJDIR)/%.o : %.cpp
 	g++ -c $< -o $@ $(CXXFLAGS) $(INC)
 
 clean:
-	rm -rf $(leOBJ) le
+	rm -rf $(leOBJ_IN_DIR) le
+	rmdir $(OBJDIR)
 
