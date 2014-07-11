@@ -2,6 +2,7 @@
 
 uniform mat4 projection;
 uniform mat4 model_view;
+in vec4 vObjSpacePosition;
 in vec4 vPosition;
 in vec4 vWorldPosition;
 in vec4 vNormal;

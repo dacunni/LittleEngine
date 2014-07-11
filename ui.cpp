@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string>
 #include <sstream>
 
@@ -13,8 +14,8 @@
 #include "RandomNumberGenerator.h"
 #include "BoundingVolume.h"
 
-int window_width = 512;
-int window_height = 512;
+int window_width = 650;
+int window_height = 650;
 
 TriangleMesh * mesh = nullptr;
 GPUMesh gpu_mesh;
@@ -25,7 +26,25 @@ GLuint point_cloud_shader_program = 0;
 
 int anim_timeout_millis = 33;
 float anim_rotation = 0.0f;
-float anim_rot_step = 0.03;
+float anim_rot_step = 0.02;
+float anim_time = 0.0f;
+float anim_time_step = 0.1;
+
+Vector4 cameraPosition( 0.0, 0.0, 0.0 );
+
+void keyPressed( unsigned char key, int width, int height ) 
+{
+    switch( key ) {
+        case 'k':
+            cameraPosition.z -= 0.25;
+            glutPostRedisplay();
+            break;
+        case 'j':
+            cameraPosition.z += 0.25;
+            glutPostRedisplay();
+            break;
+    }
+}
 
 void viewportReshaped( int width, int height ) 
 {
@@ -64,6 +83,7 @@ void buildPointCloud( void )
 void animTimerCallback( int value )
 {
     anim_rotation += anim_rot_step;
+    anim_time += anim_time_step;
     glutPostRedisplay();
 }
 
@@ -83,9 +103,15 @@ void repaintViewport( void )
 
     model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
     //model_rotation = makeRotation( 0.0, Vector4( 0, 1, 0 ) );
-    model_translation = makeTranslation( Vector4( 0, -1.0, -5.0 ) );
-    //model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
+    // bunny and dragon
+    //model_translation = makeTranslation( Vector4( 0, -1.0, -5.0 ) );
+    // tetrahedron
+    model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
     model_view = compose( model_translation, model_rotation );
+    Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x,
+                                                             -cameraPosition.y,
+                                                             -cameraPosition.z ) );
+    model_view = compose( camera_translation, model_view );
 
     Matrix4x4 model_view_projection;
     mult( projection, model_view.fwd, model_view_projection );
@@ -111,8 +137,11 @@ void repaintViewport( void )
             GL_WARN_IF_ERROR();
             GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
             GL_WARN_IF_ERROR();
+            GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
+            GL_WARN_IF_ERROR();
             glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
             glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
+            glUniform1f( anim_time_loc, anim_time );
             GL_WARN_IF_ERROR();
             gpu_mesh.bind();
             gpu_mesh.draw();
@@ -205,6 +234,9 @@ GLuint createShaders( const char * vs, const char * fs )
     GLuint vertex_shader = loadShader( GL_VERTEX_SHADER, vs );
     GLuint fragment_shader = loadShader( GL_FRAGMENT_SHADER, fs );
 
+    if( !vertex_shader || !fragment_shader )
+        return 0;
+
     shader_program = glCreateProgram();
     if( vertex_shader != 0 )
         glAttachShader( shader_program, vertex_shader );
@@ -231,7 +263,11 @@ GLuint createShaders( const char * vs, const char * fs )
 
 int main (int argc, char * const argv[]) 
 {
+    const char * vertex_shader_filename = "basic.vs";
+    const char * fragment_shader_filename = "basic.fs";
+
     printf("FastRender UI\n");
+
     glutInit( &argc, const_cast<char **>(argv) );
     glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
                          | GLUT_RGBA | GLUT_DEPTH
@@ -245,11 +281,34 @@ int main (int argc, char * const argv[])
     printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
     printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
-    mesh_shader_program = createShaders( "basic.vs", "basic.fs" );
+    //
+    // Parse command line arguments
+    //
+    const char * options = "v:f:";
+    int opt = 0;
+
+    while( (opt = getopt( argc, argv, options )) > -1 ) {
+        if( opt == '?' ) {
+            exit(-1);
+        }
+        switch( opt ) {
+            case 'v': vertex_shader_filename = optarg; break;
+            case 'f': fragment_shader_filename = optarg; break;
+            default:
+                fprintf( stderr, "Unsupported option '-%c'\n", opt );
+        }
+    }
+
+    mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
     point_cloud_shader_program = createShaders( "points.vs", "points.fs" );
+
+    if( !mesh_shader_program || !point_cloud_shader_program ) {
+        return -1;
+    }
 
     glutReshapeFunc( viewportReshaped );
     glutDisplayFunc( repaintViewport );
+    glutKeyboardFunc( keyPressed );
 
     AssetLoader loader;
     std::string modelPath = "models";
@@ -265,11 +324,11 @@ int main (int argc, char * const argv[])
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
     //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
-    mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
+    //mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
 
-    //mesh = new TriangleMesh();
-    //makeTriangleMeshTetrahedron( *mesh );
+    mesh = new TriangleMesh();
+    makeTriangleMeshTetrahedron( *mesh );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );
