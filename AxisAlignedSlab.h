@@ -23,6 +23,10 @@ public:
     
     virtual bool intersect( const Ray & ray, RayIntersection & intersection ) const;
 
+    float xdim() const { return xmax - xmin; }
+    float ydim() const { return ymax - ymin; }
+    float zdim() const { return zmax - zmin; }
+
     float xmin, ymin, zmin;
     float xmax, ymax, zmax;
 

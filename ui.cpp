@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "AssetLoader.h"
+#include "AxisAlignedSlab.h"
 #include "Transform.h"
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"
@@ -30,6 +31,8 @@ float anim_rot_step = 0.02;
 float anim_time = 0.0f;
 float anim_time_step = 0.1;
 
+bool draw_wireframes = false;
+
 Vector4 cameraPosition( 0.0, 0.0, 0.0 );
 
 void keyPressed( unsigned char key, int width, int height ) 
@@ -41,6 +44,10 @@ void keyPressed( unsigned char key, int width, int height )
             break;
         case 'j':
             cameraPosition.z += 0.25;
+            glutPostRedisplay();
+            break;
+        case 'w':
+            draw_wireframes = !draw_wireframes;
             glutPostRedisplay();
             break;
     }
@@ -102,11 +109,24 @@ void repaintViewport( void )
     projection.glProjectionSymmetric( 0.25, 0.2, 0.5, 100.0 );
 
     model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-    //model_rotation = makeRotation( 0.0, Vector4( 0, 1, 0 ) );
-    // bunny and dragon
-    //model_translation = makeTranslation( Vector4( 0, -1.0, -5.0 ) );
-    // tetrahedron
-    model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
+    // Shift the model back away from the camera
+    Vector4 object_world_offset = Vector4( 0.0, 0.0, -5.0 );
+
+    // Center the model around the origin
+    Vector4 object_centering_offset = Vector4( 0.0, 0.0, 0.0 );
+    if( mesh ) {
+        AxisAlignedSlab * bounds = mesh->getAxisAlignedBounds(); 
+        if( bounds ) {
+            object_centering_offset =  Vector4( -0.5 * (bounds->xmin + bounds->xmax), 
+                                                -0.5 * (bounds->ymin + bounds->ymax), 
+                                                -0.5 * (bounds->zmin + bounds->zmax) ); 
+        }
+    }
+
+    Vector4 offset;
+    add( object_world_offset, object_centering_offset, offset );
+    model_translation = makeTranslation( offset );
+
     model_view = compose( model_translation, model_rotation );
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x,
                                                              -cameraPosition.y,
@@ -129,9 +149,11 @@ void repaintViewport( void )
         }
 
         if( gpu_mesh.uploaded() ) {
-            //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
-            //glFrontFace( GL_CCW );
-            //glEnable(GL_CULL_FACE);
+            if( draw_wireframes ) {
+                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
+                glFrontFace( GL_CCW );
+                glEnable( GL_CULL_FACE );
+            }
 
             GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
             GL_WARN_IF_ERROR();
@@ -145,6 +167,11 @@ void repaintViewport( void )
             GL_WARN_IF_ERROR();
             gpu_mesh.bind();
             gpu_mesh.draw();
+
+            if( draw_wireframes ) {                           // revert to normal behavior
+                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
+                glDisable( GL_CULL_FACE );
+            }
         }
     }
 
@@ -324,11 +351,13 @@ int main (int argc, char * const argv[])
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
     //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
-    //mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
+    mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
     //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
 
-    mesh = new TriangleMesh();
-    makeTriangleMeshTetrahedron( *mesh );
+    //mesh = loader.load( modelPath + "/stanford/lucy.ply" );
+
+    //mesh = new TriangleMesh();
+    //makeTriangleMeshTetrahedron( *mesh );
 
     if( !mesh ) {
         fprintf( stderr, "Error loading mesh\n" );
