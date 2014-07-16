@@ -300,7 +300,7 @@ int main (int argc, char * const argv[])
     }
 
     mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
-    point_cloud_shader_program = createShaders( "points.vs", "points.fs" );
+    point_cloud_shader_program = createShaders( "shaders/points.vs", "shaders/points.fs" );
 
     if( !mesh_shader_program || !point_cloud_shader_program ) {
         return -1;
