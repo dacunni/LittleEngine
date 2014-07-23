@@ -290,8 +290,8 @@ GLuint createShaders( const char * vs, const char * fs )
 
 int main (int argc, char * const argv[]) 
 {
-    const char * vertex_shader_filename = "basic.vs";
-    const char * fragment_shader_filename = "basic.fs";
+    const char * vertex_shader_filename = "shaders/basic.vs";
+    const char * fragment_shader_filename = "shaders/basic.fs";
 
     printf("FastRender UI\n");
 

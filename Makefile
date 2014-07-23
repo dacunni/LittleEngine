@@ -25,6 +25,8 @@ HDR = \
     Transform.h \
     TriangleMesh.h \
     Vector.h \
+    Vector4.h \
+    Vector2.h \
     Vector4.hpp \
     Vector2.hpp
 
