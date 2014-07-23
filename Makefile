@@ -24,7 +24,9 @@ HDR = \
     Traceable.h \
     Transform.h \
     TriangleMesh.h \
-    Vector.h
+    Vector.h \
+    Vector4.hpp \
+    Vector2.hpp
 
 
 leOBJ = \

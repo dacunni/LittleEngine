@@ -1,13 +1,13 @@
 //
-//  Vector.hpp
+//  Vector4.hpp
 //  FastRender
 //
 //  Created by David Cunningham on 8/3/13.
 //
 //
 
-#ifndef FastRender_Vector_hpp
-#define FastRender_Vector_hpp
+#ifndef FastRender_Vector4_hpp
+#define FastRender_Vector4_hpp
 
 inline Vector4::Vector4()
     : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
