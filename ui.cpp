@@ -14,6 +14,7 @@
 #include "GPUPointCloud.h"
 #include "RandomNumberGenerator.h"
 #include "BoundingVolume.h"
+#include "ShaderProgram.h"
 
 int window_width = 650;
 int window_height = 650;
@@ -201,91 +202,24 @@ void repaintViewport( void )
     glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
 }
 
-const char * shaderTypeAsString( GLuint type )
-{
-    switch( type ) {
-        case GL_VERTEX_SHADER:
-            return "VERTEX SHADER";
-        case GL_FRAGMENT_SHADER:
-            return "FRAGMENT SHADER";
-        default:
-            return "UNKNOWN SHADER";
-    }
-}
-
-GLuint loadShader( GLuint type, const std::string & filename )
-{
-    const char * type_string = shaderTypeAsString( type );
-    int status = 0;
-
-    std::ifstream ifs( filename );
-    std::stringstream ss;
-    ss << ifs.rdbuf();
-    std::string src = ss.str();
-    // FIXME - add error handling
-
-    printf( ">>>> %s >>>>\n%s<<<< %s <<<<\n", type_string, src.c_str(), type_string );
-    GLuint shader = glCreateShader( type );    
-
-    // Make an array of pointers for GL
-    const char * srcs[] = { src.c_str() };
-    glShaderSource( shader, 1, srcs, NULL );
-
-    // Compile shader
-    glCompileShader( shader );
-    glGetShaderiv( shader, GL_COMPILE_STATUS, &status );
-
-    printf( "Shader Compile status: %d\n", status );
-
-    if( !status ) {
-        GLint len = 0;
-        glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &len );
-        std::vector<GLchar> log( len );
-        glGetShaderInfoLog( shader, len, &len, &log[0] );
-        printf( "Compiler Error Message:\n%s", (char *) &log[0] );
-        glDeleteShader( shader );
-        return 0;
-    }
-
-    // FIXME - add error handling
-
-    return shader;
-}
-
 GLuint createShaders( const char * vs, const char * fs ) 
 {
-    GLuint status = 0;
-    GLint program_status = 0;
-    GLuint shader_program = 0;
+    Program program;
+    Shader vertex_shader;
+    Shader fragment_shader;
 
-    GLuint vertex_shader = loadShader( GL_VERTEX_SHADER, vs );
-    GLuint fragment_shader = loadShader( GL_FRAGMENT_SHADER, fs );
+    vertex_shader.loadFile( GL_VERTEX_SHADER, vs );
+    fragment_shader.loadFile( GL_FRAGMENT_SHADER, fs );
 
-    if( !vertex_shader || !fragment_shader )
+    if( !vertex_shader.id || !fragment_shader.id )
         return 0;
 
-    shader_program = glCreateProgram();
-    if( vertex_shader != 0 )
-        glAttachShader( shader_program, vertex_shader );
-    if( fragment_shader != 0 ) 
-        glAttachShader( shader_program, fragment_shader );
-    glLinkProgram( shader_program );
+    program.create();
+    program.attach( vertex_shader );
+    program.attach( fragment_shader );
+    program.link();
 
-    glGetProgramiv( shader_program, GL_LINK_STATUS, &program_status ); 
-    printf( "Link status: %d\n", program_status );
-
-    if( !program_status ) {
-        GLint len = 0;
-        glGetProgramiv( shader_program, GL_INFO_LOG_LENGTH, &len );
-        std::vector<GLchar> log( len );
-        glGetProgramInfoLog( shader_program, len, &len, &log[0] );
-        printf( "Compiler Error Message:\n%s", (char *) &log[0] );
-        glDeleteProgram( shader_program );
-        return 0; 
-    }
-    // FIXME - add error handling
-
-    return shader_program;
+    return program.id;
 }
 
 int main (int argc, char * const argv[]) 
@@ -372,5 +306,36 @@ int main (int argc, char * const argv[])
     GL_WARN_IF_ERROR();
     glutMainLoop();
     return EXIT_SUCCESS;
+}
+
+void Program::create()
+{
+    printf( "Creating program\n");
+    id = glCreateProgram();
+}
+
+void Program::attach( Shader & shader )
+{
+    if( shader.id != 0 ) {
+        glAttachShader( id, shader.id );
+    }
+}
+
+void Program::link()
+{
+    GLint status = 0;
+    printf( "Linking program\n");
+    glLinkProgram( id );
+    glGetProgramiv( id, GL_LINK_STATUS, &status ); 
+    printf( "Link status: %d\n", status );
+
+    if( !status ) {
+        GLint len = 0;
+        glGetProgramiv( id, GL_INFO_LOG_LENGTH, &len );
+        std::vector<GLchar> log( len );
+        glGetProgramInfoLog( id, len, &len, &log[0] );
+        printf( "Linker Error Message:\n%s", (char *) &log[0] );
+        glDeleteProgram( id );
+    }
 }
 

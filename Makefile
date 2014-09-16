@@ -17,6 +17,7 @@ HDR = \
     Ray.h \
     Scene.h \
     Shader.h \
+    ShaderProgram.h \
     Sphere.h \
     TMOctreeAccelerator.h \
     TestScenes.h \
@@ -46,6 +47,7 @@ leOBJ = \
 	RandomNumberGenerator.o \
 	Ray.o \
 	Scene.o \
+	ShaderProgram.o \
 	Sphere.o \
     TestScenes.o \
     TMOctreeAccelerator.o \
