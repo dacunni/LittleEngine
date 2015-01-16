@@ -11,6 +11,7 @@
 #include "Transform.h"
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"
+#include "GameObject.h"
 #include "GPUMesh.h"
 #include "GPUPointCloud.h"
 #include "RandomNumberGenerator.h"
@@ -28,9 +29,10 @@ int mouse_button_state[3] = {
 int mouse_last_x = -1;
 int mouse_last_y = -1;
 
-TriangleMesh * mesh = nullptr;
-GPUMesh gpu_mesh;
 GPUPointCloud gpu_point_cloud;
+
+GameObject * hero = nullptr;
+GameObject * enemy = nullptr;
 
 GLuint mesh_shader_program = 0;
 GLuint point_cloud_shader_program = 0;
@@ -150,8 +152,8 @@ void repaintViewport( void )
 
     // Center the model around the origin
     Vector4 object_centering_offset = Vector4( 0.0, 0.0, 0.0 );
-    if( mesh ) {
-        AxisAlignedSlab * bounds = mesh->getAxisAlignedBounds(); 
+    if( hero && hero->mesh ) {
+        AxisAlignedSlab * bounds = hero->mesh->getAxisAlignedBounds(); 
         if( bounds ) {
             object_centering_offset =  Vector4( -0.5 * (bounds->xmin + bounds->xmax), 
                                                 -0.5 * (bounds->ymin + bounds->ymax), 
@@ -175,40 +177,63 @@ void repaintViewport( void )
     //model_view_projection = projection;
     //model_view_projection.at( 0, 3 ) += 3.0;
 
-    if( mesh ) {
+    if( draw_wireframes ) {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
+        glFrontFace( GL_CCW );
+        glEnable( GL_CULL_FACE );
+    }
+
+    if( hero ) {
         if( mesh_shader_program != 0 ) {
             glUseProgram( mesh_shader_program );
         }
 
-        if( !gpu_mesh.uploaded() ) {
-            gpu_mesh.upload( *mesh );
+        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
+        GL_WARN_IF_ERROR();
+        GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
+        GL_WARN_IF_ERROR();
+        GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
+        GL_WARN_IF_ERROR();
+        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
+        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
+        glUniform1f( anim_time_loc, anim_time );
+        GL_WARN_IF_ERROR();
+
+        hero->draw();
+    }
+
+    if( enemy ) {
+        add( offset, Vector4(1.0, 0.0, 0.0), offset );
+        model_translation = makeTranslation( offset );
+        model_view = compose( model_translation, model_rotation );
+        Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x,
+                                                                 -cameraPosition.y,
+                                                                 -cameraPosition.z ) );
+        model_view = compose( camera_translation, model_view );
+        Matrix4x4 model_view_projection;
+        mult( projection, model_view.fwd, model_view_projection );
+
+        if( mesh_shader_program != 0 ) {
+            glUseProgram( mesh_shader_program );
         }
 
-        if( gpu_mesh.uploaded() ) {
-            if( draw_wireframes ) {
-                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
-                glFrontFace( GL_CCW );
-                glEnable( GL_CULL_FACE );
-            }
+        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
+        GL_WARN_IF_ERROR();
+        GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
+        GL_WARN_IF_ERROR();
+        GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
+        GL_WARN_IF_ERROR();
+        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
+        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
+        glUniform1f( anim_time_loc, anim_time );
+        GL_WARN_IF_ERROR();
 
-            GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
-            GL_WARN_IF_ERROR();
-            GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
-            GL_WARN_IF_ERROR();
-            GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
-            GL_WARN_IF_ERROR();
-            glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
-            glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
-            glUniform1f( anim_time_loc, anim_time );
-            GL_WARN_IF_ERROR();
-            gpu_mesh.bind();
-            gpu_mesh.draw();
+        enemy->draw();
+    }
 
-            if( draw_wireframes ) {                           // revert to normal behavior
-                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
-                glDisable( GL_CULL_FACE );
-            }
-        }
+    if( draw_wireframes ) {                           // revert to normal behavior
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
+        glDisable( GL_CULL_FACE );
     }
 
     if( point_cloud_shader_program != 0 ) {
@@ -311,34 +336,11 @@ int main (int argc, char * const argv[])
     AssetLoader loader;
     std::string modelPath = "models";
 
-    // dragon
+    printf("Loading game objects\n");
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
-    //mesh = loader.load( dragonPath + "/dragon_vrip_res4.ply" );
-    //mesh = loader.load( dragonPath + "/dragon_vrip_res3.ply" );
-    //mesh = loader.load( dragonPath + "/dragon_vrip_res2.ply" );
-    //mesh = loader.load( dragonPath + "/dragon_vrip.ply" );
-
-    // bunnies
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-    //mesh = loader.load( bunnyPath + "/bun_zipper_res4.ply" );
-    //mesh = loader.load( bunnyPath + "/bun_zipper_res3.ply" );
-    mesh = loader.load( bunnyPath + "/bun_zipper_res2.ply" );
-    //mesh = loader.load( bunnyPath + "/bun_zipper.ply" );
-
-    //mesh = loader.load( modelPath + "/stanford/lucy.ply" );
-
-    //mesh = new TriangleMesh();
-    //makeTriangleMeshTetrahedron( *mesh );
-
-    if( !mesh ) {
-        fprintf( stderr, "Error loading mesh\n" );
-        return EXIT_FAILURE;
-    }
-
-    BoundingVolume * meshBB = new BoundingVolume();
-    meshBB->buildAxisAligned( mesh );
-    meshBB->print();
-    delete meshBB;
+    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

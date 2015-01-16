@@ -1,56 +1,58 @@
 
 HDR = \
-    AmbientOcclusionShader.h \
-    AssetLoader.h \
-    AxisAlignedSlab.h \
-    BasicDiffuseSpecularShader.h \
-    BoundingVolume.h \
-    Color.h \
-    Container.h \
-    FlatContainer.h \
-    GPUMesh.h \
-    GPUPointCloud.h \
-    Material.h \
-    Matrix.h \
-    OpenGLUtil.h \
-    RandomNumberGenerator.h \
-    Ray.h \
-    Scene.h \
-    Shader.h \
-    ShaderProgram.h \
-    Sphere.h \
-    TMOctreeAccelerator.h \
-    TestScenes.h \
-    Timer.h \
-    Traceable.h \
-    Transform.h \
-    TriangleMesh.h \
-    Vector.h \
-    Vector4.h \
-    Vector2.h \
-    Vector4.hpp \
-    Vector2.hpp
+	AmbientOcclusionShader.h \
+	AssetLoader.h \
+	AxisAlignedSlab.h \
+	BasicDiffuseSpecularShader.h \
+	BoundingVolume.h \
+	Color.h \
+	Container.h \
+	FlatContainer.h \
+	GameObject.h \
+	GPUMesh.h \
+	GPUPointCloud.h \
+	Material.h \
+	Matrix.h \
+	OpenGLUtil.h \
+	RandomNumberGenerator.h \
+	Ray.h \
+	Scene.h \
+	Shader.h \
+	ShaderProgram.h \
+	Sphere.h \
+	TMOctreeAccelerator.h \
+	TestScenes.h \
+	Timer.h \
+	Traceable.h \
+	Transform.h \
+	TriangleMesh.h \
+	Vector.h \
+	Vector4.h \
+	Vector2.h \
+	Vector4.hpp \
+	Vector2.hpp
 
 
 leOBJ = \
-    AmbientOcclusionShader.o \
+	AmbientOcclusionShader.o \
 	AssetLoader.o \
 	AxisAlignedSlab.o \
-    BasicDiffuseSpecularShader.o \
+	BasicDiffuseSpecularShader.o \
 	BoundingVolume.o \
 	Container.o \
 	FlatContainer.o \
-    GPUMesh.o \
-    GPUPointCloud.o \
+	GameObject.o \
+	GPUMesh.o \
+	GPUPointCloud.o \
 	Matrix.o \
-    OpenGLUtil.o \
+	OpenGLUtil.o \
 	RandomNumberGenerator.o \
 	Ray.o \
 	Scene.o \
 	ShaderProgram.o \
 	Sphere.o \
-    TestScenes.o \
-    TMOctreeAccelerator.o \
+	TestScenes.o \
+	TMOctreeAccelerator.o \
 	Timer.o \
 	Traceable.o \
 	Transform.o \

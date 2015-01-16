@@ -7,7 +7,6 @@
  *
  */
 
-#include "OpenGLUtil.h"
 #include "GPUMesh.h"
 #include "TriangleMesh.h"
 

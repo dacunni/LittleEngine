@@ -9,7 +9,7 @@
 #ifndef _GPU_MESH_H_
 #define _GPU_MESH_H_
 
-// TODO - make an implementation file for these methods
+#include "OpenGLUtil.h"
 
 class TriangleMesh;
 
