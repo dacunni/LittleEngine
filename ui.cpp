@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <string>
 #include <sstream>
 
@@ -19,6 +20,14 @@
 int window_width = 650;
 int window_height = 650;
 
+int mouse_button_state[3] = { 
+    GLUT_UP, // left
+    GLUT_UP, // right
+    GLUT_UP  // middle
+};
+int mouse_last_x = -1;
+int mouse_last_y = -1;
+
 TriangleMesh * mesh = nullptr;
 GPUMesh gpu_mesh;
 GPUPointCloud gpu_point_cloud;
@@ -26,11 +35,10 @@ GPUPointCloud gpu_point_cloud;
 GLuint mesh_shader_program = 0;
 GLuint point_cloud_shader_program = 0;
 
+double start_time = -1.0;
 int anim_timeout_millis = 33;
 float anim_rotation = 0.0f;
-float anim_rot_step = 0.02;
 float anim_time = 0.0f;
-float anim_time_step = 0.1;
 
 bool draw_wireframes = false;
 
@@ -52,6 +60,26 @@ void keyPressed( unsigned char key, int width, int height )
             glutPostRedisplay();
             break;
     }
+}
+
+void mouseButton( int button, int state, int x, int y )
+{
+    mouse_button_state[button] = state;
+    mouse_last_x = x;
+    mouse_last_y = y;
+}
+
+void mouseMotionWhileButtonPressed( int x, int y )
+{
+    int dx = x - mouse_last_x;
+    int dy = y - mouse_last_y;
+
+    cameraPosition.x += 0.05 * dx;
+    cameraPosition.z += 0.05 * dy;
+    glutPostRedisplay();
+
+    mouse_last_x = x;
+    mouse_last_y = y;
 }
 
 void viewportReshaped( int width, int height ) 
@@ -88,10 +116,17 @@ void buildPointCloud( void )
     gpu_point_cloud.upload( points );
 }
 
+double timeAsDouble()
+{
+    struct timeval tm = {};
+    gettimeofday( &tm, NULL );
+    return (double) tm.tv_sec + 1.0e-6 * (double) tm.tv_usec;
+}
+
 void animTimerCallback( int value )
 {
-    anim_rotation += anim_rot_step;
-    anim_time += anim_time_step;
+    anim_time = (float) (timeAsDouble() - start_time);
+    anim_rotation = anim_time * 0.4;
     glutPostRedisplay();
 }
 
@@ -270,6 +305,8 @@ int main (int argc, char * const argv[])
     glutReshapeFunc( viewportReshaped );
     glutDisplayFunc( repaintViewport );
     glutKeyboardFunc( keyPressed );
+    glutMouseFunc( mouseButton );
+    glutMotionFunc( mouseMotionWhileButtonPressed );
 
     AssetLoader loader;
     std::string modelPath = "models";
@@ -304,6 +341,7 @@ int main (int argc, char * const argv[])
     delete meshBB;
 
     GL_WARN_IF_ERROR();
+    start_time = timeAsDouble();
     glutMainLoop();
     return EXIT_SUCCESS;
 }
