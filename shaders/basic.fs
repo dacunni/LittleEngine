@@ -16,5 +16,6 @@ void main()
     color = vec4(1.0, 0.0, 0.0, 1.0);
     vec4 toLight0 = normalize(light0 - vWorldPosition);
     color.rgb = light0Color * dot(vNormal, toLight0);
+    //color = normalize(vNormal); // visualize normal vector
 }
 

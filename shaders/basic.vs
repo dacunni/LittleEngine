@@ -12,10 +12,14 @@ out vec4 vNormal;
 
 void main()
 {
+    // Transform position
     vObjSpacePosition = position;
     vWorldPosition = model_view * position;
     vPosition = projection * vWorldPosition;
     gl_Position = vPosition;
-    vNormal = projection * model_view * normalize(normal);
+
+    // Transform normal
+    vNormal = vec4(normal.xyz, 0.0); // fix up the w component just in case
+    vNormal = model_view * normalize(vNormal);
 }
 
