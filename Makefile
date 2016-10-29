@@ -21,7 +21,6 @@ HDR = \
 	ShaderProgram.h \
 	Sphere.h \
 	TMOctreeAccelerator.h \
-	TestScenes.h \
 	Timer.h \
 	Traceable.h \
 	Transform.h \
@@ -51,7 +50,6 @@ leOBJ = \
 	Scene.o \
 	ShaderProgram.o \
 	Sphere.o \
-	TestScenes.o \
 	TMOctreeAccelerator.o \
 	Timer.o \
 	Traceable.o \
@@ -60,7 +58,9 @@ leOBJ = \
 	Vector.o \
 	ui.o
 
-INC = -I/usr/local/include/ImageMagick-6
+INC = -I/usr/local/include
+INC += -I/usr/include/ImageMagick
+INC += -I/usr/local/include/ImageMagick-6
 CXXFLAGS = -std=c++11
 CXXFLAGS += -Wno-deprecated
 CXXFLAGS += -O2
