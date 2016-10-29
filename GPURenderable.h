@@ -25,8 +25,10 @@ class GPURenderable
         virtual void draw();
 
         void setShaderProgram( GLuint program );
-        void setModelViewMatrix( Matrix4x4 & mat );
+        void setWorldMatrix( Matrix4x4 & mat );
+        void setViewMatrix( Matrix4x4 & mat );
         void setProjection( Matrix4x4 & mat );
+        void setAnimTime( float t );
 
         const GLuint POSITION_ATTRIB_INDEX = 0;
         const GLuint NORMAL_ATTRIB_INDEX   = 1;

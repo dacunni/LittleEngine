@@ -1,7 +1,5 @@
 #version 410
 
-uniform mat4 projection;
-uniform mat4 model_view;
 uniform float anim_time;
 in vec4 vObjSpacePosition;
 in vec4 vPosition;

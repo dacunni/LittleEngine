@@ -54,19 +54,35 @@ void GPURenderable::setShaderProgram( GLuint program )
     shader_program = program;
 }
 
-void GPURenderable::setModelViewMatrix( Matrix4x4 & mat )
+void GPURenderable::setWorldMatrix( Matrix4x4 & mat )
 {
-    GLint mv_loc = glGetUniformLocation( shader_program, "model_view" );
+    GLint loc = glGetUniformLocation( shader_program, "world" );
     GL_WARN_IF_ERROR();
-    glUniformMatrix4fv( mv_loc, 1, GL_TRUE, mat.data );
+    glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
+    GL_WARN_IF_ERROR();
+}
+
+void GPURenderable::setViewMatrix( Matrix4x4 & mat )
+{
+    GLint loc = glGetUniformLocation( shader_program, "view" );
+    GL_WARN_IF_ERROR();
+    glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
     GL_WARN_IF_ERROR();
 }
 
 void GPURenderable::setProjection( Matrix4x4 & mat )
 {
-    GLint proj_loc = glGetUniformLocation( shader_program, "projection" );
+    GLint loc = glGetUniformLocation( shader_program, "projection" );
     GL_WARN_IF_ERROR();
-    glUniformMatrix4fv( proj_loc, 1, GL_TRUE, mat.data );
+    glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
+    GL_WARN_IF_ERROR();
+}
+
+void GPURenderable::setAnimTime( float t )
+{
+    GLint loc = glGetUniformLocation( shader_program, "anim_time" );
+    GL_WARN_IF_ERROR();
+    glUniform1f( loc, t );
     GL_WARN_IF_ERROR();
 }
 

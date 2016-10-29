@@ -1,7 +1,8 @@
 #version 410
 
+uniform mat4 world;
+uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 model_view;
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
 in vec4 vWorldPosition;

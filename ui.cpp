@@ -160,7 +160,7 @@ void repaintViewport( void )
     Transform camera_rotation = 
         compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
                  makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
-    Transform camera_xform = compose( camera_translation, camera_rotation );
+    Transform camera = compose( camera_translation, camera_rotation );
 
     if( draw_wireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
@@ -170,13 +170,12 @@ void repaintViewport( void )
 
     if( ground ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
-        Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
-        Transform model_view = compose( model_translation, model_rotation );
-        model_view = model_translation;
-        model_view = compose( camera_xform, model_view );
+        Transform model_view = model_translation;
+        Transform world = model_translation;
 
         ground->gpu_mesh.setShaderProgram( ground_shader_program );
-        ground->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        ground->gpu_mesh.setWorldMatrix( world.fwd );
+        ground->gpu_mesh.setViewMatrix( camera.fwd );
         ground->gpu_mesh.setProjection( projection );
         ground->draw();
     }
@@ -184,24 +183,26 @@ void repaintViewport( void )
     if( hero ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-        Transform model_view = compose( model_translation, model_rotation );
-        model_view = compose( camera_xform, model_view );
+        Transform world = compose( model_translation, model_rotation );
 
         hero->gpu_mesh.setShaderProgram( mesh_shader_program );
-        hero->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        hero->gpu_mesh.setWorldMatrix( world.fwd );
+        hero->gpu_mesh.setViewMatrix( camera.fwd );
         hero->gpu_mesh.setProjection( projection );
+        hero->gpu_mesh.setAnimTime( anim_time );
         hero->draw();
     }
 
     if( enemy ) {
         Transform model_translation = makeTranslation( Vector4( 1.0, 0.0, -5.0 ) );
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-        Transform model_view = compose( model_translation, model_rotation );
-        model_view = compose( camera_xform, model_view );
+        Transform world = compose( model_translation, model_rotation );
 
         enemy->gpu_mesh.setShaderProgram( mesh_shader_program );
-        enemy->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        enemy->gpu_mesh.setWorldMatrix( world.fwd );
+        enemy->gpu_mesh.setViewMatrix( camera.fwd );
         enemy->gpu_mesh.setProjection( projection );
+        enemy->gpu_mesh.setAnimTime( anim_time );
         enemy->draw();
     }
 
@@ -222,11 +223,12 @@ void repaintViewport( void )
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         //Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         //Transform model_view = compose( model_translation, model_rotation );
-        Transform model_view = model_translation;
-        model_view = compose( camera_xform, model_view );
+        Transform world = model_translation;
+        //model_view = compose( camera_xform, model_view );
 
         gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
-        gpu_point_cloud.setModelViewMatrix( model_view.fwd );
+        gpu_point_cloud.setWorldMatrix( world.fwd );
+        gpu_point_cloud.setViewMatrix( camera.fwd );
         gpu_point_cloud.setProjection( projection );
         gpu_point_cloud.bind();
         gpu_point_cloud.draw();
@@ -261,6 +263,8 @@ int main (int argc, char * const argv[])
 {
     const char * vertex_shader_filename = "shaders/basic.vs";
     const char * fragment_shader_filename = "shaders/basic.fs";
+    //const char * fragment_shader_filename = "shaders/wood.fs";
+    //const char * fragment_shader_filename = "shaders/fire.fs";
 
     printf("FastRender UI\n");
 
@@ -315,8 +319,13 @@ int main (int argc, char * const argv[])
     printf("Loading game objects\n");
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
+#if 1 // low res
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+#else // hi res
+    hero = new GameObject( bunnyPath + "/bun_zipper.ply" );
+    enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
+#endif
 
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
