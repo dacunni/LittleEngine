@@ -13,9 +13,10 @@ vec3 light0Color = vec3( 0.5, 0.5, 1.0 );
  
 void main()
 {
-    color = vec4(1.0, 0.0, 0.0, 1.0);
+    color = vec4(0.0, 1.0, 0.0, 1.0);
     vec4 toLight0 = normalize(light0 - vWorldPosition);
-    color.rgb = light0Color * dot(vNormal, toLight0);
-    color = normalize(vNormal); // visualize normal vector
+    //color.rgb = light0Color * dot(vNormal, toLight0);
+    //color = normalize(vNormal); // visualize normal vector
+    color.g *= 0.25 + 0.75 * 0.5 * (cos(vWorldPosition.x) * cos(vWorldPosition.z) + 1.0);
 }
 

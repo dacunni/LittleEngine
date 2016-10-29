@@ -23,6 +23,12 @@ GameObject::GameObject( const std::string & path )
     }
 }
 
+GameObject::GameObject( TriangleMesh * trimesh )
+    : mesh(trimesh)
+{
+
+}
+
 GameObject::~GameObject() 
 {
     delete mesh;

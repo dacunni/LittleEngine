@@ -33,9 +33,11 @@ GPUPointCloud gpu_point_cloud;
 
 GameObject * hero = nullptr;
 GameObject * enemy = nullptr;
+GameObject * ground = nullptr;
 
 GLuint mesh_shader_program = 0;
 GLuint point_cloud_shader_program = 0;
+GLuint ground_shader_program = 0;
 
 double start_time = -1.0;
 int anim_timeout_millis = 33;
@@ -44,7 +46,7 @@ float anim_time = 0.0f;
 
 bool draw_wireframes = false;
 
-Vector4 cameraPosition( 0.0, 0.0, 0.0 );
+Vector4 cameraPosition( 0.0, 0.6, 0.0 );
 
 void keyPressed( unsigned char key, int width, int height ) 
 {
@@ -140,42 +142,9 @@ void repaintViewport( void )
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    Transform model_rotation;
-    Transform model_translation;
-    Transform model_view;
-
     projection.glProjectionSymmetric( 0.25, 0.2, 0.5, 100.0 );
 
-    model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-    // Shift the model back away from the camera
-    Vector4 object_world_offset = Vector4( 0.0, 0.0, -5.0 );
-
-    // Center the model around the origin
-    Vector4 object_centering_offset = Vector4( 0.0, 0.0, 0.0 );
-    if( hero && hero->mesh ) {
-        AxisAlignedSlab * bounds = hero->mesh->getAxisAlignedBounds(); 
-        if( bounds ) {
-            object_centering_offset =  Vector4( -0.5 * (bounds->xmin + bounds->xmax), 
-                                                -0.5 * (bounds->ymin + bounds->ymax), 
-                                                -0.5 * (bounds->zmin + bounds->zmax) ); 
-        }
-    }
-
-    Vector4 offset;
-    add( object_world_offset, object_centering_offset, offset );
-    model_translation = makeTranslation( offset );
-
-    model_view = compose( model_translation, model_rotation );
-    Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x,
-                                                             -cameraPosition.y,
-                                                             -cameraPosition.z ) );
-    model_view = compose( camera_translation, model_view );
-
-    Matrix4x4 model_view_projection;
-    mult( projection, model_view.fwd, model_view_projection );
-    //mult( model_view.fwd, projection, model_view_projection );
-    //model_view_projection = projection;
-    //model_view_projection.at( 0, 3 ) += 3.0;
+    Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
 
     if( draw_wireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
@@ -183,51 +152,41 @@ void repaintViewport( void )
         glEnable( GL_CULL_FACE );
     }
 
+    if( ground ) {
+        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
+        Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
+        Transform model_view = compose( model_translation, model_rotation );
+        model_view = model_translation;
+        model_view = compose( camera_translation, model_view );
+
+        ground->gpu_mesh.setShaderProgram( ground_shader_program );
+        ground->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        ground->gpu_mesh.setProjection( projection );
+        ground->draw();
+    }
+
     if( hero ) {
-        if( mesh_shader_program != 0 ) {
-            glUseProgram( mesh_shader_program );
-        }
+        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
+        Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
+        Transform model_view = compose( model_translation, model_rotation );
+        model_view = compose( camera_translation, model_view );
 
-        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
-        GL_WARN_IF_ERROR();
-        GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
-        GL_WARN_IF_ERROR();
-        GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
-        GL_WARN_IF_ERROR();
-        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
-        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
-        glUniform1f( anim_time_loc, anim_time );
-        GL_WARN_IF_ERROR();
-
+        hero->gpu_mesh.setShaderProgram( mesh_shader_program );
+        hero->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        hero->gpu_mesh.setProjection( projection );
         hero->draw();
     }
 
     if( enemy ) {
-        add( offset, Vector4(1.0, 0.0, 0.0), offset );
-        model_translation = makeTranslation( offset );
-        model_view = compose( model_translation, model_rotation );
-        Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x,
-                                                                 -cameraPosition.y,
-                                                                 -cameraPosition.z ) );
+        Transform model_translation = makeTranslation( Vector4( 1.0, 0.0, -5.0 ) );
+        Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
+        Transform model_view = compose( model_translation, model_rotation );
         model_view = compose( camera_translation, model_view );
-        Matrix4x4 model_view_projection;
-        mult( projection, model_view.fwd, model_view_projection );
 
-        if( mesh_shader_program != 0 ) {
-            glUseProgram( mesh_shader_program );
-        }
-
-        GLint proj_loc = glGetUniformLocation( mesh_shader_program, "projection" );
-        GL_WARN_IF_ERROR();
-        GLint mv_loc = glGetUniformLocation( mesh_shader_program, "model_view" );
-        GL_WARN_IF_ERROR();
-        GLint anim_time_loc = glGetUniformLocation( mesh_shader_program, "anim_time" );
-        GL_WARN_IF_ERROR();
-        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
-        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
-        glUniform1f( anim_time_loc, anim_time );
-        GL_WARN_IF_ERROR();
-
+        enemy->gpu_mesh.setShaderProgram( mesh_shader_program );
+        enemy->gpu_mesh.setModelViewMatrix( model_view.fwd );
+        enemy->gpu_mesh.setProjection( projection );
+        enemy->draw();
         enemy->draw();
     }
 
@@ -245,13 +204,18 @@ void repaintViewport( void )
     }
 
     if( gpu_point_cloud.uploaded() ) {
+        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
+        //Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
+        //Transform model_view = compose( model_translation, model_rotation );
+        Transform model_view = model_translation;
+        model_view = compose( camera_translation, model_view );
         GLint proj_loc = glGetUniformLocation( point_cloud_shader_program, "projection" );
         GL_WARN_IF_ERROR();
-        //GLint mv_loc = glGetUniformLocation( point_cloud_shader_program, "model_view" );
+        GLint mv_loc = glGetUniformLocation( point_cloud_shader_program, "model_view" );
         GL_WARN_IF_ERROR();
         glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
         GL_WARN_IF_ERROR();
-        //glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
+        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
         GL_WARN_IF_ERROR();
         gpu_point_cloud.bind();
         gpu_point_cloud.draw();
@@ -322,8 +286,9 @@ int main (int argc, char * const argv[])
 
     mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
     point_cloud_shader_program = createShaders( "shaders/points.vs", "shaders/points.fs" );
+    ground_shader_program = createShaders( "shaders/ground.vs", "shaders/ground.fs" );
 
-    if( !mesh_shader_program || !point_cloud_shader_program ) {
+    if( !mesh_shader_program || !point_cloud_shader_program || !ground_shader_program ) {
         return -1;
     }
 
@@ -341,6 +306,10 @@ int main (int argc, char * const argv[])
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+
+    TriangleMesh * ground_mesh = new TriangleMesh();
+    makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
+    ground = new GameObject( ground_mesh );
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

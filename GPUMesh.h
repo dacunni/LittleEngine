@@ -12,6 +12,8 @@
 #include "OpenGLUtil.h"
 
 class TriangleMesh;
+class Matrix4x4;
+class Program;
 
 class GPUMesh
 {
@@ -24,6 +26,10 @@ class GPUMesh
         void bind();
         void draw();
 
+        void setShaderProgram( GLuint program );
+        void setModelViewMatrix( Matrix4x4 & mat );
+        void setProjection( Matrix4x4 & mat );
+
         const GLuint POSITION_ATTRIB_INDEX = 0;
         const GLuint NORMAL_ATTRIB_INDEX   = 1;
 
@@ -31,6 +37,8 @@ class GPUMesh
         GLuint vbo = 0;
         GLuint ibo = 0;
         unsigned long long num_vertices = 0;
+
+        GLuint shader_program;
 };
 
 

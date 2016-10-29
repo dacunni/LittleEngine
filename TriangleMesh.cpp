@@ -204,21 +204,29 @@ void makeTriangleMeshCube( TriangleMesh & mesh )
 void makeTriangleMeshGroundPlatform( TriangleMesh & mesh, float size )
 {
     mesh.vertices.resize( 4 );
+    mesh.normals.resize( 4 );
     mesh.triangles.resize( 2 );
     
-    float yoffset = -5.0; // TEMP
+    float yoffset = 0.0;
     
     mesh.vertices[0] = Vector4( -size / 2.0, yoffset, -size / 2.0 );
     mesh.vertices[1] = Vector4( -size / 2.0, yoffset, size / 2.0 );
     mesh.vertices[2] = Vector4( size / 2.0, yoffset, size / 2.0 );
     mesh.vertices[3] = Vector4( size / 2.0, yoffset, -size / 2.0 );
     
+    Vector4 up( 0.0, 1.0, 0.0 );
+    mesh.normals[0] = up;
+    mesh.normals[1] = up;
+    mesh.normals[2] = up;
+    mesh.normals[3] = up;
+
     // TODO - make the winding order consistent
     mesh.triangles[0].vi[0] = 0;
     mesh.triangles[0].vi[1] = 1;
     mesh.triangles[0].vi[2] = 2;
-    mesh.triangles[1].vi[0] = 1;
-    mesh.triangles[1].vi[1] = 3;
-    mesh.triangles[1].vi[2] = 2;
+    mesh.triangles[1].vi[0] = 0;
+    mesh.triangles[1].vi[1] = 2;
+    mesh.triangles[1].vi[2] = 3;
+
 }
 

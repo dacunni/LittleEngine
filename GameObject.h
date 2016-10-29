@@ -17,6 +17,7 @@ class GameObject
 {
     public:
         GameObject( const std::string & path );
+        GameObject( TriangleMesh * trimesh );
         ~GameObject();
 
         void draw();

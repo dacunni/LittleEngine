@@ -8,6 +8,8 @@
  */
 
 #include "GPUMesh.h"
+#include "Matrix.h"
+#include "ShaderProgram.h"
 #include "TriangleMesh.h"
 
 GPUMesh::GPUMesh() 
@@ -82,6 +84,28 @@ void GPUMesh::draw()
         }
         GL_WARN_IF_ERROR();
     }
+}
+
+void GPUMesh::setShaderProgram( GLuint program )
+{
+    glUseProgram( program );
+    shader_program = program;
+}
+
+void GPUMesh::setModelViewMatrix( Matrix4x4 & mat )
+{
+    GLint mv_loc = glGetUniformLocation( shader_program, "model_view" );
+    GL_WARN_IF_ERROR();
+    glUniformMatrix4fv( mv_loc, 1, GL_TRUE, mat.data );
+    GL_WARN_IF_ERROR();
+}
+
+void GPUMesh::setProjection( Matrix4x4 & mat )
+{
+    GLint proj_loc = glGetUniformLocation( shader_program, "projection" );
+    GL_WARN_IF_ERROR();
+    glUniformMatrix4fv( proj_loc, 1, GL_TRUE, mat.data );
+    GL_WARN_IF_ERROR();
 }
 
 

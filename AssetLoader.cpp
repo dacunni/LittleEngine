@@ -13,6 +13,7 @@
 #include <assimp/Importer.hpp>
 
 #include "AssetLoader.h"
+#include "AxisAlignedSlab.h"
 #include "TriangleMesh.h"
 
 
@@ -58,7 +59,7 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
         trimesh->normals[vi].set( n.x, n.y, n.z );
 
         // TEMP >>>
-        const float scale = 10.0f;
+        const float scale = 5.0f;
         trimesh->vertices[vi][0] *= scale;
         trimesh->vertices[vi][1] *= scale;
         trimesh->vertices[vi][2] *= scale;
@@ -77,6 +78,10 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
         trimesh->triangles[ti].vi[1] = t.mIndices[1];
         trimesh->triangles[ti].vi[2] = t.mIndices[2];
     }
+
+    AxisAlignedSlab * bounds = trimesh->getAxisAlignedBounds();
+    printf("Bounds : "); bounds->print();
+    delete bounds;
 
     return trimesh;
 }

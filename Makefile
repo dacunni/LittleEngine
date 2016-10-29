@@ -1,9 +1,7 @@
 
 HDR = \
-	AmbientOcclusionShader.h \
 	AssetLoader.h \
 	AxisAlignedSlab.h \
-	BasicDiffuseSpecularShader.h \
 	BoundingVolume.h \
 	Color.h \
 	Container.h \
@@ -33,10 +31,8 @@ HDR = \
 
 
 leOBJ = \
-	AmbientOcclusionShader.o \
 	AssetLoader.o \
 	AxisAlignedSlab.o \
-	BasicDiffuseSpecularShader.o \
 	BoundingVolume.o \
 	Container.o \
 	FlatContainer.o \
@@ -62,10 +58,11 @@ INC = -I/usr/local/include
 INC += -I/usr/include/ImageMagick
 INC += -I/usr/local/include/ImageMagick-6
 CXXFLAGS = -std=c++11
+CXXFLAGS += -mmacosx-version-min=10.10
 CXXFLAGS += -Wno-deprecated
 CXXFLAGS += -O2
 CXXFLAGS += -g
-LDXXFLAGS = -e _main -lassimp -lMagick++-6.Q16 -lm -lc++ -lc -macosx_version_min 10.9
+LDXXFLAGS = -e _main -lassimp -lMagick++-6.Q16 -lm -lc++ -lc -macosx_version_min 10.10
 leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
 
 all: le
