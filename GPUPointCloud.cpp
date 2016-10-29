@@ -52,16 +52,11 @@ void GPUPointCloud::bind()
 void GPUPointCloud::draw()
 {
     if( vao ) {
-        glPointSize( point_size );
+        // Enable gl_PointSize in VS
+        glEnable( GL_PROGRAM_POINT_SIZE );
         glDrawArrays( GL_POINTS, 0, num_vertices );
-        glPointSize( 1 );
         GL_WARN_IF_ERROR();
     }
-}
-
-void GPUPointCloud::setPointSize( float s ) 
-{ 
-    point_size = s; 
 }
 
 

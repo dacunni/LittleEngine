@@ -21,6 +21,7 @@ void main()
     color.rgb += light0Color * dot(vNormal, toLight0);
     vec4 toLight1 = normalize(light1 - vWorldPosition);
     color.rgb += light1Color * dot(vNormal, toLight1);
-    color = normalize(vNormal); // visualize normal vector
+    color.rgb = normalize(vNormal).xyz; // visualize normal vector
+    //color.a = 0.5;
 }
 

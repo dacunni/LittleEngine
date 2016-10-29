@@ -25,9 +25,6 @@ class GPUPointCloud : public GPURenderable
         virtual void bind();
         virtual void draw();
 
-        void setPointSize( float s );
-
-        float point_size = 1;
 };
 
 

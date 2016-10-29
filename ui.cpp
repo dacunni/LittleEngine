@@ -130,7 +130,6 @@ void buildPointCloud( void )
 #endif
         points.push_back( p );
     }
-    gpu_point_cloud.setPointSize( 1 );
     gpu_point_cloud.upload( points );
 }
 
@@ -237,10 +236,7 @@ void repaintViewport( void )
 
     if( gpu_point_cloud.uploaded() ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
-        //Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-        //Transform model_view = compose( model_translation, model_rotation );
         Transform world = model_translation;
-        //model_view = compose( camera_xform, model_view );
 
         gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
         gpu_point_cloud.setWorldMatrix( world.fwd );
@@ -293,9 +289,13 @@ int main (int argc, char * const argv[])
     glutInitWindowPosition( 0, 0 );
     glutCreateWindow("FastRender UI");
 
+
     printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
     printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
     printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     //
     // Parse command line arguments
