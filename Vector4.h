@@ -43,6 +43,8 @@ class Vector4
         void normalize();
         void negate();
 
+        Vector4 normalized() const;
+
         void print() const;
         void fprintCSV( FILE * file ) const;
 

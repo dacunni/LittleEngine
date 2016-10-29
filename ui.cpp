@@ -34,6 +34,8 @@ GPUPointCloud gpu_point_cloud;
 GameObject * hero = nullptr;
 GameObject * enemy = nullptr;
 GameObject * ground = nullptr;
+GameObject * tetra = nullptr;
+//std::vector<GameObject*> game_objects; // TODO
 
 GLuint mesh_shader_program = 0;
 GLuint point_cloud_shader_program = 0;
@@ -154,7 +156,8 @@ void repaintViewport( void )
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    projection.glProjectionSymmetric( 0.25, 0.2, 0.5, 100.0 );
+    //projection.glProjectionSymmetric( 0.30, 0.30, 0.5, 100.0 );
+    projection.glProjectionSymmetric( 0.30 * (float) window_width / window_height, 0.30, 0.5, 100.0 );
 
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
     Transform camera_rotation = 
@@ -204,6 +207,19 @@ void repaintViewport( void )
         enemy->gpu_mesh.setProjection( projection );
         enemy->gpu_mesh.setAnimTime( anim_time );
         enemy->draw();
+    }
+
+    if( tetra ) {
+        Transform model_translation = makeTranslation( Vector4( 1.0, 1.0, -5.0 ) );
+        Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
+        Transform world = compose( model_translation, model_rotation );
+
+        tetra->gpu_mesh.setShaderProgram( mesh_shader_program );
+        tetra->gpu_mesh.setWorldMatrix( world.fwd );
+        tetra->gpu_mesh.setViewMatrix( camera.fwd );
+        tetra->gpu_mesh.setProjection( projection );
+        tetra->gpu_mesh.setAnimTime( anim_time );
+        tetra->draw();
     }
 
     if( draw_wireframes ) {                           // revert to normal behavior
@@ -330,6 +346,10 @@ int main (int argc, char * const argv[])
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
     ground = new GameObject( ground_mesh );
+
+    TriangleMesh * tetra_mesh = new TriangleMesh();
+    makeTriangleMeshTetrahedron( *tetra_mesh );
+    tetra = new GameObject( tetra_mesh );
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

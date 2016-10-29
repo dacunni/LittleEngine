@@ -169,6 +169,7 @@ AxisAlignedSlab * TriangleMesh::getAxisAlignedBounds() const
 void makeTriangleMeshTetrahedron( TriangleMesh & mesh )
 {
     mesh.vertices.resize( 4 );
+    mesh.normals.resize( 4 );
     mesh.triangles.resize( 4 );
     
     const float one_ov_sqrt_two = 0.70710678118;
@@ -180,8 +181,12 @@ void makeTriangleMeshTetrahedron( TriangleMesh & mesh )
     mesh.vertices[1] = Vector4( -halflen,  0.0, -one_ov_sqrt_two * halflen );
     mesh.vertices[2] = Vector4(  0.0, -halflen,  one_ov_sqrt_two * halflen );
     mesh.vertices[3] = Vector4(  0.0,  halflen,  one_ov_sqrt_two * halflen );
+
+    mesh.normals[0] = mesh.vertices[0].normalized();
+    mesh.normals[1] = mesh.vertices[1].normalized();
+    mesh.normals[2] = mesh.vertices[2].normalized();
+    mesh.normals[3] = mesh.vertices[3].normalized();
     
-    // TODO - make the winding order consistent
     mesh.triangles[0].vi[0] = 0;
     mesh.triangles[0].vi[1] = 1;
     mesh.triangles[0].vi[2] = 2;
@@ -220,13 +225,11 @@ void makeTriangleMeshGroundPlatform( TriangleMesh & mesh, float size )
     mesh.normals[2] = up;
     mesh.normals[3] = up;
 
-    // TODO - make the winding order consistent
     mesh.triangles[0].vi[0] = 0;
     mesh.triangles[0].vi[1] = 1;
     mesh.triangles[0].vi[2] = 2;
     mesh.triangles[1].vi[0] = 0;
     mesh.triangles[1].vi[1] = 2;
     mesh.triangles[1].vi[2] = 3;
-
 }
 

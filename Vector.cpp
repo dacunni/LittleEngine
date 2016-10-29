@@ -31,6 +31,13 @@ void Vector4::normalize()
 	}
 }
 
+Vector4 Vector4::normalized() const
+{
+    Vector4 u( *this );
+    u.normalize();
+    return u;
+}
+
 void Vector4::negate()
 {
     data[0] = -data[0];
