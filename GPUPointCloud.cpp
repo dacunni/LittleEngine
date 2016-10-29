@@ -41,11 +41,6 @@ void GPUPointCloud::upload( std::vector<Vector4> & points )
     num_vertices = points.size();
 }
 
-bool GPUPointCloud::uploaded()
-{
-    return vao != 0;
-}
-
 void GPUPointCloud::bind()
 {
     if( vao ) {

@@ -47,19 +47,29 @@ float anim_time = 0.0f;
 bool draw_wireframes = false;
 
 Vector4 cameraPosition( 0.0, 0.6, 0.0 );
+float cameraXRotation = 0.0;
+float cameraYRotation = 0.0;
 
 void keyPressed( unsigned char key, int width, int height ) 
 {
     switch( key ) {
-        case 'k':
+        case 'w':
             cameraPosition.z -= 0.25;
             glutPostRedisplay();
             break;
-        case 'j':
+        case 's':
             cameraPosition.z += 0.25;
             glutPostRedisplay();
             break;
-        case 'w':
+        case 'a':
+            cameraPosition.x -= 0.25;
+            glutPostRedisplay();
+            break;
+        case 'd':
+            cameraPosition.x += 0.25;
+            glutPostRedisplay();
+            break;
+        case 'W':
             draw_wireframes = !draw_wireframes;
             glutPostRedisplay();
             break;
@@ -78,8 +88,10 @@ void mouseMotionWhileButtonPressed( int x, int y )
     int dx = x - mouse_last_x;
     int dy = y - mouse_last_y;
 
-    cameraPosition.x += 0.05 * dx;
-    cameraPosition.z += 0.05 * dy;
+    //cameraPosition.x += 0.05 * dx;
+    //cameraPosition.z += 0.05 * dy;
+    cameraXRotation += 0.01 * dy;
+    cameraYRotation += 0.01 * dx;
     glutPostRedisplay();
 
     mouse_last_x = x;
@@ -145,6 +157,10 @@ void repaintViewport( void )
     projection.glProjectionSymmetric( 0.25, 0.2, 0.5, 100.0 );
 
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
+    Transform camera_rotation = 
+        compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
+                 makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
+    Transform camera_xform = compose( camera_translation, camera_rotation );
 
     if( draw_wireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
@@ -157,7 +173,7 @@ void repaintViewport( void )
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
         Transform model_view = compose( model_translation, model_rotation );
         model_view = model_translation;
-        model_view = compose( camera_translation, model_view );
+        model_view = compose( camera_xform, model_view );
 
         ground->gpu_mesh.setShaderProgram( ground_shader_program );
         ground->gpu_mesh.setModelViewMatrix( model_view.fwd );
@@ -169,7 +185,7 @@ void repaintViewport( void )
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         Transform model_view = compose( model_translation, model_rotation );
-        model_view = compose( camera_translation, model_view );
+        model_view = compose( camera_xform, model_view );
 
         hero->gpu_mesh.setShaderProgram( mesh_shader_program );
         hero->gpu_mesh.setModelViewMatrix( model_view.fwd );
@@ -181,12 +197,11 @@ void repaintViewport( void )
         Transform model_translation = makeTranslation( Vector4( 1.0, 0.0, -5.0 ) );
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         Transform model_view = compose( model_translation, model_rotation );
-        model_view = compose( camera_translation, model_view );
+        model_view = compose( camera_xform, model_view );
 
         enemy->gpu_mesh.setShaderProgram( mesh_shader_program );
         enemy->gpu_mesh.setModelViewMatrix( model_view.fwd );
         enemy->gpu_mesh.setProjection( projection );
-        enemy->draw();
         enemy->draw();
     }
 
@@ -208,15 +223,11 @@ void repaintViewport( void )
         //Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         //Transform model_view = compose( model_translation, model_rotation );
         Transform model_view = model_translation;
-        model_view = compose( camera_translation, model_view );
-        GLint proj_loc = glGetUniformLocation( point_cloud_shader_program, "projection" );
-        GL_WARN_IF_ERROR();
-        GLint mv_loc = glGetUniformLocation( point_cloud_shader_program, "model_view" );
-        GL_WARN_IF_ERROR();
-        glUniformMatrix4fv( proj_loc, 1, GL_TRUE, projection.data );
-        GL_WARN_IF_ERROR();
-        glUniformMatrix4fv( mv_loc, 1, GL_TRUE, model_view.fwd.data );
-        GL_WARN_IF_ERROR();
+        model_view = compose( camera_xform, model_view );
+
+        gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
+        gpu_point_cloud.setModelViewMatrix( model_view.fwd );
+        gpu_point_cloud.setProjection( projection );
         gpu_point_cloud.bind();
         gpu_point_cloud.draw();
     }

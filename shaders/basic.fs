@@ -10,12 +10,16 @@ out vec4 color;
 
 vec4 light0 = vec4( 10.0, 10.0, 5.0, 1.0 );
 vec3 light0Color = vec3( 0.5, 0.5, 1.0 );
+vec4 light1 = vec4( -5.0, 0.0, 0.0, 1.0 );
+vec3 light1Color = vec3( 0.8, 0.7, 0.0 );
  
 void main()
 {
-    color = vec4(1.0, 0.0, 0.0, 1.0);
+    color = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 toLight0 = normalize(light0 - vWorldPosition);
-    color.rgb = light0Color * dot(vNormal, toLight0);
-    color = normalize(vNormal); // visualize normal vector
+    color.rgb += light0Color * dot(vNormal, toLight0);
+    vec4 toLight1 = normalize(light1 - vWorldPosition);
+    color.rgb += light1Color * dot(vNormal, toLight1);
+    //color = normalize(vNormal); // visualize normal vector
 }
 

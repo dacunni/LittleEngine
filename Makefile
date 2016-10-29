@@ -7,6 +7,7 @@ HDR = \
 	Container.h \
 	FlatContainer.h \
 	GameObject.h \
+	GPURenderable.h \
 	GPUMesh.h \
 	GPUPointCloud.h \
 	Material.h \
@@ -37,6 +38,7 @@ leOBJ = \
 	Container.o \
 	FlatContainer.o \
 	GameObject.o \
+	GPURenderable.o \
 	GPUMesh.o \
 	GPUPointCloud.o \
 	Matrix.o \

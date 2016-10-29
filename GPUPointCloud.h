@@ -12,27 +12,21 @@
 #include <vector>
 #include "Vector.h"
 #include "OpenGLUtil.h"
+#include "GPURenderable.h"
 
-class GPUPointCloud
+class GPUPointCloud : public GPURenderable
 {
     public:
         GPUPointCloud();
         ~GPUPointCloud(); 
 
         void upload( std::vector<Vector4> & points );
-        bool uploaded();
 
-        void bind();
-        void draw();
+        virtual void bind();
+        virtual void draw();
 
         void setPointSize( float s );
 
-        const GLuint POSITION_ATTRIB_INDEX = 0;
-        const GLuint NORMAL_ATTRIB_INDEX   = 1;
-
-        GLuint vao = 0;
-        GLuint vbo = 0;
-        unsigned long long num_vertices = 0;
         float point_size = 1;
 };
 

@@ -10,35 +10,19 @@
 #define _GPU_MESH_H_
 
 #include "OpenGLUtil.h"
+#include "GPURenderable.h"
 
 class TriangleMesh;
-class Matrix4x4;
-class Program;
 
-class GPUMesh
+class GPUMesh : public GPURenderable
 {
     public:
         GPUMesh();
         ~GPUMesh();
 
         void upload( TriangleMesh & mesh );
-        bool uploaded();
-        void bind();
-        void draw();
-
-        void setShaderProgram( GLuint program );
-        void setModelViewMatrix( Matrix4x4 & mat );
-        void setProjection( Matrix4x4 & mat );
-
-        const GLuint POSITION_ATTRIB_INDEX = 0;
-        const GLuint NORMAL_ATTRIB_INDEX   = 1;
-
-        GLuint vao = 0;
-        GLuint vbo = 0;
-        GLuint ibo = 0;
-        unsigned long long num_vertices = 0;
-
-        GLuint shader_program;
+        virtual void bind();
+        virtual void draw();
 };
 
 
