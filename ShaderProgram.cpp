@@ -66,5 +66,34 @@ void Shader::loadSource( GLuint type, const std::string & src )
     }
 }
 
+void Program::create()
+{
+    printf( "Creating program\n");
+    id = glCreateProgram();
+}
 
+void Program::attach( Shader & shader )
+{
+    if( shader.id != 0 ) {
+        glAttachShader( id, shader.id );
+    }
+}
+
+void Program::link()
+{
+    GLint status = 0;
+    printf( "Linking program\n");
+    glLinkProgram( id );
+    glGetProgramiv( id, GL_LINK_STATUS, &status ); 
+    printf( "Link status: %d\n", status );
+
+    if( !status ) {
+        GLint len = 0;
+        glGetProgramiv( id, GL_INFO_LOG_LENGTH, &len );
+        std::vector<GLchar> log( len );
+        glGetProgramInfoLog( id, len, &len, &log[0] );
+        printf( "Linker Error Message:\n%s", (char *) &log[0] );
+        glDeleteProgram( id );
+    }
+}
 

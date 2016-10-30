@@ -120,14 +120,9 @@ void buildPointCloud( void )
     Vector4 dir( 1.0, 1.0, 0 );
     dir.normalize();
     for( int i = 0; i < num_points; i++ ) {
-#if 1
-        p.x = rng.uniformRange( -3.0, -2.0 );
-        p.y = rng.uniformRange( -1.0, 1.0 );
-        p.z = rng.uniformRange( -6.0, -10.0 );
-#else
-        rng.uniformSurfaceUnitSphere( p );     
-        //rng.uniformSurfaceUnitHalfSphere( dir, p );     
-#endif
+        p.x = rng.uniformRange( -4.0, -2.0 );
+        p.y = rng.uniformRange( 0.0, 1.0 );
+        p.z = rng.uniformRange( -10.0, -6.0 );
         points.push_back( p );
     }
     gpu_point_cloud.upload( points );
@@ -355,36 +350,5 @@ int main (int argc, char * const argv[])
     start_time = timeAsDouble();
     glutMainLoop();
     return EXIT_SUCCESS;
-}
-
-void Program::create()
-{
-    printf( "Creating program\n");
-    id = glCreateProgram();
-}
-
-void Program::attach( Shader & shader )
-{
-    if( shader.id != 0 ) {
-        glAttachShader( id, shader.id );
-    }
-}
-
-void Program::link()
-{
-    GLint status = 0;
-    printf( "Linking program\n");
-    glLinkProgram( id );
-    glGetProgramiv( id, GL_LINK_STATUS, &status ); 
-    printf( "Link status: %d\n", status );
-
-    if( !status ) {
-        GLint len = 0;
-        glGetProgramiv( id, GL_INFO_LOG_LENGTH, &len );
-        std::vector<GLchar> log( len );
-        glGetProgramInfoLog( id, len, &len, &log[0] );
-        printf( "Linker Error Message:\n%s", (char *) &log[0] );
-        glDeleteProgram( id );
-    }
 }
 
