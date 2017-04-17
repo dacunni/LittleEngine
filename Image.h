@@ -11,6 +11,8 @@
 #define MAGICKCORE_QUANTUM_DEPTH 16
 #include <Magick++.h>
 
+#include "OpenGLUtil.h"
+
 template <typename PIXEL>
 class Image
 {
@@ -39,6 +41,7 @@ public:
     virtual ~RGBImage() = default;
 
     void loadImage( const std::string & filename );
+    GLuint uploadGL();
 };
 
 template <>
@@ -62,6 +65,21 @@ void RGBImage<unsigned char>::loadImage( const std::string & filename )
         pixels[i].g = magData[i].green >> 8;
         pixels[i].b = magData[i].blue >> 8;
     }
+}
+
+template <>
+GLuint RGBImage<unsigned char>::uploadGL()
+{
+    GLuint texID = 0;
+    glGenTextures( 1, &texID );
+    glBindTexture( GL_TEXTURE_2D, texID );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height,
+                  0, GL_RGB, GL_UNSIGNED_BYTE, data() );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    return texID;
 }
 
 #endif

@@ -338,15 +338,7 @@ int main (int argc, char * const argv[])
     // TEMP >>>
     RGBImage<unsigned char> hero_tex_image;
     hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
-    GLuint texID;
-    glGenTextures( 1, &texID );
-    glBindTexture( GL_TEXTURE_2D, texID );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, hero_tex_image.width, hero_tex_image.height,
-                  0, GL_RGB, GL_UNSIGNED_BYTE, hero_tex_image.data() );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    GLuint texID = hero_tex_image.uploadGL();
     // TEMP <<<
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
