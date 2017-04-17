@@ -29,6 +29,7 @@ const char * shaderTypeAsString( GLuint type )
 
 void Shader::loadFile( GLuint type, const std::string filename )
 {
+    printf("Loading shader from file %s\n", filename.c_str());
     std::ifstream ifs( filename );
     std::stringstream ss;
     ss << ifs.rdbuf();
@@ -42,8 +43,10 @@ void Shader::loadSource( GLuint type, const std::string & src )
     int status = 0;
 
     id = glCreateShader( type );    
+#if 0
     printf( ">>>> %s id=%u >>>>\n%s<<<< %s id=%u <<<<\n", 
             type_string, id, src.c_str(), type_string, id );
+#endif
 
     // Make an array of pointers for GL
     const char * srcs[] = { src.c_str() };
@@ -53,7 +56,7 @@ void Shader::loadSource( GLuint type, const std::string & src )
     glCompileShader( id );
     glGetShaderiv( id, GL_COMPILE_STATUS, &status );
 
-    printf( "Shader Compile status: %d\n", status );
+    printf( "Shader Compile status: %s\n", status ? "OK" : "ERROR" );
 
     if( !status ) {
         GLint len = 0;
@@ -68,7 +71,6 @@ void Shader::loadSource( GLuint type, const std::string & src )
 
 void Program::create()
 {
-    printf( "Creating program\n");
     id = glCreateProgram();
 }
 
@@ -82,10 +84,9 @@ void Program::attach( Shader & shader )
 void Program::link()
 {
     GLint status = 0;
-    printf( "Linking program\n");
     glLinkProgram( id );
     glGetProgramiv( id, GL_LINK_STATUS, &status ); 
-    printf( "Link status: %d\n", status );
+    printf( "Link status: %s\n", status ? "OK" : "ERROR" );
 
     if( !status ) {
         GLint len = 0;

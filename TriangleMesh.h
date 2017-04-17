@@ -36,8 +36,15 @@ public:
 
     virtual AxisAlignedSlab * getAxisAlignedBounds() const;
 
+    struct UVCoord {
+        float u, v;
+    };
+
+    bool hasTextureUVCoordinates() const { return textureUVCoords.size() > 0; }
+
     std::vector< Vector4 >          vertices;
     std::vector< Vector4 >          normals;
+    std::vector< UVCoord >          textureUVCoords;
     std::vector< IndexTriangle >    triangles;
 
     TriangleMeshAccelerator       * accelerator;        // Intersetion acceleration object (null if none)

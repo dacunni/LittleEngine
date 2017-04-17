@@ -8,6 +8,7 @@
 
 #include "AssetLoader.h"
 #include "AxisAlignedSlab.h"
+#include "Image.h"
 #include "Transform.h"
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"
@@ -330,7 +331,35 @@ int main (int argc, char * const argv[])
     printf("Loading game objects\n");
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-#if 1 // low res
+
+#if 1
+    hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
+    
+    // TEMP >>>
+    RGBImage<unsigned char> hero_tex_image;
+    hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
+    GLuint texID;
+    glGenTextures( 1, &texID );
+    glBindTexture( GL_TEXTURE_2D, texID );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, hero_tex_image.width, hero_tex_image.height,
+                  0, GL_RGB, GL_UNSIGNED_BYTE, hero_tex_image.data() );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    // TEMP <<<
+
+    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+#elif 1
+    hero = new GameObject( modelPath + "/blender/monkey1.obj" );
+    enemy = new GameObject( modelPath + "/blender/monkey1.obj" );
+#elif 0
+    hero = new GameObject( modelPath + "/princeton/elephant2.ply" );
+    enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
+#elif 0
+    hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
+    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+#elif 0 // low res
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
 #else // hi res
@@ -344,7 +373,7 @@ int main (int argc, char * const argv[])
 
     TriangleMesh * tetra_mesh = new TriangleMesh();
     makeTriangleMeshTetrahedron( *tetra_mesh );
-    tetra = new GameObject( tetra_mesh );
+    //tetra = new GameObject( tetra_mesh );
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

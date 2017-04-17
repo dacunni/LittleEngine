@@ -10,6 +10,7 @@ HDR = \
 	GPURenderable.h \
 	GPUMesh.h \
 	GPUPointCloud.h \
+    Image.h \
 	Material.h \
 	Matrix.h \
 	OpenGLUtil.h \

@@ -34,21 +34,37 @@ void GPUMesh::upload( TriangleMesh & mesh )
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     GLsizeiptr vsize = mesh.vertices.size() * sizeof(float) * 4;
     GLsizeiptr nsize = mesh.normals.size() * sizeof(float) * 4;
-    printf("vsize = %ld\n", vsize); // TEMP
-    printf("nsize = %ld\n", nsize); // TEMP
+    GLsizeiptr tcsize = mesh.textureUVCoords.size() * sizeof(float) * 2;
+    GLintptr vstart = 0;
+    GLintptr nstart = vstart + vsize;
+    GLintptr tcstart = nstart + nsize;
+    printf("vsize = %ld vstart = %ld\n", vsize, vstart); // TEMP
+    printf("nsize = %ld nstart = %ld\n", nsize, nstart); // TEMP
+    printf("tcsize = %ld tcstart = %ld\n", tcsize, tcstart); // TEMP
     printf("tris  = %ld\n", mesh.triangles.size()); // TEMP
+
     // allocate some space for all of our attributes
-    glBufferData( GL_ARRAY_BUFFER, vsize + nsize, NULL, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, vsize + nsize + tcsize, NULL, GL_STATIC_DRAW );
+
     // upload positions
-    glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &mesh.vertices[0].x );
+    glBufferSubData( GL_ARRAY_BUFFER, vstart, vsize, &mesh.vertices[0].x );
     GL_WARN_IF_ERROR();
-    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0 );
+    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, (void *) vstart );
     glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
+
     // upload normals
-    glBufferSubData( GL_ARRAY_BUFFER, vsize, nsize, &mesh.normals[0].x );
-    glVertexAttribPointer( NORMAL_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, (void *) vsize );
+    glBufferSubData( GL_ARRAY_BUFFER, nstart, nsize, &mesh.normals[0].x );
+    glVertexAttribPointer( NORMAL_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, (void *) nstart );
     glEnableVertexAttribArray( NORMAL_ATTRIB_INDEX );
     GL_WARN_IF_ERROR();
+
+    // upload UV coordinates
+    if( mesh.hasTextureUVCoordinates() ) {
+        glBufferSubData( GL_ARRAY_BUFFER, tcstart, tcsize, &mesh.textureUVCoords[0].u );
+        glVertexAttribPointer( TEX_COORD_ATTRIB_INDEX, 2, GL_FLOAT, GL_FALSE, 0, (void *) tcstart );
+        glEnableVertexAttribArray( TEX_COORD_ATTRIB_INDEX );
+        GL_WARN_IF_ERROR();
+    }
 
     // Upload vertex indices
     glGenBuffers( 1, &ibo );

@@ -30,8 +30,9 @@ class GPURenderable
         void setProjection( Matrix4x4 & mat );
         void setAnimTime( float t );
 
-        const GLuint POSITION_ATTRIB_INDEX = 0;
-        const GLuint NORMAL_ATTRIB_INDEX   = 1;
+        const GLuint POSITION_ATTRIB_INDEX    = 0;
+        const GLuint NORMAL_ATTRIB_INDEX      = 1;
+        const GLuint TEX_COORD_ATTRIB_INDEX   = 2;
 
         GLuint vao = 0;
         GLuint vbo = 0;
