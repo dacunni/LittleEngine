@@ -6,6 +6,8 @@
 //
 //
 
+#include <limits>
+
 // Using the Open Asset Import Library ("assimp" - http://assimp.sourceforge.net/ )
 //#include <assimp/assimp.hpp>
 #include <assimp/scene.h>
@@ -73,7 +75,26 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
     if( has_uv ) {
         trimesh->textureUVCoords.resize( mesh->mNumVertices );
     }
+
+    float scale = 1.0f;
+
+    float minx = std::numeric_limits<float>::max(), maxx = -std::numeric_limits<float>::max();
+    float miny = std::numeric_limits<float>::max(), maxy = -std::numeric_limits<float>::max();
+    float minz = std::numeric_limits<float>::max(), maxz = -std::numeric_limits<float>::max();
  
+    for( unsigned int vi = 0; vi < mesh->mNumVertices; ++vi ) {
+        const auto v = mesh->mVertices[vi];
+        minx = std::min(v.x, minx);
+        miny = std::min(v.y, miny);
+        minz = std::min(v.z, minz);
+        maxx = std::max(v.x, maxx);
+        maxy = std::max(v.y, maxy);
+        maxz = std::max(v.z, maxz);
+    }
+
+    float maxwidth = std::max(maxx - minx, std::max(maxy - miny, maxz - minz));
+    scale = 1.0f / maxwidth;
+
     for( unsigned int vi = 0; vi < mesh->mNumVertices; ++vi ) {
         const auto v = mesh->mVertices[vi];
         const auto n = mesh->mNormals[vi];
@@ -86,19 +107,10 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
             trimesh->textureUVCoords[vi] = { tc.x, tc.y };
         }
 
-        // TEMP >>>
-#if 1
-        const float scale = 0.001f;
-        //const float scale = 0.1f;
-        //const float scale = 0.5f;
-        //const float scale = 1.0f;
-        //const float scale = 5.0f;
         trimesh->vertices[vi][0] *= scale;
         trimesh->vertices[vi][1] *= scale;
         trimesh->vertices[vi][2] *= scale;
         //printf("V %f %f %f\n", v.x, v.y, v.z); // TEMP
-#endif
-        // TEMP <<<
     }
 
     for( unsigned int ti = 0; ti < mesh->mNumFaces; ++ti ) {

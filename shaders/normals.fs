@@ -21,15 +21,7 @@ vec3 light1Color = vec3( 0.2 );
  
 void main()
 {
-    vec3 baseColor = vec3(1.0);
-#if 1
-    // TODO - handle textured or not
-    baseColor = texture( tex, vUV ).rgb;
-#else
-    baseColor = vec3(0.5, 0.5, 0.5);
-#endif
-
-    color = vec4(baseColor, 1.0);
+    color = vec4(normalize(vNormal).xyz, 1.0);
 
     vec3 lighting = vec3(0.0);
     vec4 toLight0 = normalize(light0 - vWorldPosition);
@@ -38,7 +30,5 @@ void main()
     lighting += light1Color * max(dot(vNormal, toLight1), 0);
 
     color.rgb *= lighting;
-
-    //color.a = 0.5; // TEMP
 }
 

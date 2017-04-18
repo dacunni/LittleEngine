@@ -65,6 +65,7 @@ void Shader::loadSource( GLuint type, const std::string & src )
         glGetShaderInfoLog( id, len, &len, &log[0] );
         printf( "Compiler Error Message:\n%s", (char *) &log[0] );
         glDeleteShader( id );
+        exit(EXIT_FAILURE); // FIXME - return error
         return;
     }
 }
@@ -95,6 +96,7 @@ void Program::link()
         glGetProgramInfoLog( id, len, &len, &log[0] );
         printf( "Linker Error Message:\n%s", (char *) &log[0] );
         glDeleteProgram( id );
+        exit(EXIT_FAILURE); // FIXME - return error
     }
 }
 

@@ -152,7 +152,7 @@ void repaintViewport( void )
 
     Matrix4x4 projection;
     //projection.glProjectionSymmetric( 0.30, 0.30, 0.5, 100.0 );
-    projection.glProjectionSymmetric( 0.30 * (float) window_width / window_height, 0.30, 0.5, 100.0 );
+    projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 100.0 );
 
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
     Transform camera_rotation = 
@@ -332,25 +332,28 @@ int main (int argc, char * const argv[])
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-#if 1
+#if 0
     hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
     
+#if 1
     // TEMP >>>
     RGBImage<unsigned char> hero_tex_image;
     hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
     GLuint texID = hero_tex_image.uploadGL();
     // TEMP <<<
+#endif
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-#elif 1
+#elif 0
     hero = new GameObject( modelPath + "/blender/monkey1.obj" );
-    enemy = new GameObject( modelPath + "/blender/monkey1.obj" );
+    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
 #elif 0
     hero = new GameObject( modelPath + "/princeton/elephant2.ply" );
     enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
-#elif 0
+#elif 1
     hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
-    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+    //enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+    enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
 #elif 0 // low res
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
@@ -359,9 +362,11 @@ int main (int argc, char * const argv[])
     enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
 #endif
 
+#if 0
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
     ground = new GameObject( ground_mesh );
+#endif
 
     TriangleMesh * tetra_mesh = new TriangleMesh();
     makeTriangleMeshTetrahedron( *tetra_mesh );
