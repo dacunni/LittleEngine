@@ -3,3 +3,4 @@ models
 le
 *.o
 tags
+.*.sw*
