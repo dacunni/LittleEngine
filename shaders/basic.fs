@@ -22,7 +22,7 @@ vec3 light1Color = vec3( 0.2 );
 void main()
 {
     vec3 baseColor = vec3(1.0);
-#if 1
+#if 0
     // TODO - handle textured or not
     baseColor = texture( tex, vUV ).rgb;
 #else

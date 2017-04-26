@@ -332,7 +332,7 @@ int main (int argc, char * const argv[])
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-#if 0
+#if 1
     hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
     
 #if 1
@@ -344,13 +344,13 @@ int main (int argc, char * const argv[])
 #endif
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-#elif 0
+#elif 1
     hero = new GameObject( modelPath + "/blender/monkey1.obj" );
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
 #elif 0
     hero = new GameObject( modelPath + "/princeton/elephant2.ply" );
     enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
-#elif 1
+#elif 0
     hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
     //enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
