@@ -47,6 +47,7 @@ void main()
 
     //color.rgb *= lighting;
     color.rgb = lighting;
+    
     color.a = 1.0;
 }
 
