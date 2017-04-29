@@ -54,6 +54,11 @@ void GPURenderable::setShaderProgram( GLuint program )
     shader_program = program;
 }
 
+void GPURenderable::useProgram()
+{
+    glUseProgram( shader_program );
+}
+
 void GPURenderable::setWorldMatrix( Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "world" );

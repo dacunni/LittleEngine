@@ -21,7 +21,8 @@ vec3 light0Color = vec3(1.0); // white
 
 void main()
 {
-    vec3 eye = normalize(vec3(0.0, 0.0, 1.0)); // FIXME
+    vec3 cameraPosition = -view[3].xyz; // FIXME - Is this right?
+    vec3 eye = normalize(cameraPosition - vWorldPosition.xyz);
     vec3 normal = normalize(vNormal.xyz);
 
     vec3 toLight0 = normalize(light0 - vWorldPosition.xyz);

@@ -38,9 +38,9 @@ void GPUMesh::upload( TriangleMesh & mesh )
     GLintptr vstart = 0;
     GLintptr nstart = vstart + vsize;
     GLintptr tcstart = nstart + nsize;
-    printf("vsize = %ld vstart = %ld\n", vsize, vstart); // TEMP
-    printf("nsize = %ld nstart = %ld\n", nsize, nstart); // TEMP
-    printf("tcsize = %ld tcstart = %ld\n", tcsize, tcstart); // TEMP
+    printf("vsize = %ld vstart = %ld ", vsize, vstart); // TEMP
+    printf("nsize = %ld nstart = %ld ", nsize, nstart); // TEMP
+    printf("tcsize = %ld tcstart = %ld ", tcsize, tcstart); // TEMP
     printf("tris  = %ld\n", mesh.triangles.size()); // TEMP
 
     // allocate some space for all of our attributes

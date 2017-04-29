@@ -25,6 +25,7 @@ class GPURenderable
         virtual void draw();
 
         void setShaderProgram( GLuint program );
+        void useProgram();
         void setWorldMatrix( Matrix4x4 & mat );
         void setViewMatrix( Matrix4x4 & mat );
         void setProjection( Matrix4x4 & mat );

@@ -14,7 +14,8 @@ vec3 light0 = vec3( 25.0, 25.0, -10.0 );
 
 void main()
 {
-    vec3 eye = normalize(vec3(0.0, 0.0, 1.0)); // FIXME
+    vec3 cameraPosition = -view[3].xyz; // FIXME - Is this right?
+    vec3 eye = normalize(cameraPosition - vWorldPosition.xyz);
     vec3 normal = normalize(vNormal.xyz);
     float NdV = max(dot(normal, eye), 0);
     vec3 mirror = normalize(2.0 * NdV * normal - eye);
@@ -27,6 +28,11 @@ void main()
     float F0 = 0.25; // reflectance at normal incidence
     float F = F0 + (1.0 - F0) * pow(1.0 - VdH, 5);
     color.rgb = vec3(F);
+    //color.rgb = H;
+    //color.rgb = eye;
+    //color.rgb = vec3(VdH);
+    //color.rgb = normalize(cameraPosition);
+    //color.rgb = vec3(dot(eye, toLight0));
     color.a = 1.0;
 }
 

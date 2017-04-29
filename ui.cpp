@@ -38,10 +38,6 @@ GameObject * ground = nullptr;
 GameObject * tetra = nullptr;
 //std::vector<GameObject*> game_objects; // TODO
 
-GLuint mesh_shader_program = 0;
-GLuint point_cloud_shader_program = 0;
-GLuint ground_shader_program = 0;
-
 double start_time = -1.0;
 int anim_timeout_millis = 33;
 float anim_rotation = 0.0f;
@@ -103,12 +99,32 @@ void mouseMotionWhileButtonPressed( int x, int y )
 
 void viewportReshaped( int width, int height ) 
 {
-    //printf("reshape: %d x %d\n", width, height);
     window_width = width;
     window_height = height;
     glViewport( 0, 0, window_width, window_height );
     GL_WARN_IF_ERROR();
 }
+
+GLuint createShaders( const char * vs, const char * fs ) 
+{
+    Program program;
+    Shader vertex_shader;
+    Shader fragment_shader;
+
+    vertex_shader.loadFile( GL_VERTEX_SHADER, vs );
+    fragment_shader.loadFile( GL_FRAGMENT_SHADER, fs );
+
+    if( !vertex_shader.id || !fragment_shader.id )
+        return 0;
+
+    program.create();
+    program.attach( vertex_shader );
+    program.attach( fragment_shader );
+    program.link();
+
+    return program.id;
+}
+
 
 void buildPointCloud( void ) 
 {
@@ -127,6 +143,8 @@ void buildPointCloud( void )
         points.push_back( p );
     }
     gpu_point_cloud.upload( points );
+    GLuint point_cloud_shader_program = createShaders( "shaders/points.vs", "shaders/points.fs" );
+    gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
 }
 
 double timeAsDouble()
@@ -145,7 +163,6 @@ void animTimerCallback( int value )
 
 void repaintViewport( void ) 
 {
-    //printf("repaint\n");
     glClearColor( 0.2, 0.2, 0.3, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_DEPTH_TEST );
@@ -171,7 +188,7 @@ void repaintViewport( void )
         Transform model_view = model_translation;
         Transform world = model_translation;
 
-        ground->gpu_mesh.setShaderProgram( ground_shader_program );
+        ground->gpu_mesh.useProgram();
         ground->gpu_mesh.setWorldMatrix( world.fwd );
         ground->gpu_mesh.setViewMatrix( camera.fwd );
         ground->gpu_mesh.setProjection( projection );
@@ -183,7 +200,7 @@ void repaintViewport( void )
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         Transform world = compose( model_translation, model_rotation );
 
-        hero->gpu_mesh.setShaderProgram( mesh_shader_program );
+        hero->gpu_mesh.useProgram();
         hero->gpu_mesh.setWorldMatrix( world.fwd );
         hero->gpu_mesh.setViewMatrix( camera.fwd );
         hero->gpu_mesh.setProjection( projection );
@@ -196,7 +213,7 @@ void repaintViewport( void )
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
         Transform world = compose( model_translation, model_rotation );
 
-        enemy->gpu_mesh.setShaderProgram( mesh_shader_program );
+        enemy->gpu_mesh.useProgram();
         enemy->gpu_mesh.setWorldMatrix( world.fwd );
         enemy->gpu_mesh.setViewMatrix( camera.fwd );
         enemy->gpu_mesh.setProjection( projection );
@@ -209,7 +226,7 @@ void repaintViewport( void )
         Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
         Transform world = compose( model_translation, model_rotation );
 
-        tetra->gpu_mesh.setShaderProgram( mesh_shader_program );
+        tetra->gpu_mesh.useProgram();
         tetra->gpu_mesh.setWorldMatrix( world.fwd );
         tetra->gpu_mesh.setViewMatrix( camera.fwd );
         tetra->gpu_mesh.setProjection( projection );
@@ -222,10 +239,13 @@ void repaintViewport( void )
         glDisable( GL_CULL_FACE );
     }
 
+#if 0
     if( point_cloud_shader_program != 0 ) {
         glUseProgram( point_cloud_shader_program );
     }
+#endif
 
+#if 1
     if( !gpu_point_cloud.uploaded() ) {
         buildPointCloud();
     }
@@ -234,37 +254,19 @@ void repaintViewport( void )
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         Transform world = model_translation;
 
-        gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
+        //gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
+        gpu_point_cloud.useProgram();
         gpu_point_cloud.setWorldMatrix( world.fwd );
         gpu_point_cloud.setViewMatrix( camera.fwd );
         gpu_point_cloud.setProjection( projection );
         gpu_point_cloud.bind();
         gpu_point_cloud.draw();
     }
+#endif
 
     glDisable( GL_DEPTH_TEST );
     glutSwapBuffers();
     glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
-}
-
-GLuint createShaders( const char * vs, const char * fs ) 
-{
-    Program program;
-    Shader vertex_shader;
-    Shader fragment_shader;
-
-    vertex_shader.loadFile( GL_VERTEX_SHADER, vs );
-    fragment_shader.loadFile( GL_FRAGMENT_SHADER, fs );
-
-    if( !vertex_shader.id || !fragment_shader.id )
-        return 0;
-
-    program.create();
-    program.attach( vertex_shader );
-    program.attach( fragment_shader );
-    program.link();
-
-    return program.id;
 }
 
 int main (int argc, char * const argv[]) 
@@ -311,11 +313,11 @@ int main (int argc, char * const argv[])
         }
     }
 
-    mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
-    point_cloud_shader_program = createShaders( "shaders/points.vs", "shaders/points.fs" );
-    ground_shader_program = createShaders( "shaders/ground.vs", "shaders/ground.fs" );
+    GLuint mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
+    GLuint cook_torrance_shader_program = createShaders( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    GLuint ground_shader_program = createShaders( "shaders/ground.vs", "shaders/ground.fs" );
 
-    if( !mesh_shader_program || !point_cloud_shader_program || !ground_shader_program ) {
+    if( !mesh_shader_program || !ground_shader_program ) {
         return -1;
     }
 
@@ -332,7 +334,7 @@ int main (int argc, char * const argv[])
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-#if 1
+#if 0
     hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
     
 #if 1
@@ -344,13 +346,13 @@ int main (int argc, char * const argv[])
 #endif
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-#elif 1
+#elif 0
     hero = new GameObject( modelPath + "/blender/monkey1.obj" );
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
 #elif 0
     hero = new GameObject( modelPath + "/princeton/elephant2.ply" );
     enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
-#elif 0
+#elif 1
     hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
     //enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
@@ -362,15 +364,22 @@ int main (int argc, char * const argv[])
     enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
 #endif
 
+    hero->gpu_mesh.setShaderProgram( mesh_shader_program );
+    enemy->gpu_mesh.setShaderProgram( cook_torrance_shader_program );
+
 #if 0
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
     ground = new GameObject( ground_mesh );
+    ground->gpu_mesh.setShaderProgram( mesh_shader_program );
 #endif
 
+#if 0
     TriangleMesh * tetra_mesh = new TriangleMesh();
     makeTriangleMeshTetrahedron( *tetra_mesh );
-    //tetra = new GameObject( tetra_mesh );
+    tetra = new GameObject( tetra_mesh );
+    tetra->gpu_mesh.setShaderProgram( mesh_shader_program );
+#endif
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();
