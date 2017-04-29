@@ -10,6 +10,7 @@
 #define _GAME_OBJECT_H_
 
 #include "GPUMesh.h"
+#include "Transform.h"
 
 class TriangleMesh;
 
@@ -24,6 +25,7 @@ class GameObject
 
         TriangleMesh * mesh;
         GPUMesh gpu_mesh;
+        Transform worldTransform;
 };
 
 

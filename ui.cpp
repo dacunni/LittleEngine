@@ -36,7 +36,7 @@ GameObject * hero = nullptr;
 GameObject * enemy = nullptr;
 GameObject * ground = nullptr;
 GameObject * tetra = nullptr;
-//std::vector<GameObject*> game_objects; // TODO
+std::vector<GameObject*> game_objects; // TODO
 
 double start_time = -1.0;
 int anim_timeout_millis = 33;
@@ -183,55 +183,28 @@ void repaintViewport( void )
         glEnable( GL_CULL_FACE );
     }
 
-    if( ground ) {
-        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
-        Transform model_view = model_translation;
-        Transform world = model_translation;
-
-        ground->gpu_mesh.useProgram();
-        ground->gpu_mesh.setWorldMatrix( world.fwd );
-        ground->gpu_mesh.setViewMatrix( camera.fwd );
-        ground->gpu_mesh.setProjection( projection );
-        ground->draw();
-    }
-
     if( hero ) {
-        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, -5.0 ) );
-        Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-        Transform world = compose( model_translation, model_rotation );
-
-        hero->gpu_mesh.useProgram();
-        hero->gpu_mesh.setWorldMatrix( world.fwd );
-        hero->gpu_mesh.setViewMatrix( camera.fwd );
-        hero->gpu_mesh.setProjection( projection );
-        hero->gpu_mesh.setAnimTime( anim_time );
-        hero->draw();
+        hero->worldTransform = compose( makeTranslation( Vector4( 0.0, 0.0, -5.0 ) ),
+                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
     }
-
     if( enemy ) {
-        Transform model_translation = makeTranslation( Vector4( 1.0, 0.0, -5.0 ) );
-        Transform model_rotation = makeRotation( anim_rotation, Vector4( 0, 1, 0 ) );
-        Transform world = compose( model_translation, model_rotation );
-
-        enemy->gpu_mesh.useProgram();
-        enemy->gpu_mesh.setWorldMatrix( world.fwd );
-        enemy->gpu_mesh.setViewMatrix( camera.fwd );
-        enemy->gpu_mesh.setProjection( projection );
-        enemy->gpu_mesh.setAnimTime( anim_time );
-        enemy->draw();
+        enemy->worldTransform = compose( makeTranslation( Vector4( 1.0, 0.0, -5.0 ) ),
+                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
+    }
+    if( ground ) {
+        ground->worldTransform = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
+    }
+    if( tetra ) {
+        tetra->worldTransform = compose( makeTranslation( Vector4( 1.0, 1.0, -5.0 ) ), 
+                                         makeRotation( anim_rotation, Vector4( 1, 1, 0 ) ) );
     }
 
-    if( tetra ) {
-        Transform model_translation = makeTranslation( Vector4( 1.0, 1.0, -5.0 ) );
-        Transform model_rotation = makeRotation( anim_rotation, Vector4( 1, 1, 0 ) );
-        Transform world = compose( model_translation, model_rotation );
-
-        tetra->gpu_mesh.useProgram();
-        tetra->gpu_mesh.setWorldMatrix( world.fwd );
-        tetra->gpu_mesh.setViewMatrix( camera.fwd );
-        tetra->gpu_mesh.setProjection( projection );
-        tetra->gpu_mesh.setAnimTime( anim_time );
-        tetra->draw();
+    for(auto obj : game_objects ) {
+        obj->gpu_mesh.useProgram();
+        obj->gpu_mesh.setWorldMatrix( obj->worldTransform.fwd );
+        obj->gpu_mesh.setViewMatrix( camera.fwd );
+        obj->gpu_mesh.setProjection( projection );
+        obj->draw();
     }
 
     if( draw_wireframes ) {                           // revert to normal behavior
@@ -367,18 +340,23 @@ int main (int argc, char * const argv[])
     hero->gpu_mesh.setShaderProgram( mesh_shader_program );
     enemy->gpu_mesh.setShaderProgram( cook_torrance_shader_program );
 
-#if 0
+    game_objects.push_back(hero);
+    game_objects.push_back(enemy);
+
+#if 1
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
     ground = new GameObject( ground_mesh );
     ground->gpu_mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(ground);
 #endif
 
-#if 0
+#if 1
     TriangleMesh * tetra_mesh = new TriangleMesh();
     makeTriangleMeshTetrahedron( *tetra_mesh );
     tetra = new GameObject( tetra_mesh );
     tetra->gpu_mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(tetra);
 #endif
 
     GL_WARN_IF_ERROR();
