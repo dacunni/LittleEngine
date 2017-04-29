@@ -44,7 +44,7 @@ void Matrix4x4::asGLFormat( float * arr ) const
     transpose( *this, t );
 
     for( int i = 0; i < 16; i++ ) {
-        arr[i] = data[i];
+        arr[i] = t.data[i];
     }
 }
 
