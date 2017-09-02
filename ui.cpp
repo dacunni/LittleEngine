@@ -180,6 +180,9 @@ void animTimerCallback( int value )
     anim_time = (float) time_now;
 
     userTimerUpdate( time_now, delta_time );
+    for(auto obj : game_objects ) {
+        obj->updateAnimation( time_now, delta_time );
+    }
 
     anim_rotation = anim_time * 0.4;
     glutPostRedisplay();
@@ -192,7 +195,6 @@ void repaintViewport( void )
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    //projection.glProjectionSymmetric( 0.30, 0.30, 0.5, 100.0 );
     projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 100.0 );
 
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
@@ -205,22 +207,6 @@ void repaintViewport( void )
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
         glFrontFace( GL_CCW );
         glEnable( GL_CULL_FACE );
-    }
-
-    if( hero ) {
-        hero->worldTransform = compose( makeTranslation( Vector4( 0.0, 0.0, -5.0 ) ),
-                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
-    }
-    if( enemy ) {
-        enemy->worldTransform = compose( makeTranslation( Vector4( 1.0, 0.0, -5.0 ) ),
-                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
-    }
-    if( ground ) {
-        ground->worldTransform = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
-    }
-    if( tetra ) {
-        tetra->worldTransform = compose( makeTranslation( Vector4( 1.0, 1.0, -5.0 ) ), 
-                                         makeRotation( anim_rotation, Vector4( 1, 1, 0 ) ) );
     }
 
     for(auto obj : game_objects ) {
@@ -236,7 +222,6 @@ void repaintViewport( void )
         glDisable( GL_CULL_FACE );
     }
 
-#if 1
     if( !point_cloud.uploaded() ) {
         //buildPointCloud();
     }
@@ -252,7 +237,6 @@ void repaintViewport( void )
         point_cloud.bind();
         point_cloud.draw();
     }
-#endif
 
     glDisable( GL_DEPTH_TEST );
 
@@ -269,10 +253,16 @@ void makeSimpleScene()
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
+    hero->position = Vector4( 0.0, 0.0, -5.0 );
+    hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
+        self->worldTransform = compose( makeTranslation( self->position ),
+                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
+    } );
     game_objects.push_back(hero);
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
     enemy->mesh.setShaderProgram( mesh_shader_program );
+    enemy->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(enemy);
 
     ground = new GameObject();
@@ -289,6 +279,7 @@ void makeSimpleScene()
     tetra = new GameObject();
     makeMeshTetrahedron( tetra->mesh );
     tetra->mesh.setShaderProgram( mesh_shader_program );
+    tetra->position = Vector4( 1.0, 1.0, -5.0 );
     game_objects.push_back(tetra);
 }
 
@@ -299,18 +290,19 @@ void makeCookTorranceScene()
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( cook_torrance_shader_program );
+    hero->position = Vector4( 0.0, 0.0, -5.0 );
     game_objects.push_back(hero);
 
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
     enemy->mesh.setShaderProgram( cook_torrance_shader_program );
+    enemy->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(enemy);
 
     GameObject * obj = nullptr;
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
     obj->mesh.setShaderProgram( cook_torrance_shader_program );
-    obj->worldTransform = compose( makeTranslation( Vector4( -2.0, 0.0, -5.0 ) ),
-                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    obj->position = Vector4( -2.0, 0.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
@@ -321,8 +313,7 @@ void makeCookTorranceScene()
     GLuint texID = tex_image.uploadGL();
     obj->mesh.setTexture( texID );
     }
-    obj->worldTransform = compose( makeTranslation( Vector4( -1.0, 0.0, -5.0 ) ),
-                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    obj->position = Vector4( -1.0, 0.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
@@ -333,14 +324,12 @@ void makeCookTorranceScene()
     GLuint texID = tex_image.uploadGL();
     obj->mesh.setTexture( texID );
     }
-    obj->worldTransform = compose( makeTranslation( Vector4( -1.0, 1.0, -5.0 ) ),
-                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    obj->position = Vector4( -1.0, 1.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
     obj->mesh.setShaderProgram( cook_torrance_shader_program );
-    obj->worldTransform = compose( makeTranslation( Vector4( +2.0, 0.0, -5.0 ) ),
-                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    obj->position = Vector4( +2.0, 1.0, -5.0 );
     game_objects.push_back(obj);
 }
 

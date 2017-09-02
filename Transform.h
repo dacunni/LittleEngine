@@ -33,6 +33,7 @@ Transform makeRotation( float angle, const Vector4 & axis );
 
 // Builds a translation Transform
 Transform makeTranslation( const Vector4 & direction );
+Transform makeTranslation( float dx, float dy, float dz );
 
 // Builds a scaling Transform
 Transform makeScaling( float xScale, float yScale, float zScale );

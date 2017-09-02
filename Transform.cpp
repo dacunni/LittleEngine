@@ -66,7 +66,19 @@ Transform makeTranslation( const Vector4 & d )
                                0.0, 1.0, 0.0, -d.y,
                                0.0, 0.0, 1.0, -d.z,
                                0.0, 0.0, 0.0, 1.0));
-    
+}
+
+// Create a translation Transform
+Transform makeTranslation( float dx, float dy, float dz )
+{
+    return Transform(Matrix4x4(1.0, 0.0, 0.0, dx,
+                               0.0, 1.0, 0.0, dy,
+                               0.0, 0.0, 1.0, dz,
+                               0.0, 0.0, 0.0, 1.0),
+                     Matrix4x4(1.0, 0.0, 0.0, -dx,
+                               0.0, 1.0, 0.0, -dy,
+                               0.0, 0.0, 1.0, -dz,
+                               0.0, 0.0, 0.0, 1.0));
 }
 
 
