@@ -1,13 +1,5 @@
-//
-//  AxisAlignedSlab.h
-//  FastRender
-//
-//  Created by David Cunningham on 3/8/13.
-//
-//
-
-#ifndef __FastRender__AxisAlignedSlab__
-#define __FastRender__AxisAlignedSlab__
+#ifndef __AXISALIGNEDSLAB_H__
+#define __AXISALIGNEDSLAB_H__
 
 #include "Traceable.h"
 
@@ -35,4 +27,4 @@ public:
     virtual void print( FILE * file = stdout ) const;
 };
 
-#endif /* defined(__FastRender__AxisAlignedSlab__) */
+#endif

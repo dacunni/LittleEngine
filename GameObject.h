@@ -1,11 +1,3 @@
-/*
- *  GameObject.h
- *  FastRender
- *
- *  Created by David Cunningham on 4/11/2014
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
 #ifndef _GAME_OBJECT_H_
 #define _GAME_OBJECT_H_
 

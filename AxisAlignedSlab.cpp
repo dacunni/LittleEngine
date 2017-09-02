@@ -1,11 +1,3 @@
-//
-//  AxisAlignedSlab.cpp
-//  FastRender
-//
-//  Created by David Cunningham on 3/8/13.
-//
-//
-
 #include <algorithm>
 #include <utility>
 #include <math.h>

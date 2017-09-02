@@ -1,11 +1,3 @@
-/*
- *  Matrix.h
- *  FastRender
- *
- *  Created by David Cunningham on 7/21/12.
- *  Copyright 2012 __MyCompanyName__. All rights reserved.
- *
- */
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 

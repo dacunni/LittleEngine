@@ -1,13 +1,5 @@
-//
-//  Vector2.hpp
-//  FastRender
-//
-//  Created by David Cunningham on 7/22/14
-//
-//
-
-#ifndef FastRender_Vector2_hpp
-#define FastRender_Vector2_hpp
+#ifndef __VECTOR2_HPP__
+#define __VECTOR2_HPP__
 
 inline Vector2::Vector2()
     : x(0.0f), y(0.0f)

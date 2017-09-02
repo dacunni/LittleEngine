@@ -1,12 +1,3 @@
-/*
- *  Color.h
- *  FastRender
- *
- *  Created by David Cunningham on 4/12/14
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _COLOR_H_
 #define _COLOR_H_
 

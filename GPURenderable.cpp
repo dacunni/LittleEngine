@@ -1,11 +1,3 @@
-/*
- *  GPURenderable.cpp
- *  FastRender
- *
- *  Created by David Cunningham on 5/12/2014
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
 
 #include "GPURenderable.h"
 #include "Matrix.h"

@@ -1,13 +1,5 @@
-//
-//  AssetLoader.h
-//  FastRender
-//
-//  Created by David Cunningham on 8/15/13.
-//
-//
-
-#ifndef __FastRender__AssetLoader__
-#define __FastRender__AssetLoader__
+#ifndef __ASSETLOADER__
+#define __ASSETLOADER__
 
 #include <string>
 
@@ -24,4 +16,4 @@ public:
 };
 
 
-#endif /* defined(__FastRender__AssetLoader__) */
+#endif

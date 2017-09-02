@@ -1,13 +1,5 @@
-//
-//  TriangleMesh.h
-//  FastRender
-//
-//  Created by David Cunningham on 8/10/13.
-//
-//
-
-#ifndef __FastRender__TriangleMesh__
-#define __FastRender__TriangleMesh__
+#ifndef __TriangleMesh__
+#define __TriangleMesh__
 
 #include <vector>
 #include "Traceable.h"
@@ -70,4 +62,4 @@ public:
     TriangleMesh                  & mesh;
 };
 
-#endif /* defined(__FastRender__TriangleMesh__) */
+#endif

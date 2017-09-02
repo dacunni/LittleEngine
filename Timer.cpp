@@ -1,11 +1,3 @@
-//
-//  Timer.cpp
-//  FastRender
-//
-//  Created by David Cunningham on 8/4/13.
-//
-//
-
 #include <stdlib.h>
 #include "Timer.h"
 

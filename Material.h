@@ -1,12 +1,3 @@
-/*
- *  Material.h
- *  FastRender
- *
- *  Created by David Cunningham on 4/12/14
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 

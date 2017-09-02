@@ -1,11 +1,3 @@
-//
-//  Transform.cpp
-//  FastRender
-//
-//  Created by David Cunningham on 1/13/13.
-//
-//
-
 #include <cmath>
 #include "Transform.h"
 

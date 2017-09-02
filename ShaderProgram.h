@@ -1,11 +1,3 @@
-/*
- *  ShaderProgram.h
- *  FastRender
- *
- *  Created by David Cunningham on 9/15/2014
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
 #ifndef _SHADER_PROGRAM_H_
 #define _SHADER_PROGRAM_H_
 

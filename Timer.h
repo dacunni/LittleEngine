@@ -1,13 +1,5 @@
-//
-//  Timer.h
-//  FastRender
-//
-//  Created by David Cunningham on 8/4/13.
-//
-//
-
-#ifndef __FastRender__Timer__
-#define __FastRender__Timer__
+#ifndef __Timer__
+#define __Timer__
 
 #include <sys/time.h>
 
@@ -31,4 +23,4 @@ protected:
     
 };
 
-#endif /* defined(__FastRender__Timer__) */
+#endif

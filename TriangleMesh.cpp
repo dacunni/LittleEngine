@@ -1,11 +1,3 @@
-//
-//  TriangleMesh.cpp
-//  FastRender
-//
-//  Created by David Cunningham on 8/10/13.
-//
-//
-
 #include "TriangleMesh.h"
 #include "Ray.h"
 #include "AxisAlignedSlab.h"

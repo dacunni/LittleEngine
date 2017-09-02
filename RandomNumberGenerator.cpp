@@ -1,12 +1,3 @@
-/*
- *  RandomNumberGenerator.cpp
- *  FastRender
- *
- *  Created by David Cunningham on 8/14/12.
- *  Copyright 2012 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>

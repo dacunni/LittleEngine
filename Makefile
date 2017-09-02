@@ -2,10 +2,7 @@
 HDR = \
 	AssetLoader.h \
 	AxisAlignedSlab.h \
-	BoundingVolume.h \
 	Color.h \
-	Container.h \
-	FlatContainer.h \
 	GameObject.h \
 	GPURenderable.h \
 	GPUMesh.h \
@@ -20,7 +17,6 @@ HDR = \
 	Shader.h \
 	ShaderProgram.h \
 	Sphere.h \
-	TMOctreeAccelerator.h \
 	Timer.h \
 	Traceable.h \
 	Transform.h \
@@ -35,9 +31,6 @@ HDR = \
 leOBJ = \
 	AssetLoader.o \
 	AxisAlignedSlab.o \
-	BoundingVolume.o \
-	Container.o \
-	FlatContainer.o \
 	GameObject.o \
 	GPURenderable.o \
 	GPUMesh.o \
@@ -49,7 +42,6 @@ leOBJ = \
 	Scene.o \
 	ShaderProgram.o \
 	Sphere.o \
-	TMOctreeAccelerator.o \
 	Timer.o \
 	Traceable.o \
 	Transform.o \

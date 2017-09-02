@@ -105,7 +105,7 @@ void viewportReshaped( int width, int height )
     GL_WARN_IF_ERROR();
 }
 
-GLuint createShaders( const char * vs, const char * fs ) 
+GLuint createShaderProgram( const char * vs, const char * fs ) 
 {
     Program program;
     Shader vertex_shader;
@@ -143,7 +143,7 @@ void buildPointCloud( void )
         points.push_back( p );
     }
     gpu_point_cloud.upload( points );
-    GLuint point_cloud_shader_program = createShaders( "shaders/points.vs", "shaders/points.fs" );
+    GLuint point_cloud_shader_program = createShaderProgram( "shaders/points.vs", "shaders/points.fs" );
     gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
 }
 
@@ -249,7 +249,7 @@ int main (int argc, char * const argv[])
     //const char * fragment_shader_filename = "shaders/wood.fs";
     //const char * fragment_shader_filename = "shaders/fire.fs";
 
-    printf("FastRender UI\n");
+    printf("LittleEngine\n");
 
     glutInit( &argc, const_cast<char **>(argv) );
     glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
@@ -258,7 +258,7 @@ int main (int argc, char * const argv[])
                          );
     glutInitWindowSize( window_width, window_height );
     glutInitWindowPosition( 0, 0 );
-    glutCreateWindow("FastRender UI");
+    glutCreateWindow("LittleEngine");
 
 
     printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
@@ -286,9 +286,9 @@ int main (int argc, char * const argv[])
         }
     }
 
-    GLuint mesh_shader_program = createShaders( vertex_shader_filename, fragment_shader_filename );
-    GLuint cook_torrance_shader_program = createShaders( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
-    GLuint ground_shader_program = createShaders( "shaders/ground.vs", "shaders/ground.fs" );
+    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    GLuint ground_shader_program = createShaderProgram( "shaders/ground.vs", "shaders/ground.fs" );
 
     if( !mesh_shader_program || !ground_shader_program ) {
         return -1;

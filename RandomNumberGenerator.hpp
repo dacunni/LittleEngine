@@ -1,13 +1,5 @@
-//
-//  RandomNumberGenerator.hpp
-//  FastRender
-//
-//  Created by David Cunningham on 8/23/13.
-//
-//
-
-#ifndef FastRender_RandomNumberGenerator_hpp
-#define FastRender_RandomNumberGenerator_hpp
+#ifndef __RANDOMNUMBERGENERATOR_HPP__
+#define __RANDOMNUMBERGENERATOR_HPP__
 
 inline float RandomNumberGenerator::uniform01Impl( void )
 {

@@ -1,13 +1,5 @@
-//
-//  Transform.h
-//  FastRender
-//
-//  Created by David Cunningham on 1/13/13.
-//
-//
-
-#ifndef __FastRender__Transform__
-#define __FastRender__Transform__
+#ifndef __Transform__
+#define __Transform__
 
 #include "Vector.h"
 #include "Matrix.h"
@@ -45,4 +37,4 @@ Transform makeTranslation( const Vector4 & direction );
 // Builds a scaling Transform
 Transform makeScaling( float xScale, float yScale, float zScale );
 
-#endif /* defined(__FastRender__Transform__) */
+#endif

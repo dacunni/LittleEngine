@@ -1,12 +1,3 @@
-/*
- *  ShaderProgram.cpp
- *  FastRender
- *
- *  Created by David Cunningham on 9/15/2014
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <iostream>
 #include <sstream>
 #include <fstream>

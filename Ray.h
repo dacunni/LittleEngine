@@ -1,11 +1,3 @@
-/*
- *  Ray.h
- *  FastRender
- *
- *  Created by David Cunningham on 7/23/12.
- *  Copyright 2012 __MyCompanyName__. All rights reserved.
- *
- */
 #ifndef _RAY_H_
 #define _RAY_H_
 

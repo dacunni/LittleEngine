@@ -1,11 +1,3 @@
-//
-//  AssetLoader.cpp
-//  FastRender
-//
-//  Created by David Cunningham on 8/15/13.
-//
-//
-
 #include <limits>
 
 // Using the Open Asset Import Library ("assimp" - http://assimp.sourceforge.net/ )
