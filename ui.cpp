@@ -55,30 +55,43 @@ Vector4 cameraPosition( 0.0, 0.6, 0.0 );
 float cameraXRotation = 0.0;
 float cameraYRotation = 0.0;
 
-void keyPressed( unsigned char key, int width, int height ) 
+
+unsigned char keyState[256] = {0};
+
+void userTimerUpdate( double time_now, double delta_time )
+{
+    if( keyState['w'] ) {
+        cameraPosition.z -= 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['s'] ) {
+        cameraPosition.z += 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['a'] ) {
+        cameraPosition.x -= 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['d'] ) {
+        cameraPosition.x += 0.25;
+        glutPostRedisplay();
+    }
+}
+
+void keyPressed( unsigned char key, int x, int y ) 
 {
     switch( key ) {
-        case 'w':
-            cameraPosition.z -= 0.25;
-            glutPostRedisplay();
-            break;
-        case 's':
-            cameraPosition.z += 0.25;
-            glutPostRedisplay();
-            break;
-        case 'a':
-            cameraPosition.x -= 0.25;
-            glutPostRedisplay();
-            break;
-        case 'd':
-            cameraPosition.x += 0.25;
-            glutPostRedisplay();
-            break;
         case 'W':
             draw_wireframes = !draw_wireframes;
             glutPostRedisplay();
             break;
     }
+    keyState[key] = 1;
+}
+
+void keyReleased( unsigned char key, int x, int y ) 
+{
+    keyState[key] = 0;
 }
 
 void mouseButton( int button, int state, int x, int y )
@@ -162,7 +175,12 @@ double timeAsDouble()
 
 void animTimerCallback( int value )
 {
-    anim_time = (float) (timeAsDouble() - start_time);
+    double time_now = timeAsDouble() - start_time;
+    double delta_time = time_now - anim_time;
+    anim_time = (float) time_now;
+
+    userTimerUpdate( time_now, delta_time );
+
     anim_rotation = anim_time * 0.4;
     glutPostRedisplay();
 }
@@ -363,6 +381,7 @@ int main (int argc, char * const argv[])
     glutReshapeFunc( viewportReshaped );
     glutDisplayFunc( repaintViewport );
     glutKeyboardFunc( keyPressed );
+    glutKeyboardUpFunc( keyReleased );
     glutMouseFunc( mouseButton );
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
