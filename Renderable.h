@@ -1,16 +1,16 @@
-#ifndef _GPU_RENDERABLE_H_
-#define _GPU_RENDERABLE_H_
+#ifndef __RENDERABLE_H_
+#define __RENDERABLE_H_
 
 #include "OpenGLUtil.h"
 
 class Matrix4x4;
 class Program;
 
-class GPURenderable
+class Renderable
 {
     public:
-        GPURenderable();
-        ~GPURenderable();
+        Renderable();
+        ~Renderable();
 
         virtual bool uploaded();
         virtual void bind();

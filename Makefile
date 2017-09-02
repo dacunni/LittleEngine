@@ -4,9 +4,9 @@ HDR = \
 	AxisAlignedSlab.h \
 	Color.h \
 	GameObject.h \
-	GPURenderable.h \
-	GPUMesh.h \
-	GPUPointCloud.h \
+	Renderable.h \
+	Mesh.h \
+	PointCloud.h \
     Image.h \
 	Material.h \
 	Matrix.h \
@@ -32,9 +32,9 @@ leOBJ = \
 	AssetLoader.o \
 	AxisAlignedSlab.o \
 	GameObject.o \
-	GPURenderable.o \
-	GPUMesh.o \
-	GPUPointCloud.o \
+	Renderable.o \
+	Mesh.o \
+	PointCloud.o \
 	Matrix.o \
 	OpenGLUtil.o \
 	RandomNumberGenerator.o \

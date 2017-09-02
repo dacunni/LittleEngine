@@ -13,10 +13,9 @@
 #include "TriangleMesh.h"
 #include "OpenGLUtil.h"
 #include "GameObject.h"
-#include "GPUMesh.h"
-#include "GPUPointCloud.h"
+#include "Mesh.h"
+#include "PointCloud.h"
 #include "RandomNumberGenerator.h"
-#include "BoundingVolume.h"
 #include "ShaderProgram.h"
 
 int window_width = 650;
@@ -30,7 +29,7 @@ int mouse_button_state[3] = {
 int mouse_last_x = -1;
 int mouse_last_y = -1;
 
-GPUPointCloud gpu_point_cloud;
+PointCloud point_cloud;
 
 GameObject * hero = nullptr;
 GameObject * enemy = nullptr;
@@ -142,9 +141,9 @@ void buildPointCloud( void )
         p.z = rng.uniformRange( -10.0, -6.0 );
         points.push_back( p );
     }
-    gpu_point_cloud.upload( points );
+    point_cloud.upload( points );
     GLuint point_cloud_shader_program = createShaderProgram( "shaders/points.vs", "shaders/points.fs" );
-    gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
+    point_cloud.setShaderProgram( point_cloud_shader_program );
 }
 
 double timeAsDouble()
@@ -200,10 +199,10 @@ void repaintViewport( void )
     }
 
     for(auto obj : game_objects ) {
-        obj->gpu_mesh.useProgram();
-        obj->gpu_mesh.setWorldMatrix( obj->worldTransform.fwd );
-        obj->gpu_mesh.setViewMatrix( camera.fwd );
-        obj->gpu_mesh.setProjection( projection );
+        obj->mesh.useProgram();
+        obj->mesh.setWorldMatrix( obj->worldTransform.fwd );
+        obj->mesh.setViewMatrix( camera.fwd );
+        obj->mesh.setProjection( projection );
         obj->draw();
     }
 
@@ -219,21 +218,21 @@ void repaintViewport( void )
 #endif
 
 #if 1
-    if( !gpu_point_cloud.uploaded() ) {
+    if( !point_cloud.uploaded() ) {
         buildPointCloud();
     }
 
-    if( gpu_point_cloud.uploaded() ) {
+    if( point_cloud.uploaded() ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         Transform world = model_translation;
 
-        //gpu_point_cloud.setShaderProgram( point_cloud_shader_program );
-        gpu_point_cloud.useProgram();
-        gpu_point_cloud.setWorldMatrix( world.fwd );
-        gpu_point_cloud.setViewMatrix( camera.fwd );
-        gpu_point_cloud.setProjection( projection );
-        gpu_point_cloud.bind();
-        gpu_point_cloud.draw();
+        //point_cloud.setShaderProgram( point_cloud_shader_program );
+        point_cloud.useProgram();
+        point_cloud.setWorldMatrix( world.fwd );
+        point_cloud.setViewMatrix( camera.fwd );
+        point_cloud.setProjection( projection );
+        point_cloud.bind();
+        point_cloud.draw();
     }
 #endif
 
@@ -337,8 +336,8 @@ int main (int argc, char * const argv[])
     enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
 #endif
 
-    hero->gpu_mesh.setShaderProgram( mesh_shader_program );
-    enemy->gpu_mesh.setShaderProgram( cook_torrance_shader_program );
+    hero->mesh.setShaderProgram( mesh_shader_program );
+    enemy->mesh.setShaderProgram( cook_torrance_shader_program );
 
     game_objects.push_back(hero);
     game_objects.push_back(enemy);
@@ -347,7 +346,7 @@ int main (int argc, char * const argv[])
     TriangleMesh * ground_mesh = new TriangleMesh();
     makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
     ground = new GameObject( ground_mesh );
-    ground->gpu_mesh.setShaderProgram( mesh_shader_program );
+    ground->mesh.setShaderProgram( mesh_shader_program );
     game_objects.push_back(ground);
 #endif
 
@@ -355,7 +354,7 @@ int main (int argc, char * const argv[])
     TriangleMesh * tetra_mesh = new TriangleMesh();
     makeTriangleMeshTetrahedron( *tetra_mesh );
     tetra = new GameObject( tetra_mesh );
-    tetra->gpu_mesh.setShaderProgram( mesh_shader_program );
+    tetra->mesh.setShaderProgram( mesh_shader_program );
     game_objects.push_back(tetra);
 #endif
 

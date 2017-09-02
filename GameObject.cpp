@@ -3,40 +3,40 @@
 #include "TriangleMesh.h"
 
 GameObject::GameObject( const std::string & path )
-    : mesh(nullptr)
+    : triangleMesh(nullptr)
 {
     AssetLoader loader;
-    mesh = loader.load( path );
+    triangleMesh = loader.load( path );
 
-    if( !mesh ) {
+    if( !triangleMesh ) {
         fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );
         exit( EXIT_FAILURE );
     }
 }
 
 GameObject::GameObject( TriangleMesh * trimesh )
-    : mesh(trimesh)
+    : triangleMesh(trimesh)
 {
 
 }
 
 GameObject::~GameObject() 
 {
-    delete mesh;
+    delete triangleMesh;
 }
 
 void GameObject::draw()
 {
-    if( !mesh ) {
+    if( !triangleMesh ) {
         return;
     }
 
-    if( !gpu_mesh.uploaded() ) {
-        gpu_mesh.upload( *mesh );
+    if( !mesh.uploaded() ) {
+        mesh.upload( *triangleMesh );
     }
 
-    gpu_mesh.bind();
-    gpu_mesh.draw();
+    mesh.bind();
+    mesh.draw();
 }
 
 

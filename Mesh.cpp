@@ -1,21 +1,21 @@
-#include "GPUMesh.h"
+#include "Mesh.h"
 #include "Matrix.h"
 #include "ShaderProgram.h"
 #include "TriangleMesh.h"
 
-GPUMesh::GPUMesh() 
+Mesh::Mesh() 
 {
 
 }
 
-GPUMesh::~GPUMesh() 
+Mesh::~Mesh() 
 {
     // IMPLEMENT ME - free gpu resources for VAO,etc
 }
 
-void GPUMesh::upload( TriangleMesh & mesh )
+void Mesh::upload( TriangleMesh & mesh )
 {
-    printf("GPUMesh::upload\n");
+    printf("Mesh::upload\n");
     // Create vertex array object to hold everything
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
@@ -66,7 +66,7 @@ void GPUMesh::upload( TriangleMesh & mesh )
     num_vertices = mesh.triangles.size() * 3;
 }
 
-void GPUMesh::bind()
+void Mesh::bind()
 {
     if( vao ) {
         glBindVertexArray( vao );
@@ -74,7 +74,7 @@ void GPUMesh::bind()
     }
 }
 
-void GPUMesh::draw()
+void Mesh::draw()
 {
     if( vao ) {
         if( ibo ) {

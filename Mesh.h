@@ -1,16 +1,16 @@
-#ifndef _GPU_MESH_H_
-#define _GPU_MESH_H_
+#ifndef __MESH_H_
+#define __MESH_H_
 
 #include "OpenGLUtil.h"
-#include "GPURenderable.h"
+#include "Renderable.h"
 
 class TriangleMesh;
 
-class GPUMesh : public GPURenderable
+class Mesh : public Renderable
 {
     public:
-        GPUMesh();
-        ~GPUMesh();
+        Mesh();
+        ~Mesh();
 
         void upload( TriangleMesh & mesh );
         virtual void bind();

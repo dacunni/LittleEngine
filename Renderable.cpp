@@ -1,24 +1,24 @@
 
-#include "GPURenderable.h"
+#include "Renderable.h"
 #include "Matrix.h"
 #include "ShaderProgram.h"
 
-GPURenderable::GPURenderable() 
+Renderable::Renderable() 
 {
 
 }
 
-GPURenderable::~GPURenderable() 
+Renderable::~Renderable() 
 {
     // IMPLEMENT ME - free gpu resources for VAO,etc
 }
 
-bool GPURenderable::uploaded()
+bool Renderable::uploaded()
 {
     return vao != 0;
 }
 
-void GPURenderable::bind()
+void Renderable::bind()
 {
     if( vao ) {
         glBindVertexArray( vao );
@@ -26,7 +26,7 @@ void GPURenderable::bind()
     }
 }
 
-void GPURenderable::draw()
+void Renderable::draw()
 {
     if( vao ) {
         if( ibo ) {
@@ -40,18 +40,18 @@ void GPURenderable::draw()
     }
 }
 
-void GPURenderable::setShaderProgram( GLuint program )
+void Renderable::setShaderProgram( GLuint program )
 {
     glUseProgram( program );
     shader_program = program;
 }
 
-void GPURenderable::useProgram()
+void Renderable::useProgram()
 {
     glUseProgram( shader_program );
 }
 
-void GPURenderable::setWorldMatrix( Matrix4x4 & mat )
+void Renderable::setWorldMatrix( Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "world" );
     GL_WARN_IF_ERROR();
@@ -59,7 +59,7 @@ void GPURenderable::setWorldMatrix( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void GPURenderable::setViewMatrix( Matrix4x4 & mat )
+void Renderable::setViewMatrix( Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "view" );
     GL_WARN_IF_ERROR();
@@ -67,7 +67,7 @@ void GPURenderable::setViewMatrix( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void GPURenderable::setProjection( Matrix4x4 & mat )
+void Renderable::setProjection( Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "projection" );
     GL_WARN_IF_ERROR();
@@ -75,7 +75,7 @@ void GPURenderable::setProjection( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void GPURenderable::setAnimTime( float t )
+void Renderable::setAnimTime( float t )
 {
     GLint loc = glGetUniformLocation( shader_program, "anim_time" );
     GL_WARN_IF_ERROR();

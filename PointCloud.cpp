@@ -1,19 +1,19 @@
 
-#include "GPUPointCloud.h"
+#include "PointCloud.h"
 
-GPUPointCloud::GPUPointCloud() 
+PointCloud::PointCloud() 
 {
 
 }
 
-GPUPointCloud::~GPUPointCloud() 
+PointCloud::~PointCloud() 
 {
     // IMPLEMENT ME - free gpu resources for VAO,etc
 }
 
-void GPUPointCloud::upload( std::vector<Vector4> & points )
+void PointCloud::upload( std::vector<Vector4> & points )
 {
-    printf("GPUPointCloud::upload\n");
+    printf("PointCloud::upload\n");
     // Create vertex array object to hold everything
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
@@ -33,7 +33,7 @@ void GPUPointCloud::upload( std::vector<Vector4> & points )
     num_vertices = points.size();
 }
 
-void GPUPointCloud::bind()
+void PointCloud::bind()
 {
     if( vao ) {
         glBindVertexArray( vao );
@@ -41,7 +41,7 @@ void GPUPointCloud::bind()
     }
 }
 
-void GPUPointCloud::draw()
+void PointCloud::draw()
 {
     if( vao ) {
         // Enable gl_PointSize in VS

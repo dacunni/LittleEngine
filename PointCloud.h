@@ -1,16 +1,16 @@
-#ifndef _GPU_POINT_CLOUD_H_
-#define _GPU_POINT_CLOUD_H_
+#ifndef __POINT_CLOUD_H_
+#define __POINT_CLOUD_H_
 
 #include <vector>
 #include "Vector.h"
 #include "OpenGLUtil.h"
-#include "GPURenderable.h"
+#include "Renderable.h"
 
-class GPUPointCloud : public GPURenderable
+class PointCloud : public Renderable
 {
     public:
-        GPUPointCloud();
-        ~GPUPointCloud(); 
+        PointCloud();
+        ~PointCloud(); 
 
         void upload( std::vector<Vector4> & points );
 
