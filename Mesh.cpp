@@ -141,6 +141,7 @@ void makeMeshGroundPlatform( Mesh & mesh, float size )
     mesh.vertices.resize( 4 );
     mesh.normals.resize( 4 );
     mesh.indices.resize( 6 );
+    mesh.textureUVCoords.resize( 4 );
     
     float yoffset = 0.0;
     
@@ -162,5 +163,10 @@ void makeMeshGroundPlatform( Mesh & mesh, float size )
     mesh.indices[index++] = 0;
     mesh.indices[index++] = 2;
     mesh.indices[index++] = 3;
+
+    mesh.textureUVCoords[0] = { 0.0, 0.0 };
+    mesh.textureUVCoords[1] = { 0.0, 1.0 };
+    mesh.textureUVCoords[2] = { 1.0, 1.0 };
+    mesh.textureUVCoords[3] = { 1.0, 0.0 };
 }
 

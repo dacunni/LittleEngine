@@ -247,8 +247,7 @@ void repaintViewport( void )
 void makeSimpleScene()
 {
     GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
-    GLuint ground_shader_program = createShaderProgram( "shaders/ground.vs", "shaders/ground.fs" );
-    if( !mesh_shader_program || !ground_shader_program ) { exit(EXIT_FAILURE); }
+    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
@@ -261,6 +260,12 @@ void makeSimpleScene()
     ground = new GameObject();
     makeMeshGroundPlatform( ground->mesh, 30.0 );
     ground->mesh.setShaderProgram( mesh_shader_program );
+    {
+    RGBImage<unsigned char> tex_image;
+    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    GLuint texID = tex_image.uploadGL();
+    ground->mesh.setTexture( texID );
+    }
     game_objects.push_back(ground);
 
     tetra = new GameObject();
@@ -361,7 +366,7 @@ int main (int argc, char * const argv[])
     glutMouseFunc( mouseButton );
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
-#if 0
+#if 1
     makeSimpleScene();
 #elif 1
     makeCookTorranceScene();
