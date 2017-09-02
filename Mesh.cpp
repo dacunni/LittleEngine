@@ -76,6 +76,9 @@ void Mesh::bind()
 
 void Mesh::draw()
 {
+    uploadTextureUniforms();
+    glBindTexture( GL_TEXTURE_2D, textureId );
+    //glActiveTexture( GL_TEXTURE0 + 0 );
     if( vao ) {
         if( ibo ) {
             glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL );

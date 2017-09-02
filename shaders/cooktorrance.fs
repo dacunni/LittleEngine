@@ -11,6 +11,7 @@ in vec4 vNormal;
 in vec2 vUV;
 out vec4 color;
 uniform sampler2D tex;
+uniform bool useTexture;
 
 const float pi = 3.14159;
 
@@ -60,9 +61,12 @@ void main()
     }
 
     vec3 Ka = vec3(0.1);
-    vec3 Kd = vec3(0.4);
+    vec3 Kd = vec3(0.5);
     //vec3 Ka = texture( tex, vUV ).rgb * vec3(0.2);
     //vec3 Kd = texture( tex, vUV ).rgb;
+    if(useTexture) {
+        Kd = texture( tex, vUV ).rgb;
+    }
 
     vec3 ambient = Ka * light0Color;
     vec3 diffuse = Kd * light0Color;

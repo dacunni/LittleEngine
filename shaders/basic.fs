@@ -11,6 +11,7 @@ in vec2 vUV;
 out vec4 color;
 
 uniform sampler2D tex;
+uniform bool useTexture;
 
 vec4 light0 = vec4( 10.0, 10.0, 5.0, 1.0 );
 //vec3 light0Color = vec3( 0.5, 0.5, 1.0 );
@@ -21,13 +22,11 @@ vec3 light1Color = vec3( 0.2 );
  
 void main()
 {
-    vec3 baseColor = vec3(1.0);
-#if 0
-    // TODO - handle textured or not
-    baseColor = texture( tex, vUV ).rgb;
-#else
-    baseColor = vec3(0.5, 0.5, 0.5);
-#endif
+    vec3 baseColor = vec3(0.5, 0.5, 0.5);
+
+    if(useTexture) {
+        baseColor = texture( tex, vUV ).rgb;
+    }
 
     color = vec4(baseColor, 1.0);
 

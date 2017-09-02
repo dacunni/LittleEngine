@@ -17,7 +17,7 @@
 #include "RandomNumberGenerator.h"
 #include "ShaderProgram.h"
 
-int window_width = 650;
+int window_width = 1200;
 int window_height = 650;
 
 int mouse_button_state[3] = { 
@@ -210,22 +210,15 @@ void repaintViewport( void )
         glDisable( GL_CULL_FACE );
     }
 
-#if 0
-    if( point_cloud_shader_program != 0 ) {
-        glUseProgram( point_cloud_shader_program );
-    }
-#endif
-
 #if 1
     if( !point_cloud.uploaded() ) {
-        buildPointCloud();
+        //buildPointCloud();
     }
 
     if( point_cloud.uploaded() ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         Transform world = model_translation;
 
-        //point_cloud.setShaderProgram( point_cloud_shader_program );
         point_cloud.useProgram();
         point_cloud.setWorldMatrix( world.fwd );
         point_cloud.setViewMatrix( camera.fwd );
@@ -276,9 +269,7 @@ int main (int argc, char * const argv[])
     int opt = 0;
 
     while( (opt = getopt( argc, argv, options )) > -1 ) {
-        if( opt == '?' ) {
-            exit(-1);
-        }
+        if( opt == '?' ) { exit(-1); }
         switch( opt ) {
             case 'v': vertex_shader_filename = optarg; break;
             case 'f': fragment_shader_filename = optarg; break;
@@ -303,24 +294,35 @@ int main (int argc, char * const argv[])
 
     AssetLoader loader;
     std::string modelPath = "models";
+    std::string texturePath = "textures";
 
     printf("Loading game objects\n");
     std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
     std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-#if 0
+#if 1
     hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
     
-#if 1
-    // TEMP >>>
+    {
     RGBImage<unsigned char> hero_tex_image;
     hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
     GLuint texID = hero_tex_image.uploadGL();
-    //glActiveTexture(GL_TEXTURE0 + 0);
-    // TEMP <<<
-#endif
+    hero->mesh.setTexture( texID );
+    }
 
-    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    //enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    //enemy = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
+    enemy = new GameObject( modelPath + "/uvmonkey.ply" );
+    //enemy = new GameObject( modelPath + "/uvsphere.ply" );
+
+    {
+    RGBImage<unsigned char> enemy_tex_image;
+    enemy_tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    GLuint texID = enemy_tex_image.uploadGL();
+    enemy->mesh.setTexture( texID );
+    }
+
+
 #elif 0
     hero = new GameObject( modelPath + "/blender/monkey1.obj" );
     enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
@@ -329,8 +331,8 @@ int main (int argc, char * const argv[])
     enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
 #elif 1
     hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
-    //enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
-    enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
+    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+    //enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
 #elif 0 // low res
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
@@ -341,6 +343,7 @@ int main (int argc, char * const argv[])
 
     hero->mesh.setShaderProgram( mesh_shader_program );
     enemy->mesh.setShaderProgram( cook_torrance_shader_program );
+    //enemy->mesh.setShaderProgram( mesh_shader_program );
 
     game_objects.push_back(hero);
     game_objects.push_back(enemy);

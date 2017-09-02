@@ -22,6 +22,8 @@ class Renderable
         void setViewMatrix( Matrix4x4 & mat );
         void setProjection( Matrix4x4 & mat );
         void setAnimTime( float t );
+        void setTexture( GLuint texId );
+        void uploadTextureUniforms();
 
         const GLuint POSITION_ATTRIB_INDEX    = 0;
         const GLuint NORMAL_ATTRIB_INDEX      = 1;
@@ -31,6 +33,8 @@ class Renderable
         GLuint vbo = 0;
         GLuint ibo = 0;
         unsigned long long num_vertices = 0;
+        GLuint textureId = 0;
+        bool hasTexture = false;
 
         GLuint shader_program;
 };

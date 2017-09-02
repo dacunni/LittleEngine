@@ -83,4 +83,27 @@ void Renderable::setAnimTime( float t )
     GL_WARN_IF_ERROR();
 }
 
+void Renderable::setTexture( GLuint texId )
+{
+    textureId = texId;
+    hasTexture = true;
+}
+
+void Renderable::uploadTextureUniforms()
+{
+    GLint loc;
+    loc = glGetUniformLocation( shader_program, "useTexture" );
+    GL_WARN_IF_ERROR();
+    if( loc ) {
+        glUniform1i( loc, (int) hasTexture );
+        GL_WARN_IF_ERROR();
+    }
+    loc = glGetUniformLocation( shader_program, "tex" );
+    GLint textureUnit = 0;
+    GL_WARN_IF_ERROR();
+    if( loc ) {
+        glUniform1i( loc, 0 );
+        GL_WARN_IF_ERROR();
+    }
+}
 
