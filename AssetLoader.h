@@ -11,7 +11,9 @@ public:
     AssetLoader() {}
     ~AssetLoader() {}
     
-    bool loadMesh( const std::string & filename, Mesh & mesh );
+    bool loadMesh( const std::string & filename, Mesh & mesh,
+                   bool normalizeScale = true,
+                   float normScaleFactor = 1.0 );
 
 };
 

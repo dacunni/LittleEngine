@@ -31,9 +31,6 @@ int mouse_last_y = -1;
 PointCloud point_cloud;
 
 GameObject * hero = nullptr;
-GameObject * enemy = nullptr;
-GameObject * ground = nullptr;
-GameObject * tetra = nullptr;
 std::vector<GameObject*> game_objects; // TODO
 
 std::string modelPath = "models";
@@ -213,7 +210,7 @@ void repaintViewport( void )
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 100.0 );
+    projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
 
     Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
     Transform camera_rotation = 
@@ -269,6 +266,8 @@ void makeSimpleScene()
     GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
+    GameObject * obj = nullptr;
+
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
@@ -278,27 +277,27 @@ void makeSimpleScene()
     } );
     game_objects.push_back(hero);
 
-    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-    enemy->mesh.setShaderProgram( mesh_shader_program );
-    enemy->position = Vector4( 1.0, 0.0, -5.0 );
-    game_objects.push_back(enemy);
+    obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->position = Vector4( 1.0, 0.0, -5.0 );
+    game_objects.push_back(obj);
 
-    ground = new GameObject();
-    makeMeshGroundPlatform( ground->mesh, 30.0 );
-    ground->mesh.setShaderProgram( mesh_shader_program );
+    obj = new GameObject();
+    makeMeshGroundPlatform( obj->mesh, 30.0 );
+    obj->mesh.setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     tex_image.loadImage( texturePath + "/uvgrid.jpg" );
     GLuint texID = tex_image.uploadGL();
-    ground->mesh.setTexture( texID );
+    obj->mesh.setTexture( texID );
     }
-    game_objects.push_back(ground);
+    game_objects.push_back(obj);
 
-    tetra = new GameObject();
-    makeMeshTetrahedron( tetra->mesh );
-    tetra->mesh.setShaderProgram( mesh_shader_program );
-    tetra->position = Vector4( 1.0, 1.0, -5.0 );
-    game_objects.push_back(tetra);
+    obj = new GameObject();
+    makeMeshTetrahedron( obj->mesh );
+    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->position = Vector4( 1.0, 1.0, -5.0 );
+    game_objects.push_back(obj);
 }
 
 void makeCookTorranceScene()
@@ -306,17 +305,17 @@ void makeCookTorranceScene()
     GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
+    GameObject * obj = nullptr;
+
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( cook_torrance_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     game_objects.push_back(hero);
 
-    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-    enemy->mesh.setShaderProgram( cook_torrance_shader_program );
-    enemy->position = Vector4( 1.0, 0.0, -5.0 );
-    game_objects.push_back(enemy);
-
-    GameObject * obj = nullptr;
+    obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->position = Vector4( 1.0, 0.0, -5.0 );
+    game_objects.push_back(obj);
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
     obj->mesh.setShaderProgram( cook_torrance_shader_program );
@@ -351,6 +350,36 @@ void makeCookTorranceScene()
     game_objects.push_back(obj);
 }
 
+void makeSponzaScene()
+{
+    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
+
+    GameObject * obj = nullptr;
+
+    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    hero->mesh.setShaderProgram( mesh_shader_program );
+    hero->position = Vector4( 0.0, 0.0, -5.0 );
+    hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
+        self->worldTransform = compose( makeTranslation( self->position ),
+                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
+    } );
+    game_objects.push_back(hero);
+
+    obj = new GameObject( modelPath + "/dabrovic-sponza/sponza.obj", false );
+    //obj = new GameObject( modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
+    obj->mesh.setShaderProgram( mesh_shader_program );
+    {
+    RGBImage<unsigned char> tex_image;
+    // TODO: Added texture loading during mesh loading
+    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
+    GLuint texID = tex_image.uploadGL();
+    obj->mesh.setTexture( texID );
+    }
+    obj->position = Vector4( 1.0, 0.0, -5.0 );
+    game_objects.push_back(obj);
+}
 
 int main (int argc, char * const argv[]) 
 {
@@ -392,11 +421,10 @@ int main (int argc, char * const argv[])
     glutMouseFunc( mouseButton );
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
-#if 0
-    makeSimpleScene();
-#elif 1
-    makeCookTorranceScene();
-#endif
+    // Make a scene
+    //makeSimpleScene();
+    //makeCookTorranceScene();
+    makeSponzaScene();
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

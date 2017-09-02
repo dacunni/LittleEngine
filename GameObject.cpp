@@ -5,11 +5,13 @@ GameObject::AnimationFunction defaultAnimation = [](GameObject * self, float gam
     self->worldTransform = makeTranslation( self->position );
 };
 
-GameObject::GameObject( const std::string & path )
+GameObject::GameObject( const std::string & path,
+                        bool normalizeScale,
+                        float normScaleFactor )
 {
     AssetLoader loader;
 
-    if( !loader.loadMesh( path, mesh ) ) {
+    if( !loader.loadMesh( path, mesh, normalizeScale, normScaleFactor ) ) {
         fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );
         exit( EXIT_FAILURE );
     }

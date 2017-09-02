@@ -9,7 +9,9 @@
 class GameObject
 {
     public:
-        GameObject( const std::string & path );
+        GameObject( const std::string & path,
+                    bool normalizeScale = true,
+                    float normScaleFactor = 1.0f );
         GameObject();
         ~GameObject();
 
