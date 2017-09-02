@@ -4,14 +4,14 @@
 #include <string>
 
 class Traceable;
-class TriangleMesh;
+class Mesh;
 
 class AssetLoader {
 public:
     AssetLoader() {}
     ~AssetLoader() {}
     
-    TriangleMesh * load( const std::string & filename );
+    bool loadMesh( const std::string & filename, Mesh & mesh );
 
 };
 

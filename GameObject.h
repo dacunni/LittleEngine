@@ -4,18 +4,15 @@
 #include "Mesh.h"
 #include "Transform.h"
 
-class TriangleMesh;
-
 class GameObject
 {
     public:
         GameObject( const std::string & path );
-        GameObject( TriangleMesh * trimesh );
+        GameObject();
         ~GameObject();
 
         void draw();
 
-        TriangleMesh * triangleMesh;
         Mesh mesh;
         Transform worldTransform;
 };

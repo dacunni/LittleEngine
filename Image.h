@@ -53,6 +53,7 @@ void RGBImage<unsigned char>::loadImage( const std::string & filename )
 
     width = magImage.columns();
     height = magImage.rows();
+    printf("Loading image %s %u x %u\n", filename.c_str(), width, height);
 
     unsigned int size = width * height;
     pixels.resize( size );

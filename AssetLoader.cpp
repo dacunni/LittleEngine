@@ -8,10 +8,10 @@
 
 #include "AssetLoader.h"
 #include "AxisAlignedSlab.h"
-#include "TriangleMesh.h"
+#include "Mesh.h"
 
 
-TriangleMesh * AssetLoader::load( const std::string & filename )
+bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh )
 {
     Assimp::Importer importer;
     
@@ -25,12 +25,12 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
     
     if( !scene ) {
         fprintf( stderr, "Failed to load %s\n", filename.c_str() );
-        return nullptr;
+        return false;
     }
     
     printf( "Loaded %s\n", filename.c_str() );
     printf( " - # meshes -> %u\n", scene->mNumMeshes );
-    
+
     printf( "Scene:"
             " HasMeshes = %d (%u)"
             " HasMaterials = %d (%u)"
@@ -45,37 +45,33 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
     // FIXME - just getting the first mesh for now
     unsigned int mesh_index = 0;
     
-    aiMesh * mesh = meshes[mesh_index];
+    aiMesh * aimesh = meshes[mesh_index];
 
     printf( "Mesh[%u] Has Positions=%d(%u) Faces=%d(%u) Normals=%d Bones=%d NumUV=%d (%d)\n", mesh_index, 
-            (int) mesh->HasPositions(), mesh->mNumVertices,
-            (int) mesh->HasFaces(), mesh->mNumFaces,
-            (int) mesh->HasNormals(),
-            (int) mesh->HasBones(),
-            (int) mesh->GetNumUVChannels(), (int) mesh->mNumUVComponents[0]
+            (int) aimesh->HasPositions(), aimesh->mNumVertices,
+            (int) aimesh->HasFaces(), aimesh->mNumFaces,
+            (int) aimesh->HasNormals(),
+            (int) aimesh->HasBones(),
+            (int) aimesh->GetNumUVChannels(), (int) aimesh->mNumUVComponents[0]
           );
 
-    bool has_uv = mesh->GetNumUVChannels() > 0 &&
-                  mesh->mNumUVComponents[0] >= 2;
+    bool has_uv = aimesh->GetNumUVChannels() > 0 &&
+                  aimesh->mNumUVComponents[0] >= 2;
     
-    TriangleMesh * trimesh = new TriangleMesh();
-    
-    trimesh->vertices.resize( mesh->mNumVertices );
-    trimesh->normals.resize( mesh->mNumVertices );
-    trimesh->triangles.resize( mesh->mNumFaces );
-
-    if( has_uv ) {
-        trimesh->textureUVCoords.resize( mesh->mNumVertices );
-    }
+    mesh.vertices.resize( aimesh->mNumVertices );
+    mesh.normals.resize( aimesh->mNumVertices );
+    // FIXME: Triangles only, can we have quads?
+    mesh.indices.resize( aimesh->mNumFaces * 3 );
+    if( has_uv ) { mesh.textureUVCoords.resize( aimesh->mNumVertices ); }
 
     float scale = 1.0f;
 
+    // Find bounds of mesh so we can apply scaling
     float minx = std::numeric_limits<float>::max(), maxx = -std::numeric_limits<float>::max();
     float miny = std::numeric_limits<float>::max(), maxy = -std::numeric_limits<float>::max();
     float minz = std::numeric_limits<float>::max(), maxz = -std::numeric_limits<float>::max();
- 
-    for( unsigned int vi = 0; vi < mesh->mNumVertices; ++vi ) {
-        const auto v = mesh->mVertices[vi];
+    for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
+        const auto v = aimesh->mVertices[vi];
         minx = std::min(v.x, minx);
         miny = std::min(v.y, miny);
         minz = std::min(v.z, minz);
@@ -87,34 +83,30 @@ TriangleMesh * AssetLoader::load( const std::string & filename )
     float maxwidth = std::max(maxx - minx, std::max(maxy - miny, maxz - minz));
     scale = 1.0f / maxwidth;
 
-    for( unsigned int vi = 0; vi < mesh->mNumVertices; ++vi ) {
-        const auto v = mesh->mVertices[vi];
-        const auto n = mesh->mNormals[vi];
+    for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
+        const auto v = aimesh->mVertices[vi];
+        const auto n = aimesh->mNormals[vi];
 
-        trimesh->vertices[vi].set( v.x, v.y, v.z );
-        trimesh->normals[vi].set( n.x, n.y, n.z );
+        mesh.vertices[vi].set( v.x, v.y, v.z );
+        mesh.normals[vi].set( n.x, n.y, n.z );
 
         if( has_uv ) {
-            const auto tc = mesh->mTextureCoords[0][vi];
-            trimesh->textureUVCoords[vi] = { tc.x, tc.y };
+            const auto tc = aimesh->mTextureCoords[0][vi];
+            mesh.textureUVCoords[vi] = { tc.x, tc.y };
         }
 
-        trimesh->vertices[vi][0] *= scale;
-        trimesh->vertices[vi][1] *= scale;
-        trimesh->vertices[vi][2] *= scale;
-        //printf("V %f %f %f\n", v.x, v.y, v.z); // TEMP
+        mesh.vertices[vi][0] *= scale;
+        mesh.vertices[vi][1] *= scale;
+        mesh.vertices[vi][2] *= scale;
     }
 
-    for( unsigned int ti = 0; ti < mesh->mNumFaces; ++ti ) {
-        const auto t = mesh->mFaces[ti];
-        trimesh->triangles[ti].vi[0] = t.mIndices[0];
-        trimesh->triangles[ti].vi[1] = t.mIndices[1];
-        trimesh->triangles[ti].vi[2] = t.mIndices[2];
+    uint32_t index = 0;
+    for( unsigned int ti = 0; ti < aimesh->mNumFaces; ++ti ) {
+        const auto t = aimesh->mFaces[ti];
+        mesh.indices[index++] = t.mIndices[0];
+        mesh.indices[index++] = t.mIndices[1];
+        mesh.indices[index++] = t.mIndices[2];
     }
 
-    AxisAlignedSlab * bounds = trimesh->getAxisAlignedBounds();
-    printf("Bounds : "); bounds->print();
-    delete bounds;
-
-    return trimesh;
+    return true;
 }

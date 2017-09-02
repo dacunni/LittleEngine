@@ -10,7 +10,6 @@
 #include "AxisAlignedSlab.h"
 #include "Image.h"
 #include "Transform.h"
-#include "TriangleMesh.h"
 #include "OpenGLUtil.h"
 #include "GameObject.h"
 #include "Mesh.h"
@@ -237,6 +236,9 @@ void repaintViewport( void )
 #endif
 
     glDisable( GL_DEPTH_TEST );
+
+    GL_WARN_IF_ERROR();
+
     glutSwapBuffers();
     glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
 }
@@ -314,6 +316,7 @@ int main (int argc, char * const argv[])
     RGBImage<unsigned char> hero_tex_image;
     hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
     GLuint texID = hero_tex_image.uploadGL();
+    //glActiveTexture(GL_TEXTURE0 + 0);
     // TEMP <<<
 #endif
 
@@ -343,17 +346,15 @@ int main (int argc, char * const argv[])
     game_objects.push_back(enemy);
 
 #if 1
-    TriangleMesh * ground_mesh = new TriangleMesh();
-    makeTriangleMeshGroundPlatform( *ground_mesh, 30.0 );
-    ground = new GameObject( ground_mesh );
+    ground = new GameObject();
+    makeMeshGroundPlatform( ground->mesh, 30.0 );
     ground->mesh.setShaderProgram( mesh_shader_program );
     game_objects.push_back(ground);
 #endif
 
 #if 1
-    TriangleMesh * tetra_mesh = new TriangleMesh();
-    makeTriangleMeshTetrahedron( *tetra_mesh );
-    tetra = new GameObject( tetra_mesh );
+    tetra = new GameObject();
+    makeMeshTetrahedron( tetra->mesh );
     tetra->mesh.setShaderProgram( mesh_shader_program );
     game_objects.push_back(tetra);
 #endif

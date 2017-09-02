@@ -20,7 +20,6 @@ HDR = \
 	Timer.h \
 	Traceable.h \
 	Transform.h \
-	TriangleMesh.h \
 	Vector.h \
 	Vector4.h \
 	Vector2.h \
@@ -45,7 +44,6 @@ leOBJ = \
 	Timer.o \
 	Traceable.o \
 	Transform.o \
-	TriangleMesh.o \
 	Vector.o \
 	ui.o
 
