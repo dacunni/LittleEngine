@@ -36,6 +36,14 @@ GameObject * ground = nullptr;
 GameObject * tetra = nullptr;
 std::vector<GameObject*> game_objects; // TODO
 
+std::string modelPath = "models";
+std::string texturePath = "textures";
+std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
+std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
+
+const char * vertex_shader_filename = "shaders/basic.vs";
+const char * fragment_shader_filename = "shaders/basic.fs";
+
 double start_time = -1.0;
 int anim_timeout_millis = 33;
 float anim_rotation = 0.0f;
@@ -236,15 +244,86 @@ void repaintViewport( void )
     glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
 }
 
+void makeSimpleScene()
+{
+    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    GLuint ground_shader_program = createShaderProgram( "shaders/ground.vs", "shaders/ground.fs" );
+    if( !mesh_shader_program || !ground_shader_program ) { exit(EXIT_FAILURE); }
+
+    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    hero->mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(hero);
+
+    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    enemy->mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(enemy);
+
+    ground = new GameObject();
+    makeMeshGroundPlatform( ground->mesh, 30.0 );
+    ground->mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(ground);
+
+    tetra = new GameObject();
+    makeMeshTetrahedron( tetra->mesh );
+    tetra->mesh.setShaderProgram( mesh_shader_program );
+    game_objects.push_back(tetra);
+}
+
+void makeCookTorranceScene()
+{
+    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
+
+    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    hero->mesh.setShaderProgram( cook_torrance_shader_program );
+    game_objects.push_back(hero);
+
+    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    enemy->mesh.setShaderProgram( cook_torrance_shader_program );
+    game_objects.push_back(enemy);
+
+    GameObject * obj = nullptr;
+
+    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->worldTransform = compose( makeTranslation( Vector4( -2.0, 0.0, -5.0 ) ),
+                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    game_objects.push_back( obj );
+
+    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    {
+    RGBImage<unsigned char> tex_image;
+    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    GLuint texID = tex_image.uploadGL();
+    obj->mesh.setTexture( texID );
+    }
+    obj->worldTransform = compose( makeTranslation( Vector4( -1.0, 0.0, -5.0 ) ),
+                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    game_objects.push_back( obj );
+
+    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    {
+    RGBImage<unsigned char> tex_image;
+    tex_image.loadImage( texturePath + "/Dog_Hair_UV_H_CM_1.jpg" );
+    GLuint texID = tex_image.uploadGL();
+    obj->mesh.setTexture( texID );
+    }
+    obj->worldTransform = compose( makeTranslation( Vector4( -1.0, 1.0, -5.0 ) ),
+                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    game_objects.push_back( obj );
+
+    obj = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->worldTransform = compose( makeTranslation( Vector4( +2.0, 0.0, -5.0 ) ),
+                                   makeRotation( 0.0, Vector4( 0, 1, 0 ) ) );
+    game_objects.push_back(obj);
+}
+
+
 int main (int argc, char * const argv[]) 
 {
-    const char * vertex_shader_filename = "shaders/basic.vs";
-    const char * fragment_shader_filename = "shaders/basic.fs";
-    //const char * fragment_shader_filename = "shaders/wood.fs";
-    //const char * fragment_shader_filename = "shaders/fire.fs";
-
-    printf("LittleEngine\n");
-
     glutInit( &argc, const_cast<char **>(argv) );
     glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
                          | GLUT_RGBA | GLUT_DEPTH
@@ -253,8 +332,6 @@ int main (int argc, char * const argv[])
     glutInitWindowSize( window_width, window_height );
     glutInitWindowPosition( 0, 0 );
     glutCreateWindow("LittleEngine");
-
-
     printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
     printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
     printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
@@ -278,88 +355,16 @@ int main (int argc, char * const argv[])
         }
     }
 
-    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
-    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
-    GLuint ground_shader_program = createShaderProgram( "shaders/ground.vs", "shaders/ground.fs" );
-
-    if( !mesh_shader_program || !ground_shader_program ) {
-        return -1;
-    }
-
     glutReshapeFunc( viewportReshaped );
     glutDisplayFunc( repaintViewport );
     glutKeyboardFunc( keyPressed );
     glutMouseFunc( mouseButton );
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
-    AssetLoader loader;
-    std::string modelPath = "models";
-    std::string texturePath = "textures";
-
-    printf("Loading game objects\n");
-    std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
-    std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-
-#if 1
-    hero = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
-    
-    {
-    RGBImage<unsigned char> hero_tex_image;
-    hero_tex_image.loadImage( modelPath + "/tf3dm.com/Rock_3dModel/Download (1).jpg" );
-    GLuint texID = hero_tex_image.uploadGL();
-    hero->mesh.setTexture( texID );
-    }
-
-    //enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-    //enemy = new GameObject( modelPath + "/tf3dm.com/Rock_3dModel/sculpt.obj" );
-    enemy = new GameObject( modelPath + "/uvmonkey.ply" );
-    //enemy = new GameObject( modelPath + "/uvsphere.ply" );
-
-    {
-    RGBImage<unsigned char> enemy_tex_image;
-    enemy_tex_image.loadImage( texturePath + "/uvgrid.jpg" );
-    GLuint texID = enemy_tex_image.uploadGL();
-    enemy->mesh.setTexture( texID );
-    }
-
-
-#elif 0
-    hero = new GameObject( modelPath + "/blender/monkey1.obj" );
-    enemy = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-#elif 0
-    hero = new GameObject( modelPath + "/princeton/elephant2.ply" );
-    enemy = new GameObject( modelPath + "/princeton/heptoroid.ply" );
+#if 0
+    makeSimpleScene();
 #elif 1
-    hero = new GameObject( modelPath + "/stanford/Armadillo.ply" );
-    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
-    //enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
-#elif 0 // low res
-    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
-    enemy = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
-#else // hi res
-    hero = new GameObject( bunnyPath + "/bun_zipper.ply" );
-    enemy = new GameObject( dragonPath + "/dragon_vrip.ply" );
-#endif
-
-    hero->mesh.setShaderProgram( mesh_shader_program );
-    enemy->mesh.setShaderProgram( cook_torrance_shader_program );
-    //enemy->mesh.setShaderProgram( mesh_shader_program );
-
-    game_objects.push_back(hero);
-    game_objects.push_back(enemy);
-
-#if 1
-    ground = new GameObject();
-    makeMeshGroundPlatform( ground->mesh, 30.0 );
-    ground->mesh.setShaderProgram( mesh_shader_program );
-    game_objects.push_back(ground);
-#endif
-
-#if 1
-    tetra = new GameObject();
-    makeMeshTetrahedron( tetra->mesh );
-    tetra->mesh.setShaderProgram( mesh_shader_program );
-    game_objects.push_back(tetra);
+    makeCookTorranceScene();
 #endif
 
     GL_WARN_IF_ERROR();
