@@ -60,6 +60,7 @@ unsigned char keyState[256] = {0};
 
 void userTimerUpdate( double time_now, double delta_time )
 {
+    // Camera controls
     if( keyState['w'] ) {
         cameraPosition.z -= 0.25;
         glutPostRedisplay();
@@ -74,6 +75,23 @@ void userTimerUpdate( double time_now, double delta_time )
     }
     if( keyState['d'] ) {
         cameraPosition.x += 0.25;
+        glutPostRedisplay();
+    }
+    // Hero controls
+    if( keyState['i'] ) {
+        hero->position.z -= 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['k'] ) {
+        hero->position.z += 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['j'] ) {
+        hero->position.x -= 0.25;
+        glutPostRedisplay();
+    }
+    if( keyState['l'] ) {
+        hero->position.x += 0.25;
         glutPostRedisplay();
     }
 }
@@ -374,7 +392,7 @@ int main (int argc, char * const argv[])
     glutMouseFunc( mouseButton );
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
-#if 1
+#if 0
     makeSimpleScene();
 #elif 1
     makeCookTorranceScene();
