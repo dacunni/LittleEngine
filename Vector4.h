@@ -70,6 +70,15 @@ inline Vector4 refract( const Vector4 & a, const Vector4 & n, float n1, float n2
 inline void    interp( const Vector4 & a, const Vector4 & b, const float alpha, Vector4 & r);
 inline Vector4 interp( const Vector4 & a, const Vector4 & b, const float alpha );
 
+inline Vector4 operator+( const Vector4 & a, const Vector4 & b ) { return add(a, b); }
+inline Vector4 operator-( const Vector4 & a, const Vector4 & b ) { return subtract(a, b); }
+inline Vector4 operator*( const Vector4 & a, float s ) { return scale(a, s); }
+inline Vector4 operator*( float s, const Vector4 & a ) { return scale(a, s); }
+
+inline Vector4 operator+=( Vector4 & a, const Vector4 & b ) { a = a + b; return a; }
+inline Vector4 operator-=( Vector4 & a, const Vector4 & b ) { a = a - b; return a; }
+inline Vector4 operator*=( Vector4 & a, float s ) { a = a * s; return a; }
+
 #include "Vector4.hpp"
 
 #endif

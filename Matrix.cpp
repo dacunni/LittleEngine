@@ -116,6 +116,20 @@ void mult( const Matrix4x4 & A, const Matrix4x4 & B, Matrix4x4 & R )
 	}
 }
 
+Matrix4x4 operator*( const Matrix4x4 & A, const Matrix4x4 & B )
+{
+    Matrix4x4 R;
+	for( int r = 0; r < 4; r++ ) {
+		for( int c = 0; c < 4; c++ ) {
+			R.at( r, c ) = A.at( r, 0 ) * B.at( 0, c )
+						 + A.at( r, 1 ) * B.at( 1, c )
+						 + A.at( r, 2 ) * B.at( 2, c )
+						 + A.at( r, 3 ) * B.at( 3, c );
+		}
+	}
+    return R;
+}
+
 // TODO - handle result being the same vector as v
 void mult( const Matrix4x4 & A, const Vector4 & v, Vector4 & result )
 {
@@ -127,6 +141,18 @@ void mult( const Matrix4x4 & A, const Vector4 & v, Vector4 & result )
 	}
 }
 
+Vector4 operator*( const Matrix4x4 & A, const Vector4 & v )
+{
+    Vector4 result;
+    for( int r = 0; r < 4; r++ ) {
+        result[r] = 0.0;
+		for( int c = 0; c < 4; c++ ) {
+			result[r] += A.at( r, c ) * v[c];
+		}
+	}
+    return result;
+}
+
 void scale( const Matrix4x4 & A, float s, Matrix4x4 & R )
 {
 	for( int r = 0; r < 4; r++ ) {
@@ -134,6 +160,17 @@ void scale( const Matrix4x4 & A, float s, Matrix4x4 & R )
 			R.at( r, c ) = A.at( r, c ) * s;
 		}
 	}	
+}
+
+Matrix4x4 operator*( const Matrix4x4 & A, float s )
+{
+    Matrix4x4 R;
+	for( int r = 0; r < 4; r++ ) {
+		for( int c = 0; c < 4; c++ ) {
+			R.at( r, c ) = A.at( r, c ) * s;
+		}
+	}	
+    return R;
 }
 
 //

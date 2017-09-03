@@ -75,56 +75,26 @@ inline Transform cameraTransform()
 
 inline Vector4 cameraForward()
 {
-    Vector4 forward;
-    mult( cameraRotation().fwd, Vector4(0, 0, -1), forward );
-    forward.normalize();
-    return forward;
+    return cameraRotation().fwd * Vector4(0, 0, -1);
 }
 
 inline Vector4 cameraRight()
 {
-    Vector4 right;
-    mult( cameraRotation().fwd, Vector4(1, 0, 0), right );
-    right.normalize();
-    return right;
+    return cameraRotation().fwd * Vector4(1, 0, 0);
 }
 
 void userTimerUpdate( double timeNow, double deltaTime )
 {
     // Camera controls
-    if( keyState['w'] ) {
-        cameraPosition = add( cameraPosition, scale( cameraForward(), cameraSpeed * deltaTime ) );
-        glutPostRedisplay();
-    }
-    if( keyState['s'] ) {
-        cameraPosition = subtract( cameraPosition, scale( cameraForward(), cameraSpeed * deltaTime ) );
-        glutPostRedisplay();
-    }
-    if( keyState['a'] ) {
-        cameraPosition = subtract( cameraPosition, scale( cameraRight(), cameraSpeed * deltaTime ) );
-        glutPostRedisplay();
-    }
-    if( keyState['d'] ) {
-        cameraPosition = add( cameraPosition, scale( cameraRight(), cameraSpeed * deltaTime ) );
-        glutPostRedisplay();
-    }
+    if( keyState['w'] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['s'] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['a'] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['d'] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
     // Hero controls
-    if( keyState['i'] ) {
-        hero->position.z -= heroSpeed * deltaTime;
-        glutPostRedisplay();
-    }
-    if( keyState['k'] ) {
-        hero->position.z += heroSpeed * deltaTime;
-        glutPostRedisplay();
-    }
-    if( keyState['j'] ) {
-        hero->position.x -= heroSpeed * deltaTime;
-        glutPostRedisplay();
-    }
-    if( keyState['l'] ) {
-        hero->position.x += heroSpeed * deltaTime;
-        glutPostRedisplay();
-    }
+    if( keyState['i'] ) { hero->position.z -= heroSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['k'] ) { hero->position.z += heroSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['j'] ) { hero->position.x -= heroSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['l'] ) { hero->position.x += heroSpeed * deltaTime; glutPostRedisplay(); }
 }
 
 void keyPressed( unsigned char key, int x, int y ) 
@@ -398,8 +368,8 @@ void makeSponzaScene()
     hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
         const Vector4 gravity( 0.0, -15.0, 0.0 );
         Vector4 acceleration = gravity;
-        self->position = add( self->position, scale( self->velocity, deltaTime ) );
-        self->velocity = add( self->velocity, scale( acceleration, deltaTime ) );
+        self->position += self->velocity * deltaTime;
+        self->velocity += acceleration * deltaTime;
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
