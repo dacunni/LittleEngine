@@ -51,27 +51,59 @@ bool draw_wireframes = false;
 Vector4 cameraPosition( 0.0, 0.6, 0.0 );
 float cameraXRotation = 0.0;
 float cameraYRotation = 0.0;
-
+float cameraSpeed = 5.0;
 
 unsigned char keyState[256] = {0};
+
+inline Transform cameraTranslation()
+{
+    return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z );
+}
+
+inline Transform cameraRotation()
+{
+    return compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
+                    makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
+}
+
+inline Transform cameraTransform()
+{
+    return compose( cameraTranslation(), cameraRotation() );
+}
+
+inline Vector4 cameraForward()
+{
+    Vector4 forward;
+    mult( cameraRotation().fwd, Vector4(0, 0, -1), forward );
+    forward.normalize();
+    return forward;
+}
+
+inline Vector4 cameraRight()
+{
+    Vector4 right;
+    mult( cameraRotation().fwd, Vector4(1, 0, 0), right );
+    right.normalize();
+    return right;
+}
 
 void userTimerUpdate( double time_now, double delta_time )
 {
     // Camera controls
     if( keyState['w'] ) {
-        cameraPosition.z -= 0.25;
+        cameraPosition = add( cameraPosition, scale( cameraForward(), cameraSpeed * delta_time ) );
         glutPostRedisplay();
     }
     if( keyState['s'] ) {
-        cameraPosition.z += 0.25;
+        cameraPosition = subtract( cameraPosition, scale( cameraForward(), cameraSpeed * delta_time ) );
         glutPostRedisplay();
     }
     if( keyState['a'] ) {
-        cameraPosition.x -= 0.25;
+        cameraPosition = subtract( cameraPosition, scale( cameraRight(), cameraSpeed * delta_time ) );
         glutPostRedisplay();
     }
     if( keyState['d'] ) {
-        cameraPosition.x += 0.25;
+        cameraPosition = add( cameraPosition, scale( cameraRight(), cameraSpeed * delta_time ) );
         glutPostRedisplay();
     }
     // Hero controls
@@ -123,8 +155,8 @@ void mouseMotionWhileButtonPressed( int x, int y )
 
     //cameraPosition.x += 0.05 * dx;
     //cameraPosition.z += 0.05 * dy;
-    cameraXRotation += 0.01 * dy;
-    cameraYRotation += 0.01 * dx;
+    cameraXRotation -= 0.01 * dy;
+    cameraYRotation -= 0.01 * dx;
     glutPostRedisplay();
 
     mouse_last_x = x;
@@ -212,11 +244,7 @@ void repaintViewport( void )
     Matrix4x4 projection;
     projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
 
-    Transform camera_translation = makeTranslation( Vector4( -cameraPosition.x, -cameraPosition.y, -cameraPosition.z ) );
-    Transform camera_rotation = 
-        compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
-                 makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
-    Transform camera = compose( camera_translation, camera_rotation );
+    Transform camera = cameraTransform();
 
     if( draw_wireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
@@ -227,7 +255,7 @@ void repaintViewport( void )
     for(auto obj : game_objects ) {
         obj->mesh.useProgram();
         obj->mesh.setWorldMatrix( obj->worldTransform.fwd );
-        obj->mesh.setViewMatrix( camera.fwd );
+        obj->mesh.setViewMatrix( camera.rev );
         obj->mesh.setProjection( projection );
         obj->draw();
     }

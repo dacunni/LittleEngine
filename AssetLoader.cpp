@@ -74,12 +74,13 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
         aiMesh * aimesh = scene->mMeshes[mesh_index];
         bool has_uv = aimesh->GetNumUVChannels() > 0 && aimesh->mNumUVComponents[0] >= 2;
 
-        printf( "Mesh[%u] Has Positions=%d(%u) Faces=%d(%u) Normals=%d Bones=%d NumUV=%d (%d)\n", mesh_index, 
+        printf( "Mesh[%u] Has Positions=%d(%u) Faces=%d(%u) Normals=%d Bones=%d NumUV=%d (%d) Name='%s'\n", mesh_index, 
                 (int) aimesh->HasPositions(), aimesh->mNumVertices,
                 (int) aimesh->HasFaces(), aimesh->mNumFaces,
                 (int) aimesh->HasNormals(),
                 (int) aimesh->HasBones(),
-                (int) aimesh->GetNumUVChannels(), (int) aimesh->mNumUVComponents[0]
+                (int) aimesh->GetNumUVChannels(), (int) aimesh->mNumUVComponents[0],
+                aimesh->mName.C_Str()
               );
 
         // Where to start adding parts of this mesh

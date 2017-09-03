@@ -36,6 +36,11 @@ void Vector4::negate()
     data[2] = -data[2];
 }
 
+inline Vector4 Vector4::negated() const
+{
+    return Vector4( -data[0], -data[1], -data[2], data[3] );
+}
+
 void Vector4::print() const
 {
 	printf( "V4( %f %f %f %f )\n", data[0], data[1], data[2], data[3] );
