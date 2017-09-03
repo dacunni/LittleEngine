@@ -34,7 +34,7 @@ class Vector4
         float magnitude();
         void normalize();
         void negate();
-        inline Vector4 negated() const;
+        Vector4 negated() const;
         inline void makeDirection() { w = 0.0f; }
 
         Vector4 normalized() const;

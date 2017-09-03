@@ -27,6 +27,7 @@ class GameObject
         Mesh mesh;
         Transform worldTransform;
         Vector4 position;
+        Vector4 velocity;
 
         AnimationFunction animFunc;
 };

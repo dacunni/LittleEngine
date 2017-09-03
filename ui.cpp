@@ -53,6 +53,8 @@ float cameraXRotation = 0.0;
 float cameraYRotation = 0.0;
 float cameraSpeed = 5.0;
 
+float heroSpeed =  5.0;
+
 unsigned char keyState[256] = {0};
 
 inline Transform cameraTranslation()
@@ -87,40 +89,40 @@ inline Vector4 cameraRight()
     return right;
 }
 
-void userTimerUpdate( double time_now, double delta_time )
+void userTimerUpdate( double timeNow, double deltaTime )
 {
     // Camera controls
     if( keyState['w'] ) {
-        cameraPosition = add( cameraPosition, scale( cameraForward(), cameraSpeed * delta_time ) );
+        cameraPosition = add( cameraPosition, scale( cameraForward(), cameraSpeed * deltaTime ) );
         glutPostRedisplay();
     }
     if( keyState['s'] ) {
-        cameraPosition = subtract( cameraPosition, scale( cameraForward(), cameraSpeed * delta_time ) );
+        cameraPosition = subtract( cameraPosition, scale( cameraForward(), cameraSpeed * deltaTime ) );
         glutPostRedisplay();
     }
     if( keyState['a'] ) {
-        cameraPosition = subtract( cameraPosition, scale( cameraRight(), cameraSpeed * delta_time ) );
+        cameraPosition = subtract( cameraPosition, scale( cameraRight(), cameraSpeed * deltaTime ) );
         glutPostRedisplay();
     }
     if( keyState['d'] ) {
-        cameraPosition = add( cameraPosition, scale( cameraRight(), cameraSpeed * delta_time ) );
+        cameraPosition = add( cameraPosition, scale( cameraRight(), cameraSpeed * deltaTime ) );
         glutPostRedisplay();
     }
     // Hero controls
     if( keyState['i'] ) {
-        hero->position.z -= 0.25;
+        hero->position.z -= heroSpeed * deltaTime;
         glutPostRedisplay();
     }
     if( keyState['k'] ) {
-        hero->position.z += 0.25;
+        hero->position.z += heroSpeed * deltaTime;
         glutPostRedisplay();
     }
     if( keyState['j'] ) {
-        hero->position.x -= 0.25;
+        hero->position.x -= heroSpeed * deltaTime;
         glutPostRedisplay();
     }
     if( keyState['l'] ) {
-        hero->position.x += 0.25;
+        hero->position.x += heroSpeed * deltaTime;
         glutPostRedisplay();
     }
 }
@@ -131,6 +133,12 @@ void keyPressed( unsigned char key, int x, int y )
         case 'W':
             draw_wireframes = !draw_wireframes;
             glutPostRedisplay();
+            break;
+        case ' ':
+            if( hero->position.y < 0.01 ) {
+                hero->velocity.y = 5.0;
+                glutPostRedisplay();
+            }
             break;
     }
     keyState[key] = 1;
@@ -243,7 +251,6 @@ void repaintViewport( void )
 
     Matrix4x4 projection;
     projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
-
     Transform camera = cameraTransform();
 
     if( draw_wireframes ) {
@@ -389,6 +396,11 @@ void makeSponzaScene()
     hero->mesh.setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
+        const Vector4 gravity( 0.0, -15.0, 0.0 );
+        Vector4 acceleration = gravity;
+        self->position = add( self->position, scale( self->velocity, deltaTime ) );
+        self->velocity = add( self->velocity, scale( acceleration, deltaTime ) );
+        if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
     } );
