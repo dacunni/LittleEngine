@@ -275,10 +275,10 @@ void makeSimpleScene()
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
-    hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
+    hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
-    } );
+    };
     game_objects.push_back(hero);
 
     obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
@@ -364,7 +364,7 @@ void makeSponzaScene()
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
-    hero->setAnimationFunction( [](GameObject * self, float gameTime, float deltaTime) {
+    hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         const Vector4 gravity( 0.0, -15.0, 0.0 );
         Vector4 acceleration = gravity;
         self->position += self->velocity * deltaTime;
@@ -372,7 +372,7 @@ void makeSponzaScene()
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
-    } );
+    };
     game_objects.push_back(hero);
 
     obj = new GameObject( modelPath + "/dabrovic-sponza/sponza.obj", false );

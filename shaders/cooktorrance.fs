@@ -62,8 +62,6 @@ void main()
 
     vec3 Ka = vec3(0.1);
     vec3 Kd = vec3(0.5);
-    //vec3 Ka = texture( tex, vUV ).rgb * vec3(0.2);
-    //vec3 Kd = texture( tex, vUV ).rgb;
     if(useTexture) {
         Kd = texture( tex, vUV ).rgb;
     }

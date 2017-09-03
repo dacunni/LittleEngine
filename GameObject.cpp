@@ -16,12 +16,12 @@ GameObject::GameObject( const std::string & path,
         exit( EXIT_FAILURE );
     }
 
-    setAnimationFunction( defaultAnimation );
+    animFunc = defaultAnimation;
 }
 
 GameObject::GameObject()
 {
-    setAnimationFunction( defaultAnimation );
+    animFunc = defaultAnimation;
 }
 
 GameObject::~GameObject() 
@@ -37,11 +37,6 @@ void GameObject::draw()
 
     mesh.bind();
     mesh.draw();
-}
-
-void GameObject::setAnimationFunction( AnimationFunction func )
-{
-    animFunc = func;
 }
 
 void GameObject::updateAnimation(float gameTime, float deltaTime)

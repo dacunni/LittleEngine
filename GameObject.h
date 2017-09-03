@@ -21,7 +21,6 @@ class GameObject
         //   Params: this, gameTime, deltaTime
         typedef std::function<void(GameObject *, float, float)> AnimationFunction;
 
-        void setAnimationFunction( AnimationFunction func );
         void updateAnimation(float gameTime, float deltaTime);
 
         Mesh mesh;
