@@ -7,7 +7,6 @@
 #include <assimp/Importer.hpp>
 
 #include "AssetLoader.h"
-#include "AxisAlignedSlab.h"
 #include "Mesh.h"
 
 

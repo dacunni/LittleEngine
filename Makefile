@@ -1,7 +1,6 @@
 
 HDR = \
 	AssetLoader.h \
-	AxisAlignedSlab.h \
 	Color.h \
 	GameObject.h \
 	Renderable.h \
@@ -29,7 +28,6 @@ HDR = \
 
 leOBJ = \
 	AssetLoader.o \
-	AxisAlignedSlab.o \
 	GameObject.o \
 	Renderable.o \
 	Mesh.o \

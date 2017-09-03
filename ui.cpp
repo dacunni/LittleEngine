@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "AssetLoader.h"
-#include "AxisAlignedSlab.h"
 #include "Image.h"
 #include "Transform.h"
 #include "OpenGLUtil.h"
