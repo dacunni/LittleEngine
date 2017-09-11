@@ -51,6 +51,7 @@ Vector4 cameraPosition( 0.0, 0.6, 0.0 );
 float cameraXRotation = 0.0;
 float cameraYRotation = 0.0;
 float cameraSpeed = 5.0;
+float cameraKeyboardRotationSpeed = 2.0;
 
 float heroSpeed =  5.0;
 
@@ -85,10 +86,14 @@ inline Vector4 cameraRight()
 void userTimerUpdate( double timeNow, double deltaTime )
 {
     // Camera controls
+    //   Translation
     if( keyState['w'] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
     if( keyState['s'] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
     if( keyState['a'] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
     if( keyState['d'] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+    //   Rotation
+    if( keyState['q'] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState['e'] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
     // Hero controls
     if( keyState['i'] ) { hero->position.z -= heroSpeed * deltaTime; glutPostRedisplay(); }
     if( keyState['k'] ) { hero->position.z += heroSpeed * deltaTime; glutPostRedisplay(); }
@@ -377,6 +382,7 @@ void makeSponzaScene()
 
     obj = new GameObject( modelPath + "/dabrovic-sponza/sponza.obj", false );
     //obj = new GameObject( modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
+    //obj = new GameObject( modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
     obj->mesh.setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;

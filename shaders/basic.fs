@@ -37,7 +37,5 @@ void main()
     lighting += light1Color * max(dot(vNormal, toLight1), 0);
 
     color.rgb *= lighting;
-
-    //color.a = 0.5; // TEMP
 }
 
