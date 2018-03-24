@@ -14,11 +14,13 @@ Mesh::~Mesh()
 
 void Mesh::upload()
 {
-    printf("Mesh::upload\n");
+    printf("Mesh::upload this %p vao %u vbo %u ibo %u\n", this, (GLuint) vao, (GLuint) vbo, (GLuint) ibo);
     vao.bind();
+    GL_WARN_IF_ERROR();
 
     // Upload vertex positions
     vbo.bind( GL_ARRAY_BUFFER );
+    GL_WARN_IF_ERROR();
     GLsizeiptr vsize = vertices.size() * sizeof(float) * 4;
     GLsizeiptr nsize = normals.size() * sizeof(float) * 4;
     GLsizeiptr tcsize = textureUVCoords.size() * sizeof(float) * 2;
@@ -33,6 +35,7 @@ void Mesh::upload()
 
     // allocate some space for all of our attributes
     glBufferData( GL_ARRAY_BUFFER, vsize + nsize + tcsize, NULL, GL_STATIC_DRAW );
+    GL_WARN_IF_ERROR();
 
     // upload positions
     glBufferSubData( GL_ARRAY_BUFFER, vstart, vsize, &vertices[0].x );

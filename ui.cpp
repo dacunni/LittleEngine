@@ -247,10 +247,6 @@ void repaintViewport( void )
         glDisable( GL_CULL_FACE );
     }
 
-    if( !point_cloud ) {
-        buildPointCloud();
-    }
-
     if( point_cloud ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         Transform world = model_translation;
@@ -381,7 +377,7 @@ void makeSponzaScene()
     };
     game_objects.push_back(hero);
 
-#if 1
+#if 0
     AssetLoader loader;
 
     // Default texture
@@ -478,9 +474,11 @@ int main (int argc, char * const argv[])
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
     // Make a scene
-    makeSimpleScene();
+    //makeSimpleScene();
     //makeCookTorranceScene();
-    //makeSponzaScene();
+    makeSponzaScene();
+
+    //buildPointCloud();
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();
