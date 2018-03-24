@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Image.h"
+
 class Traceable;
 class Mesh;
 
@@ -14,6 +16,12 @@ public:
     bool loadMesh( const std::string & filename, Mesh & mesh,
                    bool normalizeScale = true,
                    float normScaleFactor = 1.0 );
+
+    bool loadMeshes( const std::string & filename,
+                     std::vector<Mesh> & meshes,
+                     std::vector< RGBImage<unsigned char> > & textures,
+                     bool normalizeScale = true,
+                     float normScaleFactor = 1.0 );
 
 };
 

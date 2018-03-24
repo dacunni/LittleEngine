@@ -17,8 +17,8 @@ const float pi = 3.14159;
 
 vec3 light0 = vec3( 25.0, 25.0, 0.0 );
 //vec3 light0 = vec3( 15.0, 15.0, 20.0 * cos(anim_time) );
-//vec3 light0Color = vec3( 0.8, 0.7, 0.5 );
-vec3 light0Color = vec3(1.0); // white
+vec3 light0Color = vec3( 0.8, 0.7, 0.5 );
+//vec3 light0Color = vec3(1.0); // white
 
 void main()
 {
@@ -34,12 +34,10 @@ void main()
     float NdV = max(dot(normal, eye), 0);
     float VdH = max(dot(eye, H), 0);
     float NdL = max(dot(normal, toLight0), 0);
-    float LdH  = max(dot(toLight0, H), 0);
-    vec3 mirror = normalize(2.0 * NdV * normal - eye);
 
     vec3 specular = vec3(0.0);
 
-    if( NdL > 0.0) {
+    if(NdL > 0.0 && NdV > 0.0f) {
         // Fresnel: Fraction of light reflected
         float F0 = 0.25; // reflectance at normal incidence
         float F = F0 + (1.0 - F0) * pow(1.0 - VdH, 5);
@@ -53,14 +51,14 @@ void main()
 
         // Geometric attenuation according to Blinn
         float G1 = 2.0 * NdH * NdV / VdH;
-        float G2 = 2.0 * NdH * NdL / LdH;
+        float G2 = 2.0 * NdH * NdL / VdH;
         float G = min(1.0, min(G1, G2));
 
         specular = vec3(F * D * G / (pi * NdL * NdV));
         specular *= light0Color;
     }
 
-    vec3 Ka = vec3(0.1);
+    vec3 Ka = vec3(0.3);
     vec3 Kd = vec3(0.5);
     if(useTexture) {
         Kd = texture( tex, vUV ).rgb;
@@ -70,9 +68,6 @@ void main()
     vec3 diffuse = Kd * light0Color;
 
     color.rgb = ambient + NdL * (diffuse + (1.0 - Kd) * specular);
-    //color.rgb = NdL * (diffuse + (1.0 - diffuse) * specular);
-    //color.rgb = NdL * diffuse;
-    //color.rgb = NdL * (1 - diffuse) * specular;
     color.a = 1.0;
 }
 

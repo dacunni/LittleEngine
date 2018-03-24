@@ -29,6 +29,7 @@ HDR = \
 leOBJ = \
 	AssetLoader.o \
 	GameObject.o \
+    Image.o \
 	Renderable.o \
 	Mesh.o \
 	PointCloud.o \

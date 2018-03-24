@@ -139,7 +139,7 @@ void mouseMotionWhileButtonPressed( int x, int y )
     //cameraPosition.z += 0.05 * dy;
     cameraXRotation -= 0.01 * dy;
     cameraYRotation -= 0.01 * dx;
-    glutPostRedisplay();
+    //glutPostRedisplay();
 
     mouse_last_x = x;
     mouse_last_y = y;
@@ -277,7 +277,7 @@ void makeSimpleScene()
 
     GameObject * obj = nullptr;
 
-    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    hero = new GameObject( bunnyPath + "/bun_zipper_res3.ply" );
     hero->mesh.setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
@@ -380,20 +380,60 @@ void makeSponzaScene()
     };
     game_objects.push_back(hero);
 
+#if 1
+    AssetLoader loader;
+
+    // Default texture
+    RGBImage<unsigned char> tex_image;
+    // TODO: Added texture loading during mesh loading
+    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    //tex_image.loadImage( modelPath + "/gallery/gallery_small.jpg" );
+    //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
+    GLuint texID = tex_image.uploadGL();
+
+    std::vector< RGBImage<unsigned char> > textures;
+
+    std::vector<Mesh> meshes;
+    if( loader.loadMeshes( modelPath + "/dabrovic-sponza/sponza.obj",
+    //if( loader.loadMeshes( modelPath + "/gallery/gallery.obj",
+                           meshes, textures, false ) ) {
+        for( auto & mesh : meshes ) {
+            obj = new GameObject();
+            // FIXME: Proper copy/move construction
+            obj->mesh.vertices = mesh.vertices;
+            obj->mesh.normals = mesh.normals;
+            obj->mesh.textureUVCoords = mesh.textureUVCoords;
+            obj->mesh.indices = mesh.indices;
+            if( mesh.hasTexture )
+                obj->mesh.setTexture( mesh.textureId );
+
+            // TODO: load material for each mesh
+
+            //obj->mesh.setTexture( texID );
+            obj->mesh.setShaderProgram( mesh_shader_program );
+            game_objects.push_back( obj );
+        }
+    }
+
+#else
     obj = new GameObject( modelPath + "/dabrovic-sponza/sponza.obj", false );
     //obj = new GameObject( modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
     //obj = new GameObject( modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
+    //obj = new GameObject( modelPath + "/gallery/gallery.obj", true, 50.0 );
+    //obj = new GameObject( modelPath + "/fireplace_room/fireplace_room.obj", true, 4.0 );
     obj->mesh.setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     // TODO: Added texture loading during mesh loading
     tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    //tex_image.loadImage( modelPath + "/gallery/gallery_small.jpg" );
     //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
     GLuint texID = tex_image.uploadGL();
     obj->mesh.setTexture( texID );
     }
     obj->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(obj);
+#endif
 }
 
 int main (int argc, char * const argv[]) 
