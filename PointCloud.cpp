@@ -14,13 +14,10 @@ PointCloud::~PointCloud()
 void PointCloud::upload( std::vector<Vector4> & points )
 {
     printf("PointCloud::upload\n");
-    // Create vertex array object to hold everything
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
+    vao.bind();
 
     // Upload vertex positions
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    vbo.bind( GL_ARRAY_BUFFER );
     GLsizeiptr vsize = points.size() * sizeof(points[0]);
     // allocate some space for all of our attributes
     glBufferData( GL_ARRAY_BUFFER, vsize, NULL, GL_STATIC_DRAW );
@@ -31,14 +28,12 @@ void PointCloud::upload( std::vector<Vector4> & points )
     glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
 
     num_vertices = points.size();
+    is_uploaded = true;
 }
 
 void PointCloud::bind()
 {
-    if( vao ) {
-        glBindVertexArray( vao );
-        GL_WARN_IF_ERROR();
-    }
+    vao.bind();
 }
 
 void PointCloud::draw()

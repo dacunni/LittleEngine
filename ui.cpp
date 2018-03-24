@@ -27,7 +27,7 @@ int mouse_button_state[3] = {
 int mouse_last_x = -1;
 int mouse_last_y = -1;
 
-PointCloud point_cloud;
+PointCloud * point_cloud = nullptr;
 
 GameObject * hero = nullptr;
 std::vector<GameObject*> game_objects; // TODO
@@ -190,9 +190,10 @@ void buildPointCloud( void )
         p.z = rng.uniformRange( -10.0, -6.0 );
         points.push_back( p );
     }
-    point_cloud.upload( points );
+    point_cloud = new PointCloud();
+    point_cloud->upload( points );
     GLuint point_cloud_shader_program = createShaderProgram( "shaders/points.vs", "shaders/points.fs" );
-    point_cloud.setShaderProgram( point_cloud_shader_program );
+    point_cloud->setShaderProgram( point_cloud_shader_program );
 }
 
 double timeAsDouble()
@@ -246,20 +247,20 @@ void repaintViewport( void )
         glDisable( GL_CULL_FACE );
     }
 
-    if( !point_cloud.uploaded() ) {
-        //buildPointCloud();
+    if( !point_cloud ) {
+        buildPointCloud();
     }
 
-    if( point_cloud.uploaded() ) {
+    if( point_cloud ) {
         Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
         Transform world = model_translation;
 
-        point_cloud.useProgram();
-        point_cloud.setWorldMatrix( world.fwd );
-        point_cloud.setViewMatrix( camera.fwd );
-        point_cloud.setProjection( projection );
-        point_cloud.bind();
-        point_cloud.draw();
+        point_cloud->useProgram();
+        point_cloud->setWorldMatrix( world.fwd );
+        point_cloud->setViewMatrix( camera.fwd );
+        point_cloud->setProjection( projection );
+        point_cloud->bind();
+        point_cloud->draw();
     }
 
     glDisable( GL_DEPTH_TEST );
@@ -477,9 +478,9 @@ int main (int argc, char * const argv[])
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
     // Make a scene
-    //makeSimpleScene();
+    makeSimpleScene();
     //makeCookTorranceScene();
-    makeSponzaScene();
+    //makeSponzaScene();
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

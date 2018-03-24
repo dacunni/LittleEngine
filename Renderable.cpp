@@ -5,25 +5,22 @@
 
 Renderable::Renderable() 
 {
-
+    vao.init();
+    vbo.init();
 }
 
 Renderable::~Renderable() 
 {
-    // IMPLEMENT ME - free gpu resources for VAO,etc
 }
 
 bool Renderable::uploaded()
 {
-    return vao != 0;
+    return is_uploaded;
 }
 
 void Renderable::bind()
 {
-    if( vao ) {
-        glBindVertexArray( vao );
-        GL_WARN_IF_ERROR();
-    }
+    vao.bind();
 }
 
 void Renderable::draw()

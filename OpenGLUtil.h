@@ -13,5 +13,31 @@
 
 GLenum warnIfError( const char * func, int line );
 
+struct VertexArrayObject {
+    VertexArrayObject();
+    ~VertexArrayObject();
+
+    operator bool() const { return value != 0; }
+    operator GLuint() const { return value; }
+
+    void init();
+    void bind();
+
+    GLuint value;
+};
+
+struct BufferObject {
+    BufferObject();
+    ~BufferObject();
+
+    operator bool() const { return value != 0; }
+    operator GLuint() const { return value; }
+
+    void init();
+    void bind(GLenum target);
+
+    GLuint value;
+};
+
 
 #endif

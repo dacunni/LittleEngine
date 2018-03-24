@@ -29,9 +29,10 @@ class Renderable
         const GLuint NORMAL_ATTRIB_INDEX      = 1;
         const GLuint TEX_COORD_ATTRIB_INDEX   = 2;
 
-        GLuint vao = 0;
-        GLuint vbo = 0;
-        GLuint ibo = 0;
+        bool is_uploaded = false;
+        VertexArrayObject vao;
+        BufferObject vbo;
+        BufferObject ibo;
         unsigned long long num_vertices = 0;
         GLuint textureId = 0;
         bool hasTexture = false;

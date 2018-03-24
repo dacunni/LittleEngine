@@ -15,13 +15,10 @@ Mesh::~Mesh()
 void Mesh::upload()
 {
     printf("Mesh::upload\n");
-    // Create vertex array object to hold everything
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
+    vao.bind();
 
     // Upload vertex positions
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    vbo.bind( GL_ARRAY_BUFFER );
     GLsizeiptr vsize = vertices.size() * sizeof(float) * 4;
     GLsizeiptr nsize = normals.size() * sizeof(float) * 4;
     GLsizeiptr tcsize = textureUVCoords.size() * sizeof(float) * 2;
@@ -58,20 +55,18 @@ void Mesh::upload()
     }
 
     // Upload vertex indices
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    ibo.init();
+    ibo.bind( GL_ELEMENT_ARRAY_BUFFER );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, isize, &indices[0], GL_STATIC_DRAW );
     GL_WARN_IF_ERROR();
 
     num_vertices = vertices.size();
+    is_uploaded = true;
 }
 
 void Mesh::bind()
 {
-    if( vao ) {
-        glBindVertexArray( vao );
-        GL_WARN_IF_ERROR();
-    }
+    vao.bind();
 }
 
 void Mesh::draw()

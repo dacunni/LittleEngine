@@ -30,7 +30,4 @@ class Program {
         GLuint id;
 };
 
-
-
-
 #endif
