@@ -12,15 +12,15 @@ public:
     void stop();
     double elapsed();
     
-    static double toDouble( const struct timeval & tm );
-    
 protected:
     
     struct timeval start_time;
     struct timeval end_time;
     bool running;
     bool valid;
-    
 };
+
+double timeAsDouble( const struct timeval & tm );
+double timeNowAsDouble();
 
 #endif

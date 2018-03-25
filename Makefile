@@ -2,6 +2,7 @@
 HDR = \
 	AssetLoader.h \
 	Color.h \
+    Engine.h \
 	GameObject.h \
 	Renderable.h \
 	Mesh.h \
@@ -24,6 +25,7 @@ HDR = \
 
 leOBJ = \
 	AssetLoader.o \
+    Engine.o \
 	GameObject.o \
     Image.o \
 	Renderable.o \

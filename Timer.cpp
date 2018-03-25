@@ -1,8 +1,16 @@
 #include <stdlib.h>
 #include "Timer.h"
 
-double Timer::toDouble( const struct timeval & tm ){
+double timeAsDouble( const struct timeval & tm )
+{
     return (double) tm.tv_sec + (double) tm.tv_usec * 1.0e-6;
+}
+
+double timeNowAsDouble()
+{
+    struct timeval tm = {};
+    gettimeofday( &tm, NULL );
+    return timeAsDouble( tm );
 }
 
 void Timer::start()
@@ -28,5 +36,5 @@ double Timer::elapsed()
         gettimeofday( &end_time, NULL );
     }
     
-    return toDouble( end_time ) - toDouble( start_time );
+    return timeAsDouble( end_time ) - timeAsDouble( start_time );
 }
