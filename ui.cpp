@@ -16,139 +16,14 @@
 #include "RandomNumberGenerator.h"
 #include "ShaderProgram.h"
 
-int window_width = 1200;
-int window_height = 650;
-
-int mouse_button_state[3] = { 
-    GLUT_UP, // left
-    GLUT_UP, // right
-    GLUT_UP  // middle
-};
-int mouse_last_x = -1;
-int mouse_last_y = -1;
-
-GameObject * hero = nullptr;
-std::vector<GameObject*> game_objects; // TODO
-
-std::string modelPath = "models";
-std::string texturePath = "textures";
-std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
-std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
-
 const char * vertex_shader_filename = "shaders/basic.vs";
 const char * fragment_shader_filename = "shaders/basic.fs";
 
-double start_time = -1.0;
-int anim_timeout_millis = 33;
-float anim_rotation = 0.0f;
-float anim_time = 0.0f;
-
-bool draw_wireframes = false;
-
-Vector4 cameraPosition( 0.0, 0.6, 0.0 );
-float cameraXRotation = 0.0;
-float cameraYRotation = 0.0;
-float cameraSpeed = 5.0;
-float cameraKeyboardRotationSpeed = 2.0;
-
-float heroSpeed =  5.0;
-
-unsigned char keyState[256] = {0};
-
-inline Transform cameraTranslation()
+double timeAsDouble()
 {
-    return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z );
-}
-
-inline Transform cameraRotation()
-{
-    return compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
-                    makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
-}
-
-inline Transform cameraTransform()
-{
-    return compose( cameraTranslation(), cameraRotation() );
-}
-
-inline Vector4 cameraForward()
-{
-    return cameraRotation().fwd * Vector4(0, 0, -1);
-}
-
-inline Vector4 cameraRight()
-{
-    return cameraRotation().fwd * Vector4(1, 0, 0);
-}
-
-void userTimerUpdate( double timeNow, double deltaTime )
-{
-    // Camera controls
-    //   Translation
-    if( keyState['w'] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['s'] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['a'] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['d'] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    //   Rotation
-    if( keyState['q'] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['e'] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
-    // Hero controls
-    if( keyState['i'] ) { hero->position.z -= heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['k'] ) { hero->position.z += heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['j'] ) { hero->position.x -= heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['l'] ) { hero->position.x += heroSpeed * deltaTime; glutPostRedisplay(); }
-}
-
-void keyPressed( unsigned char key, int x, int y ) 
-{
-    switch( key ) {
-        case 'W':
-            draw_wireframes = !draw_wireframes;
-            glutPostRedisplay();
-            break;
-        case ' ':
-            if( hero->position.y < 0.01 ) {
-                hero->velocity.y = 5.0;
-                glutPostRedisplay();
-            }
-            break;
-    }
-    keyState[key] = 1;
-}
-
-void keyReleased( unsigned char key, int x, int y ) 
-{
-    keyState[key] = 0;
-}
-
-void mouseButton( int button, int state, int x, int y )
-{
-    mouse_button_state[button] = state;
-    mouse_last_x = x;
-    mouse_last_y = y;
-}
-
-void mouseMotionWhileButtonPressed( int x, int y )
-{
-    int dx = x - mouse_last_x;
-    int dy = y - mouse_last_y;
-
-    //cameraPosition.x += 0.05 * dx;
-    //cameraPosition.z += 0.05 * dy;
-    cameraXRotation -= 0.01 * dy;
-    cameraYRotation -= 0.01 * dx;
-    //glutPostRedisplay();
-
-    mouse_last_x = x;
-    mouse_last_y = y;
-}
-
-void viewportReshaped( int width, int height ) 
-{
-    window_width = width;
-    window_height = height;
-    glViewport( 0, 0, window_width, window_height );
-    GL_WARN_IF_ERROR();
+    struct timeval tm = {};
+    gettimeofday( &tm, NULL );
+    return (double) tm.tv_sec + 1.0e-6 * (double) tm.tv_usec;
 }
 
 GLuint createShaderProgram( const char * vs, const char * fs ) 
@@ -171,9 +46,254 @@ GLuint createShaderProgram( const char * vs, const char * fs )
     return program.id;
 }
 
+class Engine
+{
+    public:
+        Engine() {}
+        ~Engine() {}
+
+        GameObject * hero = nullptr;
+        std::vector<GameObject*> game_objects; // TODO
+
+        std::string modelPath = "models";
+        std::string texturePath = "textures";
+        std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
+        std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
+
+        double start_time = -1.0;
+        int anim_timeout_millis = 33;
+        float anim_rotation = 0.0f;
+        float anim_time = 0.0f;
+
+        bool draw_wireframes = false;
+
+        Vector4 cameraPosition = Vector4( 0.0, 0.6, 0.0 );
+        float cameraXRotation = 0.0;
+        float cameraYRotation = 0.0;
+        float cameraSpeed = 5.0;
+        float cameraKeyboardRotationSpeed = 2.0;
+
+        float heroSpeed =  5.0;
+
+        int window_width = 1200;
+        int window_height = 650;
+
+        unsigned char keyState[256] = {0};
+
+        int mouse_button_state[3] = { 
+            GLUT_UP, // left
+            GLUT_UP, // right
+            GLUT_UP  // middle
+        };
+        int mouse_last_x = -1;
+        int mouse_last_y = -1;
+
+        inline Transform cameraTranslation()
+        {
+            return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z );
+        }
+
+        inline Transform cameraRotation()
+        {
+            return compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
+                            makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
+        }
+
+        inline Transform cameraTransform()
+        {
+            return compose( cameraTranslation(), cameraRotation() );
+        }
+
+        inline Vector4 cameraForward()
+        {
+            return cameraRotation().fwd * Vector4(0, 0, -1);
+        }
+
+        inline Vector4 cameraRight()
+        {
+            return cameraRotation().fwd * Vector4(1, 0, 0);
+        }
+
+        void userTimerUpdate( double timeNow, double deltaTime )
+        {
+            // Camera controls
+            //   Translation
+            if( keyState['w'] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['s'] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['a'] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['d'] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+            //   Rotation
+            if( keyState['q'] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['e'] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
+            // Hero controls
+            if( keyState['i'] ) { hero->position.z -= heroSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['k'] ) { hero->position.z += heroSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['j'] ) { hero->position.x -= heroSpeed * deltaTime; glutPostRedisplay(); }
+            if( keyState['l'] ) { hero->position.x += heroSpeed * deltaTime; glutPostRedisplay(); }
+        }
+
+        static Engine * _instance;
+
+        static Engine & instance() {
+            if(!_instance) {
+                _instance = new Engine();
+            }
+            return *_instance;
+        }
+
+        void createWindow(int & argc, char ** argv ) {
+            glutInit( &argc, argv );
+            glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
+                                 | GLUT_RGBA | GLUT_DEPTH
+                                 | GLUT_3_2_CORE_PROFILE  // Core profile context
+                               );
+            glutInitWindowSize( window_width, window_height );
+            glutInitWindowPosition( 0, 0 );
+            glutCreateWindow("LittleEngine");
+            printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
+            printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
+            printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+
+            registerCallbacks();
+
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        }
+
+        void start() {
+            GL_WARN_IF_ERROR();
+            start_time = timeAsDouble();
+            glutMainLoop();
+        }
+
+        static void sKeyPressed( unsigned char key, int x, int y )      { instance().keyPressed(key, x, y); }
+        static void sKeyReleased( unsigned char key, int x, int y )     { instance().keyReleased(key, x, y); }
+        static void sMouseButton( int button, int state, int x, int y ) { instance().mouseButton(button, state, x, y); }
+        static void sMouseMotionWhileButtonPressed( int x, int y )      { instance().mouseMotionWhileButtonPressed(x, y); }
+        static void sViewportReshaped( int width, int height )          { instance().viewportReshaped(width, height); }
+        static void sRepaintViewport(void)                              { instance().repaintViewport(); }
+        static void sAnimTimerCallback( int value )                     { instance().animTimerCallback(value); }
+
+        void registerCallbacks() {
+            glutReshapeFunc( sViewportReshaped );
+            glutDisplayFunc( sRepaintViewport );
+            glutKeyboardFunc( sKeyPressed );
+            glutKeyboardUpFunc( sKeyReleased );
+            glutMouseFunc( sMouseButton );
+            glutMotionFunc( sMouseMotionWhileButtonPressed );
+        }
+
+        void keyPressed( unsigned char key, int x, int y ) 
+        {
+            switch( key ) {
+                case 'W':
+                    draw_wireframes = !draw_wireframes;
+                    glutPostRedisplay();
+                    break;
+                case ' ':
+                    if( hero->position.y < 0.01 ) {
+                        hero->velocity.y = 5.0;
+                        glutPostRedisplay();
+                    }
+                    break;
+            }
+            keyState[key] = 1;
+        }
+
+        void keyReleased( unsigned char key, int x, int y ) 
+        {
+            keyState[key] = 0;
+        }
+
+        void mouseButton( int button, int state, int x, int y )
+        {
+            mouse_button_state[button] = state;
+            mouse_last_x = x;
+            mouse_last_y = y;
+        }
+
+        void mouseMotionWhileButtonPressed( int x, int y )
+        {
+            int dx = x - mouse_last_x;
+            int dy = y - mouse_last_y;
+
+            //cameraPosition.x += 0.05 * dx;
+            //cameraPosition.z += 0.05 * dy;
+            cameraXRotation -= 0.01 * dy;
+            cameraYRotation -= 0.01 * dx;
+            //glutPostRedisplay();
+
+            mouse_last_x = x;
+            mouse_last_y = y;
+        }
+
+        void viewportReshaped( int width, int height ) 
+        {
+            window_width = width;
+            window_height = height;
+            glViewport( 0, 0, window_width, window_height );
+            GL_WARN_IF_ERROR();
+        }
+
+        void animTimerCallback( int value )
+        {
+            double time_now = timeAsDouble() - start_time;
+            double delta_time = time_now - anim_time;
+            anim_time = (float) time_now;
+
+            userTimerUpdate( time_now, delta_time );
+            for(auto obj : game_objects ) {
+                obj->updateAnimation( time_now, delta_time );
+            }
+
+            anim_rotation = anim_time * 0.4;
+            glutPostRedisplay();
+        }
+
+        void repaintViewport( void ) 
+        {
+            glClearColor( 0.2, 0.2, 0.3, 1.0 );
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+            glEnable( GL_DEPTH_TEST );
+
+            Matrix4x4 projection;
+            projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
+            Transform camera = cameraTransform();
+
+            if( draw_wireframes ) {
+                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
+                glFrontFace( GL_CCW );
+                glEnable( GL_CULL_FACE );
+            }
+
+            for(auto obj : game_objects ) {
+                obj->renderable->useProgram();
+                obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
+                obj->renderable->setViewMatrix( camera.rev );
+                obj->renderable->setProjection( projection );
+                obj->draw();
+            }
+
+            if( draw_wireframes ) {                           // revert to normal behavior
+                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
+                glDisable( GL_CULL_FACE );
+            }
+
+            glDisable( GL_DEPTH_TEST );
+
+            GL_WARN_IF_ERROR();
+
+            glutSwapBuffers();
+            glutTimerFunc( anim_timeout_millis, sAnimTimerCallback, 0 );
+        }
+
+};
+
+Engine * Engine::_instance = nullptr;
 
 void buildPointCloud( void ) 
 {
+    Engine & engine = Engine::instance();
     // Make some random points
     std::vector<Vector4> points;
     RandomNumberGenerator rng;
@@ -198,177 +318,129 @@ void buildPointCloud( void )
     GameObject * obj = new GameObject();
     obj->renderable = point_cloud;
 
-    game_objects.push_back( obj );
-}
-
-double timeAsDouble()
-{
-    struct timeval tm = {};
-    gettimeofday( &tm, NULL );
-    return (double) tm.tv_sec + 1.0e-6 * (double) tm.tv_usec;
-}
-
-void animTimerCallback( int value )
-{
-    double time_now = timeAsDouble() - start_time;
-    double delta_time = time_now - anim_time;
-    anim_time = (float) time_now;
-
-    userTimerUpdate( time_now, delta_time );
-    for(auto obj : game_objects ) {
-        obj->updateAnimation( time_now, delta_time );
-    }
-
-    anim_rotation = anim_time * 0.4;
-    glutPostRedisplay();
-}
-
-void repaintViewport( void ) 
-{
-    glClearColor( 0.2, 0.2, 0.3, 1.0 );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    glEnable( GL_DEPTH_TEST );
-
-    Matrix4x4 projection;
-    projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
-    Transform camera = cameraTransform();
-
-    if( draw_wireframes ) {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
-        glFrontFace( GL_CCW );
-        glEnable( GL_CULL_FACE );
-    }
-
-    for(auto obj : game_objects ) {
-        obj->renderable->useProgram();
-        obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
-        obj->renderable->setViewMatrix( camera.rev );
-        obj->renderable->setProjection( projection );
-        obj->draw();
-    }
-
-    if( draw_wireframes ) {                           // revert to normal behavior
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
-        glDisable( GL_CULL_FACE );
-    }
-
-    glDisable( GL_DEPTH_TEST );
-
-    GL_WARN_IF_ERROR();
-
-    glutSwapBuffers();
-    glutTimerFunc( anim_timeout_millis, animTimerCallback, 0 );
+    engine.game_objects.push_back( obj );
 }
 
 void makeSimpleScene()
 {
+    Engine & engine = Engine::instance();
+
     GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
 
-    hero = new GameObject( bunnyPath + "/bun_zipper_res3.ply" );
+    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res3.ply" );
+    engine.hero = hero;
     hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        Engine & engine = Engine::instance();
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
     };
-    game_objects.push_back(hero);
+    engine.game_objects.push_back(hero);
 
-    obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    obj = new GameObject( engine.modelPath + "/tf3dm.com/soccerball/untitled.ply" );
     obj->renderable->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 1.0, 0.0, -5.0 );
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 
     obj = new GameObject();
     obj->renderable = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
     obj->renderable->setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
-    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
     GLuint texID = tex_image.uploadGL();
     obj->renderable->setTexture( texID );
     }
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 
     obj = new GameObject();
     obj->renderable = std::shared_ptr<Mesh>(makeMeshTetrahedron());
     obj->renderable->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 1.0, 1.0, -5.0 );
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 }
 
 void makeCookTorranceScene()
 {
+    Engine & engine = Engine::instance();
+
     GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
 
-    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res2.ply" );
+    engine.hero = hero;
     hero->renderable->setShaderProgram( cook_torrance_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
-    game_objects.push_back(hero);
+    engine.game_objects.push_back(hero);
 
-    obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    obj = new GameObject( engine.modelPath + "/tf3dm.com/soccerball/untitled.ply" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( 1.0, 0.0, -5.0 );
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 
-    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( -2.0, 0.0, -5.0 );
-    game_objects.push_back( obj );
+    engine.game_objects.push_back( obj );
 
-    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
     {
     RGBImage<unsigned char> tex_image;
-    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
     GLuint texID = tex_image.uploadGL();
     obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( -1.0, 0.0, -5.0 );
-    game_objects.push_back( obj );
+    engine.game_objects.push_back( obj );
 
-    obj = new GameObject( modelPath + "/uvmonkey.ply" );
+    obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
     {
     RGBImage<unsigned char> tex_image;
-    tex_image.loadImage( texturePath + "/Dog_Hair_UV_H_CM_1.jpg" );
+    tex_image.loadImage( engine.texturePath + "/Dog_Hair_UV_H_CM_1.jpg" );
     GLuint texID = tex_image.uploadGL();
     obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( -1.0, 1.0, -5.0 );
-    game_objects.push_back( obj );
+    engine.game_objects.push_back( obj );
 
-    obj = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
+    obj = new GameObject( engine.dragonPath + "/dragon_vrip_res2.ply" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( +2.0, 1.0, -5.0 );
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 }
 
 void makeSponzaScene()
 {
+    Engine & engine = Engine::instance();
+
     GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
 
-    hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
+    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res2.ply" );
+    engine.hero = hero;
     hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        Engine & engine = Engine::instance();
         const Vector4 gravity( 0.0, -15.0, 0.0 );
         Vector4 acceleration = gravity;
         self->position += self->velocity * deltaTime;
         self->velocity += acceleration * deltaTime;
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( anim_rotation, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
     };
-    game_objects.push_back(hero);
+    engine.game_objects.push_back(hero);
 
 #if 0
     AssetLoader loader;
@@ -376,16 +448,16 @@ void makeSponzaScene()
     // Default texture
     RGBImage<unsigned char> tex_image;
     // TODO: Added texture loading during mesh loading
-    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
-    //tex_image.loadImage( modelPath + "/gallery/gallery_small.jpg" );
-    //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    //tex_image.loadImage( engine.modelPath + "/gallery/gallery_small.jpg" );
+    //tex_image.loadImage( engine.modelPath + "/dabrovic-sponza/01_STUB.JPG" );
     GLuint texID = tex_image.uploadGL();
 
     std::vector< RGBImage<unsigned char> > textures;
 
     std::vector<Mesh> meshes;
-    if( loader.loadMeshes( modelPath + "/dabrovic-sponza/sponza.obj",
-    //if( loader.loadMeshes( modelPath + "/gallery/gallery.obj",
+    if( loader.loadMeshes( engine.modelPath + "/dabrovic-sponza/sponza.obj",
+    //if( loader.loadMeshes( engine.modelPath + "/gallery/gallery.obj",
                            meshes, textures, false ) ) {
         for( auto & mesh : meshes ) {
             obj = new GameObject();
@@ -401,51 +473,37 @@ void makeSponzaScene()
 
             //obj->mesh.setTexture( texID );
             obj->mesh.setShaderProgram( mesh_shader_program );
-            game_objects.push_back( obj );
+            engine.game_objects.push_back( obj );
         }
     }
 
 #else
-    obj = new GameObject( modelPath + "/dabrovic-sponza/sponza.obj", false );
-    //obj = new GameObject( modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
-    //obj = new GameObject( modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
-    //obj = new GameObject( modelPath + "/gallery/gallery.obj", true, 50.0 );
-    //obj = new GameObject( modelPath + "/fireplace_room/fireplace_room.obj", true, 4.0 );
+    obj = new GameObject( engine.modelPath + "/dabrovic-sponza/sponza.obj", false );
+    //obj = new GameObject( engine.modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
+    //obj = new GameObject( engine.modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
+    //obj = new GameObject( engine.modelPath + "/gallery/gallery.obj", true, 50.0 );
+    //obj = new GameObject( engine.modelPath + "/fireplace_room/fireplace_room.obj", true, 4.0 );
     obj->renderable->setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     // TODO: Added texture loading during mesh loading
-    tex_image.loadImage( texturePath + "/uvgrid.jpg" );
-    //tex_image.loadImage( modelPath + "/gallery/gallery_small.jpg" );
-    //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    //tex_image.loadImage( engine.modelPath + "/gallery/gallery_small.jpg" );
+    //tex_image.loadImage( engine.modelPath + "/dabrovic-sponza/01_STUB.JPG" );
     GLuint texID = tex_image.uploadGL();
     obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( 1.0, 0.0, -5.0 );
-    game_objects.push_back(obj);
+    engine.game_objects.push_back(obj);
 #endif
 }
 
-int main (int argc, char * const argv[]) 
+int main (int argc, char ** argv) 
 {
-    glutInit( &argc, const_cast<char **>(argv) );
-    glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
-                         | GLUT_RGBA | GLUT_DEPTH
-                         | GLUT_3_2_CORE_PROFILE  // Core profile context
-                         );
-    glutInitWindowSize( window_width, window_height );
-    glutInitWindowPosition( 0, 0 );
-    glutCreateWindow("LittleEngine");
-    printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
-    printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
-    printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+    Engine & engine = Engine::instance();
+    engine.createWindow(argc, argv);
 
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    //
     // Parse command line arguments
-    //
     const char * options = "v:f:";
     int opt = 0;
 
@@ -459,23 +517,15 @@ int main (int argc, char * const argv[])
         }
     }
 
-    glutReshapeFunc( viewportReshaped );
-    glutDisplayFunc( repaintViewport );
-    glutKeyboardFunc( keyPressed );
-    glutKeyboardUpFunc( keyReleased );
-    glutMouseFunc( mouseButton );
-    glutMotionFunc( mouseMotionWhileButtonPressed );
-
     // Make a scene
-    makeSimpleScene();
+    //makeSimpleScene();
     //makeCookTorranceScene();
-    //makeSponzaScene();
+    makeSponzaScene();
 
-    buildPointCloud();
+    //buildPointCloud();
 
-    GL_WARN_IF_ERROR();
-    start_time = timeAsDouble();
-    glutMainLoop();
+    engine.start();
+
     return EXIT_SUCCESS;
 }
 
