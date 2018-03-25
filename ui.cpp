@@ -244,6 +244,75 @@ void makeSponzaScene()
 #endif
 }
 
+void makeLotsOfThings()
+{
+    Engine & engine = Engine::instance();
+
+    GLuint hero_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
+    if( !hero_torrance_shader_program ) { exit(EXIT_FAILURE); }
+    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
+    GLuint floor_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    if( !floor_shader_program ) { exit(EXIT_FAILURE); }
+
+    GameObject * obj = nullptr;
+
+    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res2.ply" );
+    engine.hero = hero;
+    hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        Engine & engine = Engine::instance();
+        const Vector4 gravity( 0.0, -15.0, 0.0 );
+        Vector4 acceleration = gravity;
+        self->position += self->velocity * deltaTime;
+        self->velocity += acceleration * deltaTime;
+        if( self->position.y < 0.0 ) self->position.y = 0.0;
+        self->worldTransform = compose( makeTranslation( self->position ),
+                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
+    };
+    hero->renderable->setShaderProgram( hero_torrance_shader_program );
+    hero->position = Vector4( 0.0, 0.0, -5.0 );
+    engine.game_objects.push_back(hero);
+
+    AssetLoader loader;
+
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+    std::string path = engine.modelPath + "/uvmonkey.ply";
+    //std::string path = engine.dragonPath + "/dragon_vrip_res2.ply";
+    if( !loader.loadMesh( path, *mesh, true, 1.0f ) ) {
+        fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );
+        exit( EXIT_FAILURE );
+    }
+
+    int xdim = 4, zdim = 4;
+    float spacing = 1.25;
+    for(int xi = 0; xi < xdim; xi++) {
+        for(int zi = 0; zi < zdim; zi++) {
+            float x = (float) xi * spacing;
+            float z = (float) zi * spacing - 5.0;
+
+            //obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
+            obj = new GameObject();
+            obj->renderable = mesh;
+            obj->renderable->setShaderProgram( cook_torrance_shader_program );
+            obj->position = Vector4( x, 0.0, z );
+            engine.game_objects.push_back( obj );
+
+        }
+    }
+
+    // floor
+    obj = new GameObject();
+    obj->renderable = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
+    obj->renderable->setShaderProgram( floor_shader_program );
+    {
+    RGBImage<unsigned char> tex_image;
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    GLuint texID = tex_image.uploadGL();
+    obj->renderable->setTexture( texID );
+    }
+    engine.game_objects.push_back(obj);
+}
+
 int main (int argc, char ** argv) 
 {
     Engine & engine = Engine::instance();
@@ -266,7 +335,8 @@ int main (int argc, char ** argv)
     // Make a scene
     //makeSimpleScene();
     //makeCookTorranceScene();
-    makeSponzaScene();
+    //makeSponzaScene();
+    makeLotsOfThings();
 
     //buildPointCloud();
 
