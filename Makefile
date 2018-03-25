@@ -11,13 +11,9 @@ HDR = \
 	Matrix.h \
 	OpenGLUtil.h \
 	RandomNumberGenerator.h \
-	Ray.h \
-	Scene.h \
 	Shader.h \
 	ShaderProgram.h \
-	Sphere.h \
 	Timer.h \
-	Traceable.h \
 	Transform.h \
 	Vector.h \
 	Vector4.h \
@@ -36,12 +32,8 @@ leOBJ = \
 	Matrix.o \
 	OpenGLUtil.o \
 	RandomNumberGenerator.o \
-	Ray.o \
-	Scene.o \
 	ShaderProgram.o \
-	Sphere.o \
 	Timer.o \
-	Traceable.o \
 	Transform.o \
 	Vector.o \
 	ui.o
