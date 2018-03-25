@@ -27,8 +27,6 @@ int mouse_button_state[3] = {
 int mouse_last_x = -1;
 int mouse_last_y = -1;
 
-PointCloud * point_cloud = nullptr;
-
 GameObject * hero = nullptr;
 std::vector<GameObject*> game_objects; // TODO
 
@@ -190,10 +188,17 @@ void buildPointCloud( void )
         p.z = rng.uniformRange( -10.0, -6.0 );
         points.push_back( p );
     }
-    point_cloud = new PointCloud();
-    point_cloud->upload( points );
+
+    std::shared_ptr<PointCloud> point_cloud = std::make_shared<PointCloud>();
+    point_cloud->vertices = points;
+    point_cloud->upload();
     GLuint point_cloud_shader_program = createShaderProgram( "shaders/points.vs", "shaders/points.fs" );
     point_cloud->setShaderProgram( point_cloud_shader_program );
+
+    GameObject * obj = new GameObject();
+    obj->renderable = point_cloud;
+
+    game_objects.push_back( obj );
 }
 
 double timeAsDouble()
@@ -235,28 +240,16 @@ void repaintViewport( void )
     }
 
     for(auto obj : game_objects ) {
-        obj->mesh.useProgram();
-        obj->mesh.setWorldMatrix( obj->worldTransform.fwd );
-        obj->mesh.setViewMatrix( camera.rev );
-        obj->mesh.setProjection( projection );
+        obj->renderable->useProgram();
+        obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
+        obj->renderable->setViewMatrix( camera.rev );
+        obj->renderable->setProjection( projection );
         obj->draw();
     }
 
     if( draw_wireframes ) {                           // revert to normal behavior
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
         glDisable( GL_CULL_FACE );
-    }
-
-    if( point_cloud ) {
-        Transform model_translation = makeTranslation( Vector4( 0.0, 0.0, 0.0 ) );
-        Transform world = model_translation;
-
-        point_cloud->useProgram();
-        point_cloud->setWorldMatrix( world.fwd );
-        point_cloud->setViewMatrix( camera.fwd );
-        point_cloud->setProjection( projection );
-        point_cloud->bind();
-        point_cloud->draw();
     }
 
     glDisable( GL_DEPTH_TEST );
@@ -275,7 +268,7 @@ void makeSimpleScene()
     GameObject * obj = nullptr;
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res3.ply" );
-    hero->mesh.setShaderProgram( mesh_shader_program );
+    hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         self->worldTransform = compose( makeTranslation( self->position ),
@@ -284,24 +277,24 @@ void makeSimpleScene()
     game_objects.push_back(hero);
 
     obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->renderable->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(obj);
 
     obj = new GameObject();
-    makeMeshGroundPlatform( obj->mesh, 30.0 );
-    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->renderable = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
+    obj->renderable->setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     tex_image.loadImage( texturePath + "/uvgrid.jpg" );
     GLuint texID = tex_image.uploadGL();
-    obj->mesh.setTexture( texID );
+    obj->renderable->setTexture( texID );
     }
     game_objects.push_back(obj);
 
     obj = new GameObject();
-    makeMeshTetrahedron( obj->mesh );
-    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->renderable = std::shared_ptr<Mesh>(makeMeshTetrahedron());
+    obj->renderable->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 1.0, 1.0, -5.0 );
     game_objects.push_back(obj);
 }
@@ -314,44 +307,44 @@ void makeCookTorranceScene()
     GameObject * obj = nullptr;
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
-    hero->mesh.setShaderProgram( cook_torrance_shader_program );
+    hero->renderable->setShaderProgram( cook_torrance_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     game_objects.push_back(hero);
 
     obj = new GameObject( modelPath + "/tf3dm.com/soccerball/untitled.ply" );
-    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(obj);
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
-    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( -2.0, 0.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
-    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     tex_image.loadImage( texturePath + "/uvgrid.jpg" );
     GLuint texID = tex_image.uploadGL();
-    obj->mesh.setTexture( texID );
+    obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( -1.0, 0.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( modelPath + "/uvmonkey.ply" );
-    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     tex_image.loadImage( texturePath + "/Dog_Hair_UV_H_CM_1.jpg" );
     GLuint texID = tex_image.uploadGL();
-    obj->mesh.setTexture( texID );
+    obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( -1.0, 1.0, -5.0 );
     game_objects.push_back( obj );
 
     obj = new GameObject( dragonPath + "/dragon_vrip_res2.ply" );
-    obj->mesh.setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( +2.0, 1.0, -5.0 );
     game_objects.push_back(obj);
 }
@@ -364,7 +357,7 @@ void makeSponzaScene()
     GameObject * obj = nullptr;
 
     hero = new GameObject( bunnyPath + "/bun_zipper_res2.ply" );
-    hero->mesh.setShaderProgram( mesh_shader_program );
+    hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         const Vector4 gravity( 0.0, -15.0, 0.0 );
@@ -418,7 +411,7 @@ void makeSponzaScene()
     //obj = new GameObject( modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
     //obj = new GameObject( modelPath + "/gallery/gallery.obj", true, 50.0 );
     //obj = new GameObject( modelPath + "/fireplace_room/fireplace_room.obj", true, 4.0 );
-    obj->mesh.setShaderProgram( mesh_shader_program );
+    obj->renderable->setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;
     // TODO: Added texture loading during mesh loading
@@ -426,7 +419,7 @@ void makeSponzaScene()
     //tex_image.loadImage( modelPath + "/gallery/gallery_small.jpg" );
     //tex_image.loadImage( modelPath + "/dabrovic-sponza/01_STUB.JPG" );
     GLuint texID = tex_image.uploadGL();
-    obj->mesh.setTexture( texID );
+    obj->renderable->setTexture( texID );
     }
     obj->position = Vector4( 1.0, 0.0, -5.0 );
     game_objects.push_back(obj);
@@ -474,11 +467,11 @@ int main (int argc, char * const argv[])
     glutMotionFunc( mouseMotionWhileButtonPressed );
 
     // Make a scene
-    //makeSimpleScene();
+    makeSimpleScene();
     //makeCookTorranceScene();
-    makeSponzaScene();
+    //makeSponzaScene();
 
-    //buildPointCloud();
+    buildPointCloud();
 
     GL_WARN_IF_ERROR();
     start_time = timeAsDouble();

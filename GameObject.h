@@ -2,6 +2,7 @@
 #define _GAME_OBJECT_H_
 
 #include <functional>
+#include <memory>
 
 #include "Mesh.h"
 #include "Transform.h"
@@ -23,7 +24,7 @@ class GameObject
 
         void updateAnimation(float gameTime, float deltaTime);
 
-        Mesh mesh;
+        std::shared_ptr<Renderable> renderable;
         Transform worldTransform;
         Vector4 position;
         Vector4 velocity;

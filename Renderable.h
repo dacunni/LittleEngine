@@ -12,7 +12,8 @@ class Renderable
         Renderable();
         ~Renderable();
 
-        virtual bool uploaded();
+        bool uploaded();
+        virtual void upload();
         virtual void bind();
         virtual void draw();
 

@@ -93,78 +93,89 @@ void Mesh::draw()
 // Simple Shapes
 ////////////////////////////////////////////////////////////////////////
 
-void makeMeshTetrahedron( Mesh & mesh )
+Mesh * makeMeshTetrahedron()
 {
-    mesh.vertices.resize( 4 );
-    mesh.normals.resize( 4 );
-    mesh.indices.resize( 12 );
+    Mesh * mesh = new Mesh();
+    mesh->vertices.resize( 4 );
+    mesh->normals.resize( 4 );
+    mesh->indices.resize( 12 );
     
     const float one_ov_sqrt_two = 0.70710678118;
     // length of a side
     const float len = 1.0;
     const float halflen = len * 0.5;
 
-    mesh.vertices[0] = Vector4(  halflen,  0.0, -one_ov_sqrt_two * halflen );
-    mesh.vertices[1] = Vector4( -halflen,  0.0, -one_ov_sqrt_two * halflen );
-    mesh.vertices[2] = Vector4(  0.0, -halflen,  one_ov_sqrt_two * halflen );
-    mesh.vertices[3] = Vector4(  0.0,  halflen,  one_ov_sqrt_two * halflen );
+    mesh->vertices[0] = Vector4(  halflen,  0.0, -one_ov_sqrt_two * halflen );
+    mesh->vertices[1] = Vector4( -halflen,  0.0, -one_ov_sqrt_two * halflen );
+    mesh->vertices[2] = Vector4(  0.0, -halflen,  one_ov_sqrt_two * halflen );
+    mesh->vertices[3] = Vector4(  0.0,  halflen,  one_ov_sqrt_two * halflen );
 
-    mesh.normals[0] = mesh.vertices[0].normalized();
-    mesh.normals[1] = mesh.vertices[1].normalized();
-    mesh.normals[2] = mesh.vertices[2].normalized();
-    mesh.normals[3] = mesh.vertices[3].normalized();
+    mesh->normals[0] = mesh->vertices[0].normalized();
+    mesh->normals[1] = mesh->vertices[1].normalized();
+    mesh->normals[2] = mesh->vertices[2].normalized();
+    mesh->normals[3] = mesh->vertices[3].normalized();
     
     uint32_t index = 0;
-    mesh.indices[index++] = 0;
-    mesh.indices[index++] = 1;
-    mesh.indices[index++] = 2;
-    mesh.indices[index++] = 1;
-    mesh.indices[index++] = 2;
-    mesh.indices[index++] = 3;
-    mesh.indices[index++] = 0;
-    mesh.indices[index++] = 1;
-    mesh.indices[index++] = 3;
-    mesh.indices[index++] = 0;
-    mesh.indices[index++] = 3;
-    mesh.indices[index++] = 2;
+    mesh->indices[index++] = 0;
+    mesh->indices[index++] = 1;
+    mesh->indices[index++] = 2;
+    mesh->indices[index++] = 1;
+    mesh->indices[index++] = 2;
+    mesh->indices[index++] = 3;
+    mesh->indices[index++] = 0;
+    mesh->indices[index++] = 1;
+    mesh->indices[index++] = 3;
+    mesh->indices[index++] = 0;
+    mesh->indices[index++] = 3;
+    mesh->indices[index++] = 2;
+
+    return mesh;
 }
 
-void makeMeshCube( Mesh & mesh )
+Mesh * makeMeshCube()
 {
+    Mesh * mesh = new Mesh();
+
     // IMPLEMENT ME
+
+    return mesh;
 }
 
-void makeMeshGroundPlatform( Mesh & mesh, float size )
+Mesh * makeMeshGroundPlatform( float size )
 {
-    mesh.vertices.resize( 4 );
-    mesh.normals.resize( 4 );
-    mesh.indices.resize( 6 );
-    mesh.textureUVCoords.resize( 4 );
+    Mesh * mesh = new Mesh();
+
+    mesh->vertices.resize( 4 );
+    mesh->normals.resize( 4 );
+    mesh->indices.resize( 6 );
+    mesh->textureUVCoords.resize( 4 );
     
     float yoffset = 0.0;
     
-    mesh.vertices[0] = Vector4( -size / 2.0, yoffset, -size / 2.0 );
-    mesh.vertices[1] = Vector4( -size / 2.0, yoffset, size / 2.0 );
-    mesh.vertices[2] = Vector4( size / 2.0, yoffset, size / 2.0 );
-    mesh.vertices[3] = Vector4( size / 2.0, yoffset, -size / 2.0 );
+    mesh->vertices[0] = Vector4( -size / 2.0, yoffset, -size / 2.0 );
+    mesh->vertices[1] = Vector4( -size / 2.0, yoffset, size / 2.0 );
+    mesh->vertices[2] = Vector4( size / 2.0, yoffset, size / 2.0 );
+    mesh->vertices[3] = Vector4( size / 2.0, yoffset, -size / 2.0 );
     
     Vector4 up( 0.0, 1.0, 0.0 );
-    mesh.normals[0] = up;
-    mesh.normals[1] = up;
-    mesh.normals[2] = up;
-    mesh.normals[3] = up;
+    mesh->normals[0] = up;
+    mesh->normals[1] = up;
+    mesh->normals[2] = up;
+    mesh->normals[3] = up;
 
     uint32_t index = 0;
-    mesh.indices[index++] = 0;
-    mesh.indices[index++] = 1;
-    mesh.indices[index++] = 2;
-    mesh.indices[index++] = 0;
-    mesh.indices[index++] = 2;
-    mesh.indices[index++] = 3;
+    mesh->indices[index++] = 0;
+    mesh->indices[index++] = 1;
+    mesh->indices[index++] = 2;
+    mesh->indices[index++] = 0;
+    mesh->indices[index++] = 2;
+    mesh->indices[index++] = 3;
 
-    mesh.textureUVCoords[0] = { 0.0, 0.0 };
-    mesh.textureUVCoords[1] = { 0.0, 1.0 };
-    mesh.textureUVCoords[2] = { 1.0, 1.0 };
-    mesh.textureUVCoords[3] = { 1.0, 0.0 };
+    mesh->textureUVCoords[0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[3] = { 1.0, 0.0 };
+
+    return mesh;
 }
 

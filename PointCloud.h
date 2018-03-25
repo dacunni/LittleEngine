@@ -12,11 +12,12 @@ class PointCloud : public Renderable
         PointCloud();
         ~PointCloud(); 
 
-        void upload( std::vector<Vector4> & points );
+        virtual void upload();
 
         virtual void bind();
         virtual void draw();
 
+        std::vector< Vector4 >  vertices;
 };
 
 

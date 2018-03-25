@@ -11,11 +11,14 @@ GameObject::GameObject( const std::string & path,
 {
     AssetLoader loader;
 
-    if( !loader.loadMesh( path, mesh, normalizeScale, normScaleFactor ) ) {
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+    if( !loader.loadMesh( path, *mesh, normalizeScale, normScaleFactor ) ) {
         fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );
         exit( EXIT_FAILURE );
     }
 
+    renderable = mesh;
     animFunc = defaultAnimation;
 }
 
@@ -31,12 +34,16 @@ GameObject::~GameObject()
 
 void GameObject::draw()
 {
-    if( !mesh.uploaded() ) {
-        mesh.upload();
+    if( !renderable ) {
+        return;
     }
 
-    mesh.bind();
-    mesh.draw();
+    if( !renderable->uploaded() ) {
+        renderable->upload();
+    }
+
+    renderable->bind();
+    renderable->draw();
 }
 
 void GameObject::updateAnimation(float gameTime, float deltaTime)

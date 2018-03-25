@@ -18,6 +18,10 @@ bool Renderable::uploaded()
     return is_uploaded;
 }
 
+void Renderable::upload()
+{
+}
+
 void Renderable::bind()
 {
     vao.bind();

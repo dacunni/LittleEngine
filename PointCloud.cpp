@@ -11,23 +11,23 @@ PointCloud::~PointCloud()
     // IMPLEMENT ME - free gpu resources for VAO,etc
 }
 
-void PointCloud::upload( std::vector<Vector4> & points )
+void PointCloud::upload()
 {
     printf("PointCloud::upload\n");
     vao.bind();
 
     // Upload vertex positions
     vbo.bind( GL_ARRAY_BUFFER );
-    GLsizeiptr vsize = points.size() * sizeof(points[0]);
+    GLsizeiptr vsize = vertices.size() * sizeof(vertices[0]);
     // allocate some space for all of our attributes
     glBufferData( GL_ARRAY_BUFFER, vsize, NULL, GL_STATIC_DRAW );
     // upload positions
-    glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &points[0] );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &vertices[0] );
     GL_WARN_IF_ERROR();
     glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, 0 );
     glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
 
-    num_vertices = points.size();
+    num_vertices = vertices.size();
     is_uploaded = true;
 }
 

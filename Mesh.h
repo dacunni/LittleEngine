@@ -14,7 +14,7 @@ class Mesh : public Renderable
         Mesh();
         ~Mesh();
 
-        void upload();
+        virtual void upload();
         virtual void bind();
         virtual void draw();
 
@@ -29,9 +29,9 @@ class Mesh : public Renderable
 
 
 // Simple Shapes
-void makeMeshTetrahedron( Mesh & mesh );
-void makeMeshCube( Mesh & mesh );
-void makeMeshGroundPlatform( Mesh & mesh, float size );
+Mesh * makeMeshTetrahedron();
+Mesh * makeMeshCube();
+Mesh * makeMeshGroundPlatform( float size );
 
 
 
