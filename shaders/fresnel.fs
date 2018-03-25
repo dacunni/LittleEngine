@@ -3,6 +3,7 @@
 uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec4 cameraPosition;
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
 in vec4 vWorldPosition;
@@ -14,8 +15,7 @@ vec3 light0 = vec3( 25.0, 25.0, -10.0 );
 
 void main()
 {
-    vec3 cameraPosition = -view[3].xyz; // FIXME - Is this right?
-    vec3 eye = normalize(cameraPosition - vWorldPosition.xyz);
+    vec3 eye = normalize(cameraPosition.xyz - vWorldPosition.xyz);
     vec3 normal = normalize(vNormal.xyz);
     float NdV = max(dot(normal, eye), 0);
     vec3 mirror = normalize(2.0 * NdV * normal - eye);

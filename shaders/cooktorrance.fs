@@ -3,6 +3,7 @@
 uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec4 cameraPosition;
 uniform float anim_time;
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
@@ -22,8 +23,8 @@ vec3 light0Color = vec3( 0.8, 0.7, 0.5 );
 
 void main()
 {
-    vec3 cameraPosition = -view[3].xyz; // FIXME - Is this right?
-    vec3 eye = normalize(cameraPosition - vWorldPosition.xyz);
+    //vec3 cameraPosition = -view[3].xyz; // FIXME - Is this right?
+    vec3 eye = normalize(cameraPosition.xyz - vWorldPosition.xyz);
     vec3 normal = normalize(vNormal.xyz);
 
     vec3 toLight0 = normalize(light0 - vWorldPosition.xyz);

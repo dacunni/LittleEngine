@@ -76,6 +76,14 @@ void Renderable::setProjection( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
+void Renderable::setCameraPosition( Vector4 & pos )
+{
+    GLint loc = glGetUniformLocation( shader_program, "cameraPosition" );
+    GL_WARN_IF_ERROR();
+    glUniform4fv( loc, 1, pos.data );
+    GL_WARN_IF_ERROR();
+}
+
 void Renderable::setAnimTime( float t )
 {
     GLint loc = glGetUniformLocation( shader_program, "anim_time" );

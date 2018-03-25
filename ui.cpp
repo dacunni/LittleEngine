@@ -283,20 +283,22 @@ void makeLotsOfThings()
         exit( EXIT_FAILURE );
     }
 
+    RGBImage<unsigned char> tex_image;
+    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    GLuint texID = tex_image.uploadGL();
+
     int xdim = 4, zdim = 4;
     float spacing = 1.25;
     for(int xi = 0; xi < xdim; xi++) {
+        float x = (float) xi * spacing;
         for(int zi = 0; zi < zdim; zi++) {
-            float x = (float) xi * spacing;
             float z = (float) zi * spacing - 5.0;
-
-            //obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
             obj = new GameObject();
             obj->renderable = mesh;
             obj->renderable->setShaderProgram( cook_torrance_shader_program );
             obj->position = Vector4( x, 0.0, z );
+            obj->renderable->setTexture( texID );
             engine.game_objects.push_back( obj );
-
         }
     }
 

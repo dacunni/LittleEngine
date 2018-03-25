@@ -184,6 +184,7 @@ void Engine::repaintViewport( void )
         obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
         obj->renderable->setViewMatrix( camera.rev );
         obj->renderable->setProjection( projection );
+        obj->renderable->setCameraPosition( cameraPosition );
         obj->draw();
     }
 

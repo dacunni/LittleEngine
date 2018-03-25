@@ -5,6 +5,7 @@
 
 class Matrix4x4;
 class Program;
+class Vector4;
 
 class Renderable
 {
@@ -22,6 +23,7 @@ class Renderable
         void setWorldMatrix( Matrix4x4 & mat );
         void setViewMatrix( Matrix4x4 & mat );
         void setProjection( Matrix4x4 & mat );
+        void setCameraPosition( Vector4 & pos );
         void setAnimTime( float t );
         void setTexture( GLuint texId );
         void uploadTextureUniforms();
