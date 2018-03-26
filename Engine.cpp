@@ -163,7 +163,19 @@ void Engine::animTimerCallback( int value )
     glutPostRedisplay();
 }
 
-void Engine::repaintViewport( void ) 
+void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
+{
+    for(auto obj : game_objects ) {
+        obj->renderable->useProgram();
+        obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
+        obj->renderable->setViewMatrix( view );
+        obj->renderable->setProjection( projection );
+        obj->renderable->setCameraPosition( cameraPosition );
+        obj->draw();
+    }
+}
+
+void Engine::repaintViewport() 
 {
     glClearColor( 0.2, 0.2, 0.3, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -172,25 +184,18 @@ void Engine::repaintViewport( void )
     Matrix4x4 projection;
     projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
     Transform camera = cameraTransform();
+    Matrix4x4 & view = camera.rev;
 
     if( draw_wireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
         glFrontFace( GL_CCW );
         glEnable( GL_CULL_FACE );
-    }
-
-    for(auto obj : game_objects ) {
-        obj->renderable->useProgram();
-        obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
-        obj->renderable->setViewMatrix( camera.rev );
-        obj->renderable->setProjection( projection );
-        obj->renderable->setCameraPosition( cameraPosition );
-        obj->draw();
-    }
-
-    if( draw_wireframes ) {                           // revert to normal behavior
+        drawGameObjects(projection, view);
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
         glDisable( GL_CULL_FACE );
+    }
+    else {
+        drawGameObjects(projection, view);
     }
 
     glDisable( GL_DEPTH_TEST );

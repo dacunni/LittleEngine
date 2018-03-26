@@ -8,7 +8,7 @@ class Engine
         ~Engine() {}
 
         GameObject * hero = nullptr;
-        std::vector<GameObject*> game_objects; // TODO
+        std::vector<GameObject*> game_objects;
 
         std::string modelPath = "models";
         std::string texturePath = "textures";
@@ -70,7 +70,7 @@ class Engine
         void mouseMotionWhileButtonPressed( int x, int y );
         void viewportReshaped( int width, int height );
         void animTimerCallback( int value );
-        void repaintViewport( void );
+        void repaintViewport();
 
         // Static callbacks - delegate to instance callbacks
         static void sKeyPressed( unsigned char key, int x, int y );
@@ -81,6 +81,8 @@ class Engine
         static void sRepaintViewport(void);
         static void sAnimTimerCallback( int value );
 
+    protected:
+        void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
 };
 
 #endif

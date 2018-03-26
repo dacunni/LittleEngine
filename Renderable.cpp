@@ -52,7 +52,7 @@ void Renderable::useProgram()
     glUseProgram( shader_program );
 }
 
-void Renderable::setWorldMatrix( Matrix4x4 & mat )
+void Renderable::setWorldMatrix( const Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "world" );
     GL_WARN_IF_ERROR();
@@ -60,7 +60,7 @@ void Renderable::setWorldMatrix( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void Renderable::setViewMatrix( Matrix4x4 & mat )
+void Renderable::setViewMatrix( const Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "view" );
     GL_WARN_IF_ERROR();
@@ -68,7 +68,7 @@ void Renderable::setViewMatrix( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void Renderable::setProjection( Matrix4x4 & mat )
+void Renderable::setProjection( const Matrix4x4 & mat )
 {
     GLint loc = glGetUniformLocation( shader_program, "projection" );
     GL_WARN_IF_ERROR();
@@ -76,7 +76,7 @@ void Renderable::setProjection( Matrix4x4 & mat )
     GL_WARN_IF_ERROR();
 }
 
-void Renderable::setCameraPosition( Vector4 & pos )
+void Renderable::setCameraPosition( const Vector4 & pos )
 {
     GLint loc = glGetUniformLocation( shader_program, "cameraPosition" );
     GL_WARN_IF_ERROR();

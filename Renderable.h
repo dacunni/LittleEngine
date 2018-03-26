@@ -20,10 +20,10 @@ class Renderable
 
         void setShaderProgram( GLuint program );
         void useProgram();
-        void setWorldMatrix( Matrix4x4 & mat );
-        void setViewMatrix( Matrix4x4 & mat );
-        void setProjection( Matrix4x4 & mat );
-        void setCameraPosition( Vector4 & pos );
+        void setWorldMatrix( const Matrix4x4 & mat );
+        void setViewMatrix( const Matrix4x4 & mat );
+        void setProjection( const Matrix4x4 & mat );
+        void setCameraPosition( const Vector4 & pos );
         void setAnimTime( float t );
         void setTexture( GLuint texId );
         void uploadTextureUniforms();
