@@ -290,9 +290,9 @@ void makeLotsOfThings()
     int xdim = 4, zdim = 4;
     float spacing = 1.25;
     for(int xi = 0; xi < xdim; xi++) {
-        float x = (float) xi * spacing;
+        float x = (float) xi * spacing - (xdim - 1) / 2.0f;
         for(int zi = 0; zi < zdim; zi++) {
-            float z = (float) zi * spacing - 5.0;
+            float z = (float) zi * spacing - (xdim - 1) / 2.0f - 5.0;
             obj = new GameObject();
             obj->renderable = mesh;
             obj->renderable->setShaderProgram( cook_torrance_shader_program );
