@@ -47,6 +47,13 @@ void Renderable::setShaderProgram( GLuint program )
     shader_program = program;
 }
 
+void Renderable::setShaderProgram( const std::shared_ptr<Program> & program )
+{
+    shaderProgram = program;
+    shader_program = program->id;
+    glUseProgram( shader_program );
+}
+
 void Renderable::useProgram()
 {
     glUseProgram( shader_program );

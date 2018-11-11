@@ -15,6 +15,8 @@ class Shader {
         void loadFile( GLuint type, const std::string filename );
         void loadSource( GLuint type, const std::string & src );
 
+        bool valid() const { return id != 0; }
+
         GLuint id;
 };
 
@@ -26,7 +28,13 @@ class Program {
         void create();
         void attach( Shader & shader );
         void link();
+        bool valid() const { return id != 0; }
 
+        bool loadVertexFragmentFiles(const std::string & vsFilename,
+                                     const std::string & fsFilename);
+
+        Shader vertexShader;
+        Shader fragmentShader;
         GLuint id;
 };
 

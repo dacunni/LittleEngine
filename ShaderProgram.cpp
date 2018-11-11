@@ -91,4 +91,21 @@ void Program::link()
     }
 }
 
+bool Program::loadVertexFragmentFiles(const std::string & vsFilename,
+                                      const std::string & fsFilename)
+{
+    vertexShader.loadFile(GL_VERTEX_SHADER, vsFilename);
+    fragmentShader.loadFile(GL_FRAGMENT_SHADER, fsFilename);
+
+    if(!vertexShader.valid() || !fragmentShader.valid()) {
+        return false;
+    }
+
+    create();
+    attach(vertexShader);
+    attach(fragmentShader);
+    link();
+
+    return valid();
+}
 

@@ -16,11 +16,6 @@ uniform bool useTexture;
 
 const float pi = 3.14159;
 
-vec3 light0 = vec3( 25.0, 25.0, 0.0 );
-//vec3 light0 = vec3( 15.0, 15.0, 20.0 * cos(anim_time) );
-vec3 light0Color = vec3( 0.8, 0.7, 0.5 );
-//vec3 light0Color = vec3(1.0); // white
-
 struct PointLight {
     vec3 position;
     vec3 color;

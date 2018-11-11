@@ -171,6 +171,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
         obj->renderable->setViewMatrix( view );
         obj->renderable->setProjection( projection );
         obj->renderable->setCameraPosition( cameraPosition );
+        obj->renderable->setAnimTime( anim_time );
         obj->draw();
     }
 }

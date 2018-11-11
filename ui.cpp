@@ -17,24 +17,13 @@
 const char * vertex_shader_filename = "shaders/basic.vs";
 const char * fragment_shader_filename = "shaders/basic.fs";
 
-GLuint createShaderProgram( const char * vs, const char * fs ) 
+std::shared_ptr<Program> createShaderProgram( const char * vs, const char * fs ) 
 {
-    Program program;
-    Shader vertex_shader;
-    Shader fragment_shader;
-
-    vertex_shader.loadFile( GL_VERTEX_SHADER, vs );
-    fragment_shader.loadFile( GL_FRAGMENT_SHADER, fs );
-
-    if( !vertex_shader.id || !fragment_shader.id )
-        return 0;
-
-    program.create();
-    program.attach( vertex_shader );
-    program.attach( fragment_shader );
-    program.link();
-
-    return program.id;
+    auto program = std::make_shared<Program>();
+    if(!program->loadVertexFragmentFiles(vs, fs)) {
+        return nullptr;
+    }
+    return program;
 }
 
 void buildPointCloud( void ) 
@@ -58,8 +47,7 @@ void buildPointCloud( void )
     std::shared_ptr<PointCloud> point_cloud = std::make_shared<PointCloud>();
     point_cloud->vertices = points;
     point_cloud->upload();
-    GLuint point_cloud_shader_program = createShaderProgram( "shaders/points.vs", "shaders/points.fs" );
-    point_cloud->setShaderProgram( point_cloud_shader_program );
+    point_cloud->setShaderProgram(createShaderProgram( "shaders/points.vs", "shaders/points.fs"));
 
     GameObject * obj = new GameObject();
     obj->renderable = point_cloud;
@@ -71,7 +59,7 @@ void makeSimpleScene()
 {
     Engine & engine = Engine::instance();
 
-    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
@@ -114,7 +102,7 @@ void makeCookTorranceScene()
 {
     Engine & engine = Engine::instance();
 
-    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
@@ -167,7 +155,7 @@ void makeSponzaScene()
 {
     Engine & engine = Engine::instance();
 
-    GLuint mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
@@ -248,11 +236,11 @@ void makeLotsOfThings()
 {
     Engine & engine = Engine::instance();
 
-    GLuint hero_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
+    auto hero_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
     if( !hero_torrance_shader_program ) { exit(EXIT_FAILURE); }
-    GLuint cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
-    GLuint floor_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    auto floor_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !floor_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;

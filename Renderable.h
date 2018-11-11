@@ -2,6 +2,7 @@
 #define __RENDERABLE_H_
 
 #include "OpenGLUtil.h"
+#include "ShaderProgram.h"
 
 class Matrix4x4;
 class Program;
@@ -19,6 +20,7 @@ class Renderable
         virtual void draw();
 
         void setShaderProgram( GLuint program );
+        void setShaderProgram( const std::shared_ptr<Program> & program );
         void useProgram();
         void setWorldMatrix( const Matrix4x4 & mat );
         void setViewMatrix( const Matrix4x4 & mat );
@@ -40,6 +42,7 @@ class Renderable
         GLuint textureId = 0;
         bool hasTexture = false;
 
+        std::shared_ptr<Program> shaderProgram;
         GLuint shader_program;
 };
 
