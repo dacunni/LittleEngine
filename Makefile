@@ -41,14 +41,13 @@ leOBJ = \
 	ui.o
 
 INC = -I/usr/local/include
-INC += -I/usr/include/ImageMagick
-INC += -I/usr/local/include/ImageMagick-6
+INC += -Iextern/stb
 CXXFLAGS = -std=c++11
 CXXFLAGS += -mmacosx-version-min=10.10
 CXXFLAGS += -Wno-deprecated
 CXXFLAGS += -O2
 #CXXFLAGS += -g
-LDXXFLAGS = -e _main -lassimp -lMagick++-6.Q16 -lm -lc++ -lc -macosx_version_min 10.10
+LDXXFLAGS = -e _main -lassimp -lm -lc++ -lc -macosx_version_min 10.10
 leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
 
 all: le

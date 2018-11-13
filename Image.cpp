@@ -1,26 +1,26 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#include <string>
 #include "Image.h"
 
 template <>
 void RGBImage<unsigned char>::loadImage( const std::string & filename )
 {
-    Magick::Image magImage;
+    int w = 0, h = 0, numComponents = 3;
+    unsigned char * stbiData = stbi_load(filename.c_str(), &w, &h, &numComponents, 3);
+    width = w;
+    height = h;
 
-    magImage.read( filename );
-
-    width = magImage.columns();
-    height = magImage.rows();
     printf("Loading image %s %u x %u\n", filename.c_str(), width, height);
 
-    unsigned int size = width * height;
-    pixels.resize( size );
+    const unsigned int size = width * height;
+    pixels.resize(size);
 
-    Magick::PixelPacket * magData = magImage.getPixels( 0, 0, width, height );
-
-    // NOTE: We're shifting by 8 bits because we are using a 16 bit quantum with ImageMagick
     for( unsigned int i = 0 ; i < size; i++ ) {
-        pixels[i].r = magData[i].red >> 8;
-        pixels[i].g = magData[i].green >> 8;
-        pixels[i].b = magData[i].blue >> 8;
+        pixels[i].r = stbiData[i * 3 + 0];
+        pixels[i].g = stbiData[i * 3 + 1];
+        pixels[i].b = stbiData[i * 3 + 2];
     }
 }
 

@@ -8,9 +8,6 @@
 
 #include <vector>
 
-#define MAGICKCORE_QUANTUM_DEPTH 16
-#include <Magick++.h>
-
 #include "OpenGLUtil.h"
 
 template <typename PIXEL>

@@ -13,7 +13,7 @@ PointCloud::~PointCloud()
 
 void PointCloud::upload()
 {
-    printf("PointCloud::upload\n");
+    //printf("PointCloud::upload\n");
     vao.bind();
 
     // Upload vertex positions
