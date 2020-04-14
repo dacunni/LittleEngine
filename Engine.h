@@ -30,8 +30,8 @@ class Engine
 
         float heroSpeed =  5.0;
 
-        int window_width = 1200;
-        int window_height = 650;
+        int window_width = 640;
+        int window_height = 480;
 
         unsigned char keyState[256] = {0};
 
@@ -82,6 +82,7 @@ class Engine
         static void sAnimTimerCallback( int value );
 
     protected:
+        void setViewport( int width, int height );
         void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
 };
 

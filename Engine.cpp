@@ -68,6 +68,8 @@ void Engine::createWindow(int & argc, char ** argv )
 
     registerCallbacks();
 
+    setViewport( window_width, window_height );
+
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 }
@@ -144,8 +146,9 @@ void Engine::viewportReshaped( int width, int height )
 {
     window_width = width;
     window_height = height;
-    glViewport( 0, 0, window_width, window_height );
+    setViewport( window_width, window_height );
     GL_WARN_IF_ERROR();
+    //glutPostRedisplay();
 }
 
 void Engine::animTimerCallback( int value )
@@ -161,6 +164,16 @@ void Engine::animTimerCallback( int value )
 
     anim_rotation = anim_time * 0.4;
     glutPostRedisplay();
+}
+
+void Engine::setViewport( int width, int height )
+{
+#ifdef __APPLE__
+    // WAR for retina displays
+    glViewport( 0, 0, width * 2, height * 2 );
+#else
+    glViewport( 0, 0, width, height );
+#endif
 }
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )

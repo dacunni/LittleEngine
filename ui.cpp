@@ -323,9 +323,9 @@ int main (int argc, char ** argv)
     }
 
     // Make a scene
-    makeSimpleScene();
+    //makeSimpleScene();
     //makeCookTorranceScene();
-    //makeSponzaScene();
+    makeSponzaScene();
     //makeLotsOfThings();
 
     //buildPointCloud();
