@@ -129,11 +129,17 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
 }
 
 bool AssetLoader::loadMeshes( const std::string & filename,
-                              std::vector<Mesh> & meshes,
+                              std::vector<std::shared_ptr<Mesh>> & meshes,
                               std::vector< RGBImage<unsigned char> > & textures,
                               bool normalizeScale,
                               float normScaleFactor )
 {
+    std::string basePath("");
+    auto lastSlash = filename.find_last_of("/");
+    if( lastSlash != std::string::npos ) {
+        basePath = filename.substr(0, lastSlash);
+    }
+
     Assimp::Importer importer;
     
     const aiScene * scene = importer.ReadFile( filename,
@@ -168,10 +174,6 @@ bool AssetLoader::loadMeshes( const std::string & filename,
     std::vector< std::string > diffuseTexturePaths;
     std::map<unsigned int, GLuint> materialToDiffuseTextureID;
 
-    // TEMP
-    std::string basePath("models/dabrovic-sponza");
-    //std::string basePath("models/gallery");
-
     // Find paths to each texture
     for( unsigned int materialIndex = 0; materialIndex < scene->mNumMaterials; materialIndex++ ) {
         printf("Material %3u\n", materialIndex);
@@ -180,6 +182,7 @@ bool AssetLoader::loadMeshes( const std::string & filename,
         aiString aipath;
         while( AI_SUCCESS == material->GetTexture( aiTextureType_DIFFUSE, texIndex, &aipath ) ) {
             std::string path( aipath.C_Str() );
+            std::replace(path.begin(), path.end(), '\\', '/');
             printf( "  diffuse %d : %s\n", texIndex, path.c_str() );
             diffuseTexturePaths.push_back( path );
 
@@ -194,7 +197,6 @@ bool AssetLoader::loadMeshes( const std::string & filename,
         }
     }
 
-#if 0
     // Load texture images
     unsigned int materialIndex = 0;
     for( const auto & path : diffuseTexturePaths ) {
@@ -208,7 +210,6 @@ bool AssetLoader::loadMeshes( const std::string & filename,
         materialToDiffuseTextureID[materialIndex] = texID;
         materialIndex++;
     }
-#endif
 
     // Find bounds of mesh so we can apply scaling
     float minx = std::numeric_limits<float>::max(), maxx = -std::numeric_limits<float>::max();
@@ -251,12 +252,11 @@ bool AssetLoader::loadMeshes( const std::string & filename,
                 aimesh->mName.C_Str()
               );
 
-        meshes.emplace_back();
-        auto & mesh = meshes.back();
+        meshes.emplace_back(std::make_shared<Mesh>());
+        auto & mesh = *meshes.back();
 
         mesh.vertices.resize( aimesh->mNumVertices );
         mesh.normals.resize( aimesh->mNumVertices );
-        // FIXME: Triangles only, can we have quads?
         mesh.indices.resize( aimesh->mNumFaces * 3 );
         if( has_uv ) {
             mesh.textureUVCoords.resize( aimesh->mNumVertices );

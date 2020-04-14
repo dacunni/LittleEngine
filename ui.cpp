@@ -65,6 +65,7 @@ void makeSimpleScene()
     GameObject * obj = nullptr;
 
     GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res3.ply" );
+    //GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
@@ -176,9 +177,10 @@ void makeSponzaScene()
     };
     engine.game_objects.push_back(hero);
 
-#if 0
+#if 1
     AssetLoader loader;
 
+#if 0
     // Default texture
     RGBImage<unsigned char> tex_image;
     // TODO: Added texture loading during mesh loading
@@ -186,37 +188,30 @@ void makeSponzaScene()
     //tex_image.loadImage( engine.modelPath + "/gallery/gallery_small.jpg" );
     //tex_image.loadImage( engine.modelPath + "/dabrovic-sponza/01_STUB.JPG" );
     GLuint texID = tex_image.uploadGL();
+#endif
 
     std::vector< RGBImage<unsigned char> > textures;
 
-    std::vector<Mesh> meshes;
-    if( loader.loadMeshes( engine.modelPath + "/dabrovic-sponza/sponza.obj",
-    //if( loader.loadMeshes( engine.modelPath + "/gallery/gallery.obj",
+    std::vector<std::shared_ptr<Mesh>> meshes;
+    if( loader.loadMeshes( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj",
+    //if( loader.loadMeshes( engine.modelPath + "/dabrovic-sponza/sponza.obj",
+    //if( loader.loadMeshes( engine.modelPath + "/casual-effects.com/gallery/gallery.obj",
+    //if( loader.loadMeshes( engine.modelPath + "/san-miguel/san-miguel.obj",
                            meshes, textures, false ) ) {
         for( auto & mesh : meshes ) {
             obj = new GameObject();
-            // FIXME: Proper copy/move construction
-            obj->mesh.vertices = mesh.vertices;
-            obj->mesh.normals = mesh.normals;
-            obj->mesh.textureUVCoords = mesh.textureUVCoords;
-            obj->mesh.indices = mesh.indices;
-            if( mesh.hasTexture )
-                obj->mesh.setTexture( mesh.textureId );
-
-            // TODO: load material for each mesh
-
-            //obj->mesh.setTexture( texID );
-            obj->mesh.setShaderProgram( mesh_shader_program );
+            obj->renderable = mesh;
+            obj->renderable->setShaderProgram( mesh_shader_program );
             engine.game_objects.push_back( obj );
         }
     }
 
 #else
-    obj = new GameObject( engine.modelPath + "/dabrovic-sponza/sponza.obj", false );
+    //obj = new GameObject( engine.modelPath + "/dabrovic-sponza/sponza.obj", false );
     //obj = new GameObject( engine.modelPath + "/crytek-sponza/sponza.obj", true, 100.0 );
     //obj = new GameObject( engine.modelPath + "/san-miguel/san-miguel.obj", true, 100.0 );
-    //obj = new GameObject( engine.modelPath + "/gallery/gallery.obj", true, 50.0 );
-    //obj = new GameObject( engine.modelPath + "/fireplace_room/fireplace_room.obj", true, 4.0 );
+    //obj = new GameObject( engine.modelPath + "/casual-effects.com/gallery/gallery.obj", true, 50.0 );
+    obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj", true, 4.0 );
     obj->renderable->setShaderProgram( mesh_shader_program );
     {
     RGBImage<unsigned char> tex_image;

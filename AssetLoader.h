@@ -18,8 +18,8 @@ public:
                    float normScaleFactor = 1.0 );
 
     bool loadMeshes( const std::string & filename,
-                     std::vector<Mesh> & meshes,
-                     std::vector< RGBImage<unsigned char> > & textures,
+                     std::vector<std::shared_ptr<Mesh>> & meshes,
+                     std::vector<RGBImage<unsigned char>> & textures,
                      bool normalizeScale = true,
                      float normScaleFactor = 1.0 );
 
