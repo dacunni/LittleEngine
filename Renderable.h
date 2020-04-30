@@ -27,7 +27,10 @@ class Renderable
         void setProjection( const Matrix4x4 & mat );
         void setCameraPosition( const Vector4 & pos );
         void setAnimTime( float t );
+        void setLights( float pos[][3], float intensity[][3], int numLights );
         void setTexture( GLuint texId );
+        void setRoughness( float roughness );
+        void uploadMaterialUniforms();
         void uploadTextureUniforms();
 
         const GLuint POSITION_ATTRIB_INDEX    = 0;
@@ -44,6 +47,9 @@ class Renderable
 
         std::shared_ptr<Program> shaderProgram;
         GLuint shader_program;
+
+        // Material properties
+        float roughness = 0.1;
 };
 
 

@@ -74,6 +74,7 @@ void Mesh::bind()
 
 void Mesh::draw()
 {
+    uploadMaterialUniforms();
     uploadTextureUniforms();
     glBindTexture( GL_TEXTURE_2D, textureId );
     //glActiveTexture( GL_TEXTURE0 + 0 );

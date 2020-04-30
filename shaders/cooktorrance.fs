@@ -4,38 +4,28 @@ uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec4 cameraPosition;
+uniform float roughness;
 uniform float anim_time;
+uniform sampler2D tex;
+uniform bool useTexture;
+
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
 in vec4 vWorldPosition;
 in vec4 vNormal;
 in vec2 vUV;
 out vec4 color;
-uniform sampler2D tex;
-uniform bool useTexture;
-
-const float pi = 3.14159;
 
 struct PointLight {
     vec3 position;
     vec3 color;
 };
 
-#if 1
-const int numLights = 2;
-const PointLight lights[2] = PointLight[2](
-    PointLight(vec3(-10, 1,  0), vec3(1, 1, 1)*0.3),
-    PointLight(vec3(+10, 1,  0), vec3(1, 1, 1)*0.3)
-);
-#else
-const int numLights = 4;
-const PointLight lights[4] = PointLight[4](
-    PointLight(vec3(-10, 1,  0), vec3(1, 1, 1)*0.3),
-    PointLight(vec3(+10, 1,  0), vec3(1, 1, 1)*0.3),
-    PointLight(vec3(-10, 1, 10), vec3(1, 1, 1)*0.3),
-    PointLight(vec3(+10, 1, 10), vec3(1, 1, 1)*0.3)
-);
-#endif
+uniform vec3 lightPositions[10];
+uniform vec3 lightIntensities[10];
+uniform int numLights;
+
+const float pi = 3.14159;
 
 float specularReflection(vec3 worldPos, vec3 eye, vec3 normal, PointLight light) {
     vec3 toLight = normalize(light.position - worldPos);
@@ -55,7 +45,7 @@ float specularReflection(vec3 worldPos, vec3 eye, vec3 normal, PointLight light)
 
     // Beckman microfacet distribution function
     // roughness
-    float m = 0.1;
+    float m = roughness;
     //float m = cos(anim_time) * 0.5 + 0.5; m = min(max(m, 0.01), 1.0);
     float D = 1.0 / (pi * m * m * NdH * NdH * NdH * NdH)
         * exp((NdH * NdH - 1) / (m * m * NdH * NdH));
@@ -76,7 +66,7 @@ void main()
     color.rgb = vec3(0.0);
 
     for(int i = 0; i < numLights; i++) {
-        PointLight light = lights[i];
+        PointLight light = PointLight(lightPositions[i], lightIntensities[i]);
         vec3 toLight = normalize(light.position - worldPos);
         float NdL = max(dot(normal, toLight), 0);
 

@@ -48,10 +48,10 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
 
     // Camera controls
     //   Translation
-    if( keyState[GLFW_KEY_W] && !anyMod) { cameraPosition += cameraForward() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_S] && !anyMod) { cameraPosition -= cameraForward() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_A] && !anyMod) { cameraPosition -= cameraRight() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_D] && !anyMod) { cameraPosition += cameraRight() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_W] && !anyMod) { cameraPosition += cameraForward() * cameraKeyboardSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_S] && !anyMod) { cameraPosition -= cameraForward() * cameraKeyboardSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_A] && !anyMod) { cameraPosition -= cameraRight() * cameraKeyboardSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_D] && !anyMod) { cameraPosition += cameraRight() * cameraKeyboardSpeed * deltaTime; }
     //   Rotation
     if( keyState[GLFW_KEY_Q] && !anyMod ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
     if( keyState[GLFW_KEY_E] && !anyMod ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
@@ -79,7 +79,7 @@ void Engine::createWindow(int & argc, char ** argv )
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(640, 480, "LittleEngine", NULL, NULL);
+    window = glfwCreateWindow(800, 400, "LittleEngine", NULL, NULL);
     if(!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -134,6 +134,8 @@ void Engine::sCursorPositionCallback(GLFWwindow * window, double x, double y)
 { instance().cursorPositionCallback(window, x, y); }
 void Engine::sMouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 { instance().mouseButtonCallback(window, button, action, mods); }
+void Engine::sScrollCallback(GLFWwindow * window, double xoffset, double yoffset)
+{ instance().scrollCallback(window, xoffset, yoffset); }
 void Engine::sFramebufferSizeCallback(GLFWwindow * window, int width, int height)
 { instance().framebufferSizeCallback(window, width, height); }
 
@@ -141,6 +143,7 @@ void Engine::registerCallbacks() {
     glfwSetKeyCallback(window, sKeyCallback);
     glfwSetCursorPosCallback(window, sCursorPositionCallback);
     glfwSetMouseButtonCallback(window, sMouseButtonCallback);
+    glfwSetScrollCallback(window, sScrollCallback);
     glfwSetFramebufferSizeCallback(window, sFramebufferSizeCallback);
 }
 
@@ -167,6 +170,21 @@ void Engine::mouseButtonCallback(GLFWwindow * window, int button, int action, in
 {
 }
 
+void Engine::scrollCallback(GLFWwindow * window, double xoffset, double yoffset)
+{
+    bool shiftPressed = keyState[GLFW_KEY_LEFT_SHIFT] || keyState[GLFW_KEY_RIGHT_SHIFT];
+
+    if(shiftPressed) {
+        // Rotation
+        cameraYRotation += cameraScrollRotationSpeed * xoffset;
+    }
+    else {
+        // Translation
+        cameraPosition += cameraForward() * cameraScrollSpeed * yoffset
+                       -cameraRight() * cameraScrollSpeed * xoffset;
+    }
+}
+
 void Engine::cursorPositionCallback(GLFWwindow * window, double x, double y)
 {
     double dx = x - mouse_last_x;
@@ -188,6 +206,16 @@ void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
 {
+    float lightPositions[][3] = { 
+        { 7.0, 3.0, 3.0 },
+        { -7.0, 3.0, 3.0 }
+    };
+
+    float lightColors[][3] = { 
+        { 1.0, 0.8, 0.8 },
+        { 0.8, 0.8, 1.0 }
+    };
+
     for(auto obj : game_objects ) {
         obj->renderable->useProgram();
         obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
@@ -195,6 +223,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
         obj->renderable->setProjection( projection );
         obj->renderable->setCameraPosition( cameraPosition );
         obj->renderable->setAnimTime( gameTime );
+        obj->renderable->setLights( lightPositions, lightColors, 2 );
         obj->draw();
     }
 }

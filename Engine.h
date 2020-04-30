@@ -19,11 +19,13 @@ class Engine
 
         bool draw_wireframes = false;
 
-        Vector4 cameraPosition = Vector4( 0.0, 0.6, 0.0 );
+        Vector4 cameraPosition = Vector4( 0.0, 0.6, 5.0 );
         float cameraXRotation = 0.0;
         float cameraYRotation = 0.0;
-        float cameraSpeed = 5.0;
+        float cameraKeyboardSpeed = 5.0;
+        float cameraScrollSpeed = 1.0;
         float cameraKeyboardRotationSpeed = 2.0;
+        float cameraScrollRotationSpeed = 2.0;
 
         float heroSpeed =  5.0;
 
@@ -51,12 +53,14 @@ class Engine
         void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
         void cursorPositionCallback(GLFWwindow * window, double xpos, double ypos);
         void mouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+        void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
         void framebufferSizeCallback(GLFWwindow * window, int width, int height);
 
         // Static GLFW callbacks - delegate to instance callbacks
         static void sKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
         static void sCursorPositionCallback(GLFWwindow * window, double xpos, double ypos);
         static void sMouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+        static void sScrollCallback(GLFWwindow * window, double xoffset, double yoffset);
         static void sFramebufferSizeCallback(GLFWwindow * window, int width, int height);
 
     protected:
