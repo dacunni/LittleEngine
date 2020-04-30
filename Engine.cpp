@@ -38,30 +38,46 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
 {
     // Camera controls
     //   Translation
-    if( keyState['w'] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['s'] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['a'] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['d'] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState[GLFW_KEY_W] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_S] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_A] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_D] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; }
     //   Rotation
-    if( keyState['q'] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['e'] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState[GLFW_KEY_Q] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_E] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
     // Hero controls
-    if( keyState['i'] ) { hero->position.z -= heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['k'] ) { hero->position.z += heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['j'] ) { hero->position.x -= heroSpeed * deltaTime; glutPostRedisplay(); }
-    if( keyState['l'] ) { hero->position.x += heroSpeed * deltaTime; glutPostRedisplay(); }
+    if( keyState[GLFW_KEY_I] ) { hero->position.z -= heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_K] ) { hero->position.z += heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_J] ) { hero->position.x -= heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_L] ) { hero->position.x += heroSpeed * deltaTime; }
+
+    for(auto obj : game_objects ) {
+        obj->updateAnimation(timeNow, deltaTime);
+    }
 }
 
 void Engine::createWindow(int & argc, char ** argv )
 {
-    glutInit( &argc, argv );
-    glutInitDisplayMode( GLUT_DOUBLE              // Double buffered
-                         | GLUT_RGBA | GLUT_DEPTH
-                         | GLUT_3_2_CORE_PROFILE  // Core profile context
-                       );
-    glutInitWindowSize( window_width, window_height );
-    glutInitWindowPosition( 0, 0 );
-    glutCreateWindow("LittleEngine");
+    // TODO
+    //glfwSetErrorCallback(error_callback);
+
+    if(!glfwInit()) {
+        fprintf(stderr, "Error from glfwInit()\n");
+        exit(EXIT_FAILURE);
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+
+    window = glfwCreateWindow(640, 480, "LittleEngine", NULL, NULL);
+    if(!window) {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
     printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
     printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
     printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
@@ -77,29 +93,70 @@ void Engine::createWindow(int & argc, char ** argv )
 void Engine::start()
 {
     GL_WARN_IF_ERROR();
-    start_time = timeNowAsDouble();
-    glutMainLoop();
+    gameTimer.start();
+    double prevTime = gameTimer.elapsed();
+
+    while (!glfwWindowShouldClose(window)) {
+        int width, height;
+
+        glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        repaintViewport();
+
+        double now = gameTimer.elapsed();
+        double dt = now - prevTime;
+        double fps = 1.0 / dt;
+        userTimerUpdate(now, dt);
+
+        glfwPollEvents();
+        prevTime = now;
+        glfwSetWindowTitle(window, std::to_string(fps).c_str());
+    }
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
 }
 
-void Engine::sKeyPressed( unsigned char key, int x, int y )      { instance().keyPressed(key, x, y); }
-void Engine::sKeyReleased( unsigned char key, int x, int y )     { instance().keyReleased(key, x, y); }
-void Engine::sMouseButton( int button, int state, int x, int y ) { instance().mouseButton(button, state, x, y); }
-void Engine::sMouseMotionWhileButtonPressed( int x, int y )      { instance().mouseMotionWhileButtonPressed(x, y); }
-void Engine::sViewportReshaped( int width, int height )          { instance().viewportReshaped(width, height); }
-void Engine::sRepaintViewport(void)                              { instance().repaintViewport(); }
-void Engine::sAnimTimerCallback( int value )                     { instance().animTimerCallback(value); }
+void Engine::sKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
+{ instance().keyCallback(window, key, scancode, action, mods); }
+void Engine::sCursorPositionCallback(GLFWwindow * window, double x, double y)
+{ instance().cursorPositionCallback(window, x, y); }
+void Engine::sMouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
+{ instance().mouseButtonCallback(window, button, action, mods); }
+
 
 void Engine::registerCallbacks() {
+#ifdef USE_GLFW
+    printf("IMPLEMENT ME - register callbacks\n");
+    glfwSetKeyCallback(window, sKeyCallback);
+    glfwSetCursorPosCallback(window, sCursorPositionCallback);
+    glfwSetMouseButtonCallback(window, sMouseButtonCallback);
+#else
     glutReshapeFunc( sViewportReshaped );
     glutDisplayFunc( sRepaintViewport );
     glutKeyboardFunc( sKeyPressed );
     glutKeyboardUpFunc( sKeyReleased );
     glutMouseFunc( sMouseButton );
     glutMotionFunc( sMouseMotionWhileButtonPressed );
+#endif
+}
+
+void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+    //printf("window %p key %d scan %d action %d mods %d\n",
+    //       window, key, scancode, action, mods);
+    keyState[key] = action;
+
+    if(key == GLFW_KEY_W && mods & GLFW_MOD_SHIFT && action == GLFW_PRESS) {
+        draw_wireframes = !draw_wireframes;
+    }
 }
 
 void Engine::keyPressed( unsigned char key, int x, int y ) 
 {
+#ifndef USE_GLFW
     switch( key ) {
         case 'W':
             draw_wireframes = !draw_wireframes;
@@ -112,6 +169,7 @@ void Engine::keyPressed( unsigned char key, int x, int y )
             }
             break;
     }
+#endif
     keyState[key] = 1;
 }
 
@@ -120,23 +178,20 @@ void Engine::keyReleased( unsigned char key, int x, int y )
     keyState[key] = 0;
 }
 
-void Engine::mouseButton( int button, int state, int x, int y )
+void Engine::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 {
-    mouse_button_state[button] = state;
-    mouse_last_x = x;
-    mouse_last_y = y;
 }
 
-void Engine::mouseMotionWhileButtonPressed( int x, int y )
+void Engine::cursorPositionCallback(GLFWwindow * window, double x, double y)
 {
-    int dx = x - mouse_last_x;
-    int dy = y - mouse_last_y;
+    double dx = x - mouse_last_x;
+    double dy = y - mouse_last_y;
 
-    //cameraPosition.x += 0.05 * dx;
-    //cameraPosition.z += 0.05 * dy;
-    cameraXRotation -= 0.01 * dy;
-    cameraYRotation -= 0.01 * dx;
-    //glutPostRedisplay();
+    int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    if (state == GLFW_PRESS) {
+        cameraXRotation -= 0.01 * dy;
+        cameraYRotation -= 0.01 * dx;
+    }
 
     mouse_last_x = x;
     mouse_last_y = y;
@@ -149,21 +204,6 @@ void Engine::viewportReshaped( int width, int height )
     setViewport( window_width, window_height );
     GL_WARN_IF_ERROR();
     //glutPostRedisplay();
-}
-
-void Engine::animTimerCallback( int value )
-{
-    double time_now = timeNowAsDouble() - start_time;
-    double delta_time = time_now - anim_time;
-    anim_time = (float) time_now;
-
-    userTimerUpdate( time_now, delta_time );
-    for(auto obj : game_objects ) {
-        obj->updateAnimation( time_now, delta_time );
-    }
-
-    anim_rotation = anim_time * 0.4;
-    glutPostRedisplay();
 }
 
 void Engine::setViewport( int width, int height )
@@ -216,8 +256,7 @@ void Engine::repaintViewport()
 
     GL_WARN_IF_ERROR();
 
-    glutSwapBuffers();
-    glutTimerFunc( anim_timeout_millis, sAnimTimerCallback, 0 );
+    glfwSwapBuffers(window);
 }
 
 

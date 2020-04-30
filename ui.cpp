@@ -61,41 +61,50 @@ void makeSimpleScene()
 
     auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
+    auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
     GameObject * obj = nullptr;
 
-    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res3.ply" );
-    //GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
+    //GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res3.ply" );
+    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         Engine & engine = Engine::instance();
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ) );
     };
     engine.game_objects.push_back(hero);
 
-    obj = new GameObject( engine.modelPath + "/tf3dm.com/soccerball/untitled.ply" );
+    // Load shared textures
+    RGBImage<unsigned char> uvGridImage;
+    uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    GLuint uvGridTextureID = uvGridImage.uploadGL();
+
+    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->renderable->setShaderProgram( mesh_shader_program );
-    obj->position = Vector4( 1.0, 0.0, -5.0 );
+    obj->position = Vector4( 1.0, 0.0, -3.0 );
+    obj->renderable->setTexture( uvGridTextureID );
     engine.game_objects.push_back(obj);
+
+    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
+    obj->position = Vector4( 3.0, 0.0, -3.0 );
+    obj->renderable->setTexture( uvGridTextureID );
+    engine.game_objects.push_back(obj);
+
+    obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
+    obj->renderable->setShaderProgram( cook_torrance_shader_program );
+    obj->renderable->setTexture( uvGridTextureID );
+    obj->position = Vector4( -1.0, 0.0, -5.0 );
+    engine.game_objects.push_back( obj );
 
     obj = new GameObject();
     obj->renderable = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
     obj->renderable->setShaderProgram( mesh_shader_program );
-    {
-    RGBImage<unsigned char> tex_image;
-    tex_image.loadImage( engine.texturePath + "/uvgrid.jpg" );
-    GLuint texID = tex_image.uploadGL();
-    obj->renderable->setTexture( texID );
-    }
-    engine.game_objects.push_back(obj);
-
-    obj = new GameObject();
-    obj->renderable = std::shared_ptr<Mesh>(makeMeshTetrahedron());
-    obj->renderable->setShaderProgram( mesh_shader_program );
-    obj->position = Vector4( 1.0, 1.0, -5.0 );
+    obj->renderable->setTexture( uvGridTextureID );
     engine.game_objects.push_back(obj);
 }
 
@@ -318,9 +327,9 @@ int main (int argc, char ** argv)
     }
 
     // Make a scene
-    //makeSimpleScene();
+    makeSimpleScene();
     //makeCookTorranceScene();
-    makeSponzaScene();
+    //makeSponzaScene();
     //makeLotsOfThings();
 
     //buildPointCloud();

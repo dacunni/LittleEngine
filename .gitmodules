@@ -4,3 +4,6 @@
 [submodule "extern/stb"]
 	path = extern/stb
 	url = https://github.com/nothings/stb
+[submodule "extern/glfw"]
+	path = extern/glfw
+	url = git@github.com:glfw/glfw.git

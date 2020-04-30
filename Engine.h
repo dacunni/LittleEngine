@@ -1,6 +1,8 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
+#include "Timer.h"
+
 class Engine
 {
     public:
@@ -15,7 +17,6 @@ class Engine
         std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
         std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-        double start_time = -1.0;
         int anim_timeout_millis = 33;
         float anim_rotation = 0.0f;
         float anim_time = 0.0f;
@@ -33,13 +34,16 @@ class Engine
         int window_width = 640;
         int window_height = 480;
 
-        unsigned char keyState[256] = {0};
+        unsigned char keyState[GLFW_KEY_LAST+1] = {0};
 
+#ifdef USE_GLFW
+#else
         int mouse_button_state[3] = { 
             GLUT_UP, // left
             GLUT_UP, // right
             GLUT_UP  // middle
         };
+#endif
         int mouse_last_x = -1;
         int mouse_last_y = -1;
 
@@ -62,6 +66,8 @@ class Engine
         void createWindow(int & argc, char ** argv );
         void start();
 
+        void repaintViewport();
+
         // Callbacks
         void registerCallbacks();
         void keyPressed( unsigned char key, int x, int y );
@@ -69,21 +75,23 @@ class Engine
         void mouseButton( int button, int state, int x, int y );
         void mouseMotionWhileButtonPressed( int x, int y );
         void viewportReshaped( int width, int height );
-        void animTimerCallback( int value );
-        void repaintViewport();
 
-        // Static callbacks - delegate to instance callbacks
-        static void sKeyPressed( unsigned char key, int x, int y );
-        static void sKeyReleased( unsigned char key, int x, int y );
-        static void sMouseButton( int button, int state, int x, int y );
-        static void sMouseMotionWhileButtonPressed( int x, int y );
-        static void sViewportReshaped( int width, int height );
-        static void sRepaintViewport(void);
-        static void sAnimTimerCallback( int value );
+        void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
+        void cursorPositionCallback(GLFWwindow * window, double xpos, double ypos);
+        void mouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+
+        // Static GLFW callbacks - delegate to instance callbacks
+        static void sKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
+        static void sCursorPositionCallback(GLFWwindow * window, double xpos, double ypos);
+        static void sMouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
 
     protected:
         void setViewport( int width, int height );
         void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
+
+        Timer gameTimer;
+
+        GLFWwindow * window = nullptr;
 };
 
 #endif

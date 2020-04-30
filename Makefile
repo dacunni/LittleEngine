@@ -48,7 +48,13 @@ CXXFLAGS += -Wno-deprecated
 CXXFLAGS += -O2
 #CXXFLAGS += -g
 LDXXFLAGS = -e _main -lassimp -lm -lc++ -lc -macosx_version_min 10.10
-leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
+
+#leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
+
+leLDXXFLAGS = $(LDXXFLAGS) -rpath extern/build/glfw/src extern/build/glfw/src/libglfw.3.4.dylib -framework OpenGL
+
+#extern/build/glfw/src/libglfw.3.4.dylib
+
 
 all: le
 
