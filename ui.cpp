@@ -66,13 +66,17 @@ void makeSimpleScene()
 
     GameObject * obj = nullptr;
 
-    //GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper_res3.ply" );
     GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->renderable->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         Engine & engine = Engine::instance();
+        const Vector4 gravity( 0.0, -15.0, 0.0 );
+        Vector4 acceleration = gravity;
+        self->position += self->velocity * deltaTime;
+        self->velocity += acceleration * deltaTime;
+        if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ) );
     };
@@ -91,7 +95,7 @@ void makeSimpleScene()
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->renderable->setShaderProgram( cook_torrance_shader_program );
-    obj->position = Vector4( 3.0, 0.0, -3.0 );
+    obj->position = Vector4( 2.0, 0.0, -3.0 );
     obj->renderable->setTexture( uvGridTextureID );
     engine.game_objects.push_back(obj);
 
@@ -182,7 +186,7 @@ void makeSponzaScene()
         self->velocity += acceleration * deltaTime;
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( gameTime, Vector4( 0, 1, 0 ) ) );
     };
     engine.game_objects.push_back(hero);
 
@@ -259,7 +263,7 @@ void makeLotsOfThings()
         self->velocity += acceleration * deltaTime;
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( engine.anim_rotation, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( gameTime, Vector4( 0, 1, 0 ) ) );
     };
     hero->renderable->setShaderProgram( hero_torrance_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );

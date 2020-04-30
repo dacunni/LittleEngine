@@ -6,7 +6,11 @@
 #include "Timer.h"
 #include "Engine.h"
 
-Engine * Engine::_instance = nullptr;
+Engine & Engine::instance() {
+    static Engine * _instance = nullptr;
+    if(!_instance) { _instance = new Engine(); }
+    return *_instance;
+}
 
 Transform Engine::cameraTranslation()
 {
@@ -36,20 +40,26 @@ Vector4 Engine::cameraRight()
 
 void Engine::userTimerUpdate( double timeNow, double deltaTime )
 {
+    bool shiftPressed = keyState[GLFW_KEY_LEFT_SHIFT] || keyState[GLFW_KEY_RIGHT_SHIFT];
+    bool controlPressed = keyState[GLFW_KEY_LEFT_CONTROL] || keyState[GLFW_KEY_RIGHT_CONTROL];
+    bool altPressed = keyState[GLFW_KEY_LEFT_ALT] || keyState[GLFW_KEY_RIGHT_ALT];
+
+    bool anyMod = shiftPressed || controlPressed || altPressed;
+
     // Camera controls
     //   Translation
-    if( keyState[GLFW_KEY_W] ) { cameraPosition = cameraPosition + cameraForward() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_S] ) { cameraPosition = cameraPosition - cameraForward() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_A] ) { cameraPosition = cameraPosition - cameraRight() * cameraSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_D] ) { cameraPosition = cameraPosition + cameraRight() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_W] && !anyMod) { cameraPosition += cameraForward() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_S] && !anyMod) { cameraPosition -= cameraForward() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_A] && !anyMod) { cameraPosition -= cameraRight() * cameraSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_D] && !anyMod) { cameraPosition += cameraRight() * cameraSpeed * deltaTime; }
     //   Rotation
-    if( keyState[GLFW_KEY_Q] ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_E] ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_Q] && !anyMod ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_E] && !anyMod ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
     // Hero controls
-    if( keyState[GLFW_KEY_I] ) { hero->position.z -= heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_K] ) { hero->position.z += heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_J] ) { hero->position.x -= heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_L] ) { hero->position.x += heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_I] && !anyMod) { hero->position.z -= heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_K] && !anyMod) { hero->position.z += heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_J] && !anyMod) { hero->position.x -= heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_L] && !anyMod) { hero->position.x += heroSpeed * deltaTime; }
 
     for(auto obj : game_objects ) {
         obj->updateAnimation(timeNow, deltaTime);
@@ -84,8 +94,6 @@ void Engine::createWindow(int & argc, char ** argv )
 
     registerCallbacks();
 
-    setViewport( window_width, window_height );
-
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 }
@@ -105,6 +113,7 @@ void Engine::start()
         repaintViewport();
 
         double now = gameTimer.elapsed();
+        gameTime = now;
         double dt = now - prevTime;
         double fps = 1.0 / dt;
         userTimerUpdate(now, dt);
@@ -125,22 +134,14 @@ void Engine::sCursorPositionCallback(GLFWwindow * window, double x, double y)
 { instance().cursorPositionCallback(window, x, y); }
 void Engine::sMouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 { instance().mouseButtonCallback(window, button, action, mods); }
-
+void Engine::sFramebufferSizeCallback(GLFWwindow * window, int width, int height)
+{ instance().framebufferSizeCallback(window, width, height); }
 
 void Engine::registerCallbacks() {
-#ifdef USE_GLFW
-    printf("IMPLEMENT ME - register callbacks\n");
     glfwSetKeyCallback(window, sKeyCallback);
     glfwSetCursorPosCallback(window, sCursorPositionCallback);
     glfwSetMouseButtonCallback(window, sMouseButtonCallback);
-#else
-    glutReshapeFunc( sViewportReshaped );
-    glutDisplayFunc( sRepaintViewport );
-    glutKeyboardFunc( sKeyPressed );
-    glutKeyboardUpFunc( sKeyReleased );
-    glutMouseFunc( sMouseButton );
-    glutMotionFunc( sMouseMotionWhileButtonPressed );
-#endif
+    glfwSetFramebufferSizeCallback(window, sFramebufferSizeCallback);
 }
 
 void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
@@ -148,34 +149,18 @@ void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action,
     //printf("window %p key %d scan %d action %d mods %d\n",
     //       window, key, scancode, action, mods);
     keyState[key] = action;
+    if(action == GLFW_PRESS) {
+        keyMods[key] = mods;
+    }
 
     if(key == GLFW_KEY_W && mods & GLFW_MOD_SHIFT && action == GLFW_PRESS) {
         draw_wireframes = !draw_wireframes;
     }
-}
-
-void Engine::keyPressed( unsigned char key, int x, int y ) 
-{
-#ifndef USE_GLFW
-    switch( key ) {
-        case 'W':
-            draw_wireframes = !draw_wireframes;
-            glutPostRedisplay();
-            break;
-        case ' ':
-            if( hero->position.y < 0.01 ) {
-                hero->velocity.y = 5.0;
-                glutPostRedisplay();
-            }
-            break;
+    if(key == GLFW_KEY_SPACE && !mods && action == GLFW_PRESS) {
+        if( hero->position.y < 0.01 ) {
+            hero->velocity.y = 5.0;
+        }
     }
-#endif
-    keyState[key] = 1;
-}
-
-void Engine::keyReleased( unsigned char key, int x, int y ) 
-{
-    keyState[key] = 0;
 }
 
 void Engine::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
@@ -197,23 +182,8 @@ void Engine::cursorPositionCallback(GLFWwindow * window, double x, double y)
     mouse_last_y = y;
 }
 
-void Engine::viewportReshaped( int width, int height ) 
+void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 {
-    window_width = width;
-    window_height = height;
-    setViewport( window_width, window_height );
-    GL_WARN_IF_ERROR();
-    //glutPostRedisplay();
-}
-
-void Engine::setViewport( int width, int height )
-{
-#ifdef __APPLE__
-    // WAR for retina displays
-    glViewport( 0, 0, width * 2, height * 2 );
-#else
-    glViewport( 0, 0, width, height );
-#endif
 }
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
@@ -224,19 +194,23 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
         obj->renderable->setViewMatrix( view );
         obj->renderable->setProjection( projection );
         obj->renderable->setCameraPosition( cameraPosition );
-        obj->renderable->setAnimTime( anim_time );
+        obj->renderable->setAnimTime( gameTime );
         obj->draw();
     }
 }
 
 void Engine::repaintViewport() 
 {
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    glViewport(0, 0, fbWidth, fbHeight);
+
     glClearColor( 0.2, 0.2, 0.3, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_DEPTH_TEST );
 
     Matrix4x4 projection;
-    projection.glProjectionSymmetric( 0.20 * (float) window_width / window_height, 0.20, 0.25, 200.0 );
+    projection.glProjectionSymmetric( 0.20 * (float) fbWidth / fbHeight, 0.20, 0.25, 200.0 );
     Transform camera = cameraTransform();
     Matrix4x4 & view = camera.rev;
 
