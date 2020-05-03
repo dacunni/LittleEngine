@@ -206,14 +206,18 @@ void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
 {
-    float lightPositions[][3] = { 
+    const int numLights = 3;
+
+    float lightPositions[numLights][3] = { 
         { 7.0, 3.0, 3.0 },
-        { -7.0, 3.0, 3.0 }
+        { -7.0, 3.0, 3.0 },
+        { 0.0, 3.0, -3.0 }
     };
 
-    float lightColors[][3] = { 
-        { 1.0, 0.8, 0.8 },
-        { 0.8, 0.8, 1.0 }
+    float lightColors[numLights][3] = { 
+        { 1.0, 0.6, 0.6 },
+        { 0.6, 0.6, 1.0 },
+        { 0.6, 1.0, 0.6 }
     };
 
     for(auto obj : game_objects ) {
@@ -223,7 +227,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
         obj->renderable->setProjection( projection );
         obj->renderable->setCameraPosition( cameraPosition );
         obj->renderable->setAnimTime( gameTime );
-        obj->renderable->setLights( lightPositions, lightColors, 2 );
+        obj->renderable->setLights( lightPositions, lightColors, numLights );
         obj->draw();
     }
 }

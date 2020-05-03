@@ -1,7 +1,7 @@
 #include "AssetLoader.h"
 #include "GameObject.h"
 
-GameObject::AnimationFunction defaultAnimation = [](GameObject * self, float gameTime, float deltaTime) {
+static GameObject::AnimationFunction defaultAnimation = [](GameObject * self, float gameTime, float deltaTime) {
     self->worldTransform = makeTranslation( self->position );
 };
 

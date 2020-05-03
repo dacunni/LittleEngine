@@ -30,6 +30,7 @@ class Renderable
         void setLights( float pos[][3], float intensity[][3], int numLights );
         void setTexture( GLuint texId );
         void setRoughness( float roughness );
+        void setF0( float F0 );
         void uploadMaterialUniforms();
         void uploadTextureUniforms();
 
@@ -50,6 +51,7 @@ class Renderable
 
         // Material properties
         float roughness = 0.1;
+        float F0 = 0.25;
 };
 
 

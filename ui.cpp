@@ -117,8 +117,10 @@ void makeSimpleScene()
         obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
         obj->renderable->setShaderProgram( cook_torrance_shader_program );
         obj->position = Vector4( -3.0, 0.0, -5.0 + 1.5 * i );
-        obj->renderable->setRoughness( float(i) / float(numMatTestObj - 1) );
-        obj->renderable->setTexture( uvGridTextureID );
+        //obj->renderable->setRoughness( float(i) / float(numMatTestObj - 1) );
+        obj->renderable->setRoughness( 0.1 );
+        obj->renderable->setF0( float(i + 0.5f) / float(numMatTestObj) );
+        //obj->renderable->setTexture( uvGridTextureID );
         engine.game_objects.push_back(obj);
     }
 

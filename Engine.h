@@ -22,7 +22,7 @@ class Engine
         Vector4 cameraPosition = Vector4( 0.0, 0.6, 5.0 );
         float cameraXRotation = 0.0;
         float cameraYRotation = 0.0;
-        float cameraKeyboardSpeed = 5.0;
+        float cameraKeyboardSpeed = 10.0;
         float cameraScrollSpeed = 1.0;
         float cameraKeyboardRotationSpeed = 2.0;
         float cameraScrollRotationSpeed = 2.0;

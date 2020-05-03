@@ -115,10 +115,17 @@ void Renderable::setRoughness( float roughness )
     this->roughness = std::max(roughness, 0.05f);
 }
 
+void Renderable::setF0( float F0 )
+{
+    this->F0 = F0;
+}
+
 void Renderable::uploadMaterialUniforms()
 {
     GLint loc = glGetUniformLocation( shader_program, "roughness" );
     glUniform1f( loc, roughness );
+    loc = glGetUniformLocation( shader_program, "F0" );
+    glUniform1f( loc, F0 );
 }
 
 void Renderable::uploadTextureUniforms()

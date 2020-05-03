@@ -5,6 +5,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec4 cameraPosition;
 uniform float roughness;
+uniform float F0;
 uniform float anim_time;
 uniform sampler2D tex;
 uniform bool useTexture;
@@ -40,7 +41,6 @@ float specularReflection(vec3 worldPos, vec3 eye, vec3 normal, PointLight light)
     }
 
     // Fresnel: Fraction of light reflected
-    float F0 = 0.25; // reflectance at normal incidence
     float F = F0 + (1.0 - F0) * pow(1.0 - VdH, 5);
 
     // Beckman microfacet distribution function
@@ -70,7 +70,7 @@ void main()
         vec3 toLight = normalize(light.position - worldPos);
         float NdL = max(dot(normal, toLight), 0);
 
-        vec3 Ka = vec3(0.1);
+        vec3 Ka = vec3(0.0);
         vec3 Kd = vec3(0.3);
         if(useTexture) {
             Kd = texture( tex, vUV ).rgb;
