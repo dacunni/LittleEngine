@@ -9,6 +9,7 @@
 
 #include "AssetLoader.h"
 #include "Mesh.h"
+#include "Bounds.h"
 
 
 bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
@@ -47,9 +48,7 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
     //
 
     // Find bounds of mesh so we can apply scaling
-    float minx = std::numeric_limits<float>::max(), maxx = -std::numeric_limits<float>::max();
-    float miny = std::numeric_limits<float>::max(), maxy = -std::numeric_limits<float>::max();
-    float minz = std::numeric_limits<float>::max(), maxz = -std::numeric_limits<float>::max();
+    Bounds bounds;
     float maxwidth;
     float scale = 1.0f;
 
@@ -57,17 +56,12 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
         aiMesh * aimesh = scene->mMeshes[mesh_index];
         for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
             const auto v = aimesh->mVertices[vi];
-            minx = std::min(v.x, minx);
-            miny = std::min(v.y, miny);
-            minz = std::min(v.z, minz);
-            maxx = std::max(v.x, maxx);
-            maxy = std::max(v.y, maxy);
-            maxz = std::max(v.z, maxz);
+            bounds.add(v.x, v.y, v.z);
         }
-
-        maxwidth = std::max(maxx - minx, std::max(maxy - miny, maxz - minz));
     }
-    printf("Bounds: %f - %f, %f - %f, %f - %f\n", minx, maxx, miny, maxy, minz, maxz);
+    maxwidth = bounds.maxdim();
+    printf("Bounds: %f - %f, %f - %f, %f - %f\n", bounds.minx(), bounds.maxx(),
+           bounds.miny(), bounds.maxy(), bounds.minz(), bounds.maxz());
     if( normalizeScale ) {
         scale = normScaleFactor / maxwidth;
     }
@@ -212,9 +206,7 @@ bool AssetLoader::loadMeshes( const std::string & filename,
     }
 
     // Find bounds of mesh so we can apply scaling
-    float minx = std::numeric_limits<float>::max(), maxx = -std::numeric_limits<float>::max();
-    float miny = std::numeric_limits<float>::max(), maxy = -std::numeric_limits<float>::max();
-    float minz = std::numeric_limits<float>::max(), maxz = -std::numeric_limits<float>::max();
+    Bounds bounds;
     float maxwidth;
     float scale = 1.0f;
 
@@ -222,17 +214,12 @@ bool AssetLoader::loadMeshes( const std::string & filename,
         aiMesh * aimesh = scene->mMeshes[mesh_index];
         for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
             const auto v = aimesh->mVertices[vi];
-            minx = std::min(v.x, minx);
-            miny = std::min(v.y, miny);
-            minz = std::min(v.z, minz);
-            maxx = std::max(v.x, maxx);
-            maxy = std::max(v.y, maxy);
-            maxz = std::max(v.z, maxz);
+            bounds.add(v.x, v.y, v.z);
         }
-
-        maxwidth = std::max(maxx - minx, std::max(maxy - miny, maxz - minz));
     }
-    printf("Bounds: %f - %f, %f - %f, %f - %f\n", minx, maxx, miny, maxy, minz, maxz);
+    maxwidth = bounds.maxdim();
+    printf("Bounds: %f - %f, %f - %f, %f - %f\n", bounds.minx(), bounds.maxx(),
+           bounds.miny(), bounds.maxy(), bounds.minz(), bounds.maxz());
     if( normalizeScale ) {
         scale = normScaleFactor / maxwidth;
     }
