@@ -8,8 +8,8 @@
 
 class AssetLoader {
 public:
-    AssetLoader() {}
-    ~AssetLoader() {}
+    AssetLoader() = default;
+    ~AssetLoader() = default;
     
     bool loadMesh( const std::string & filename, Mesh & mesh,
                    bool normalizeScale = true,
@@ -22,8 +22,10 @@ public:
                      float normScaleFactor = 1.0 );
 
     bool loadMeshData(const std::string & filename,
-                      std::vector<std::shared_ptr<MeshData>> & meshDatas,
+                      MeshDataGroup & meshDatas,
                       std::vector<RGBImage<unsigned char>> & textures);
+
+    MeshDataCache meshDataCache;
 };
 
 

@@ -24,7 +24,13 @@ class GameObject
 
         void updateAnimation(float gameTime, float deltaTime);
 
-        std::shared_ptr<Renderable> renderable;
+        // Pass-through setters. Call the equivalent on all renderables
+        void setShaderProgram( const std::shared_ptr<Program> & program );
+        void setTexture( GLuint texId );
+        void setRoughness( float roughness );
+        void setF0( float F0 );
+
+        std::vector<std::shared_ptr<Renderable>> renderables;
         Transform worldTransform;
         Vector4 position;
         Vector4 velocity;

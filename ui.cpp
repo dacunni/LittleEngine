@@ -26,6 +26,7 @@ std::shared_ptr<Program> createShaderProgram( const char * vs, const char * fs )
     return program;
 }
 
+#if 0
 void buildPointCloud( void ) 
 {
     Engine & engine = Engine::instance();
@@ -54,6 +55,7 @@ void buildPointCloud( void )
 
     engine.game_objects.push_back( obj );
 }
+#endif
 
 void makeSimpleScene()
 {
@@ -68,7 +70,7 @@ void makeSimpleScene()
 
     GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
-    hero->renderable->setShaderProgram( mesh_shader_program );
+    hero->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         Engine & engine = Engine::instance();
@@ -78,9 +80,11 @@ void makeSimpleScene()
         self->velocity += acceleration * deltaTime;
         if( self->position.y < 0.0 ) self->position.y = 0.0;
         self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ) );
+                                        makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ),
+                                        makeScaling( 10.0 ) );
     };
     engine.game_objects.push_back(hero);
+
 
     // Load shared textures
     RGBImage<unsigned char> uvGridImage;
@@ -88,49 +92,53 @@ void makeSimpleScene()
     GLuint uvGridTextureID = uvGridImage.uploadGL();
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->renderable->setShaderProgram( mesh_shader_program );
-    obj->position = Vector4( -1.5, 0.0, 0.0 );
+    obj->setShaderProgram( mesh_shader_program );
+    obj->position = Vector4( -3.0, 0.0, 0.0 );
     engine.game_objects.push_back(obj);
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->renderable->setShaderProgram( mesh_shader_program );
+    obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 0.0, 0.0, 0.0 );
-    obj->renderable->setTexture( uvGridTextureID );
+    obj->setTexture( uvGridTextureID );
     engine.game_objects.push_back(obj);
 
+
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->renderable->setShaderProgram( cook_torrance_shader_program );
-    obj->position = Vector4( 1.5, 0.0, 0.0 );
-    obj->renderable->setRoughness( 0.3 );
-    obj->renderable->setTexture( uvGridTextureID );
+    obj->setShaderProgram( cook_torrance_shader_program );
+    obj->position = Vector4( 3.0, 0.0, 0.0 );
+    obj->setRoughness( 0.3 );
+    obj->setTexture( uvGridTextureID );
     engine.game_objects.push_back(obj);
 
     obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
-    obj->renderable->setShaderProgram( cook_torrance_shader_program );
-    obj->renderable->setTexture( uvGridTextureID );
-    obj->renderable->setRoughness( 0.1 );
-    obj->position = Vector4( -1.0, 0.0, -5.0 );
+    obj->setShaderProgram( cook_torrance_shader_program );
+    obj->setTexture( uvGridTextureID );
+    obj->setRoughness( 0.1 );
+    obj->position = Vector4( -1.0, 0.5, -5.0 );
     engine.game_objects.push_back( obj );
 
     int numMatTestObj = 6;
     for(int i = 0; i < numMatTestObj; i++) {
         obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-        obj->renderable->setShaderProgram( cook_torrance_shader_program );
-        obj->position = Vector4( -3.0, 0.0, -5.0 + 1.5 * i );
-        //obj->renderable->setRoughness( float(i) / float(numMatTestObj - 1) );
-        obj->renderable->setRoughness( 0.1 );
-        obj->renderable->setF0( float(i + 0.5f) / float(numMatTestObj) );
-        //obj->renderable->setTexture( uvGridTextureID );
+        obj->position = Vector4( -6.0, 0.0, -6.0 + 3.0 * i );
+        obj->setShaderProgram( cook_torrance_shader_program );
+        //obj->setRoughness( float(i) / float(numMatTestObj - 1) );
+        obj->setRoughness( 0.1 );
+        obj->setF0( float(i + 0.5f) / float(numMatTestObj) );
+        obj->setTexture( uvGridTextureID );
         engine.game_objects.push_back(obj);
     }
 
     obj = new GameObject();
-    obj->renderable = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
-    obj->renderable->setShaderProgram( mesh_shader_program );
-    obj->renderable->setTexture( uvGridTextureID );
+    auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
+    ground->upload();
+    ground->setShaderProgram( mesh_shader_program );
+    ground->setTexture( uvGridTextureID );
+    obj->renderables.push_back(ground);
     engine.game_objects.push_back(obj);
 }
 
+#if 0
 void makeCookTorranceScene()
 {
     Engine & engine = Engine::instance();
@@ -183,7 +191,9 @@ void makeCookTorranceScene()
     obj->position = Vector4( +2.0, 1.0, -5.0 );
     engine.game_objects.push_back(obj);
 }
+#endif
 
+#if 0
 void makeSponzaScene()
 {
     Engine & engine = Engine::instance();
@@ -258,7 +268,9 @@ void makeSponzaScene()
     engine.game_objects.push_back(obj);
 #endif
 }
+#endif
 
+#if 0
 void makeLotsOfThings()
 {
     Engine & engine = Engine::instance();
@@ -329,6 +341,7 @@ void makeLotsOfThings()
     }
     engine.game_objects.push_back(obj);
 }
+#endif
 
 int main (int argc, char ** argv) 
 {

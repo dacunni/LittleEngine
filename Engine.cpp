@@ -209,26 +209,29 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
     const int numLights = 3;
 
     float lightPositions[numLights][3] = { 
-        { 7.0, 3.0, 3.0 },
-        { -7.0, 3.0, 3.0 },
-        { 0.0, 3.0, -3.0 }
+        { 10.0, 6.0, 6.0 },
+        { -10.0, 6.0, 6.0 },
+        { 0.0, 6.0, -6.0 }
     };
 
     float lightColors[numLights][3] = { 
         { 1.0, 0.6, 0.6 },
         { 0.6, 0.6, 1.0 },
-        { 0.6, 1.0, 0.6 }
+        { 0.6, 1.2, 0.6 }
     };
 
     for(auto obj : game_objects ) {
-        obj->renderable->useProgram();
-        obj->renderable->setWorldMatrix( obj->worldTransform.fwd );
-        obj->renderable->setViewMatrix( view );
-        obj->renderable->setProjection( projection );
-        obj->renderable->setCameraPosition( cameraPosition );
-        obj->renderable->setAnimTime( gameTime );
-        obj->renderable->setLights( lightPositions, lightColors, numLights );
-        obj->draw();
+        for(auto & renderable : obj->renderables) {
+            renderable->useProgram();
+            renderable->setWorldMatrix( obj->worldTransform.fwd );
+            renderable->setViewMatrix( view );
+            renderable->setProjection( projection );
+            renderable->setCameraPosition( cameraPosition );
+            renderable->setAnimTime( gameTime );
+            renderable->setLights( lightPositions, lightColors, numLights );
+            renderable->bind();
+            renderable->draw();
+        }
     }
 }
 

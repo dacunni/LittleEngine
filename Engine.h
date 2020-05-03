@@ -19,7 +19,7 @@ class Engine
 
         bool draw_wireframes = false;
 
-        Vector4 cameraPosition = Vector4( 0.0, 0.6, 5.0 );
+        Vector4 cameraPosition = Vector4( 0.0, 2.0, 5.0 );
         float cameraXRotation = 0.0;
         float cameraYRotation = 0.0;
         float cameraKeyboardSpeed = 10.0;

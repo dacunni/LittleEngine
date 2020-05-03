@@ -12,9 +12,15 @@
 #include "Bounds.h"
 
 bool AssetLoader::loadMeshData(const std::string & filename,
-                               std::vector<std::shared_ptr<MeshData>> & meshDatas,
+                               MeshDataGroup & meshDatas,
                                std::vector<RGBImage<unsigned char>> & textures)
 {
+    if(meshDataCache.contains(filename)) {
+        printf("Found mesh data cache entry for %s\n", filename.c_str());
+        meshDatas = meshDataCache.get(filename);
+        return true;
+    }
+
     std::string basePath("");
     auto lastSlash = filename.find_last_of("/");
     if( lastSlash != std::string::npos ) {
@@ -129,6 +135,9 @@ bool AssetLoader::loadMeshData(const std::string & filename,
             meshData.indices[index++] = t.mIndices[2];
         }
     }
+
+    printf("Adding mesh data to mesh data cache for %s\n", filename.c_str());
+    meshDataCache.add(filename, meshDatas);
 
     return true;
 }

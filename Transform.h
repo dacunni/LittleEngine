@@ -28,6 +28,12 @@ public:
 // Composes two Transforms into one. Assumes t2 is applied before t1.
 Transform compose( const Transform & t1, const Transform & t2 );
 
+// Variadic expansion of compose() to N transforms
+template<typename... Args>
+Transform compose( const Transform & t1, Args... args ) {
+    return compose( t1, compose( args... ) );
+}
+
 // Builds a rotation Transform from an axis and angle
 Transform makeRotation( float angle, const Vector4 & axis );
 
@@ -37,5 +43,6 @@ Transform makeTranslation( float dx, float dy, float dz );
 
 // Builds a scaling Transform
 Transform makeScaling( float xScale, float yScale, float zScale );
+Transform makeScaling( float scale );
 
 #endif
