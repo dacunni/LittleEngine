@@ -4,9 +4,7 @@
 #include <string>
 
 #include "Image.h"
-
-class Traceable;
-class Mesh;
+#include "Mesh.h"
 
 class AssetLoader {
 public:
@@ -23,6 +21,9 @@ public:
                      bool normalizeScale = true,
                      float normScaleFactor = 1.0 );
 
+    bool loadMeshData(const std::string & filename,
+                      std::vector<std::shared_ptr<MeshData>> & meshDatas,
+                      std::vector<RGBImage<unsigned char>> & textures);
 };
 
 

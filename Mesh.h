@@ -8,6 +8,24 @@
 #include "Renderable.h"
 #include "Vector4.h"
 
+struct UVCoord { float u, v; };
+
+struct MeshData
+{
+    std::vector<Vector4>  vertices;
+    std::vector<Vector4>  normals;
+    std::vector<UVCoord>  textureUVCoords;
+    std::vector<uint32_t> indices;
+
+    void setTexture(GLuint id) {
+        textureId = id;
+        hasTexture = true;
+    }
+
+    GLuint textureId = 0;
+    bool hasTexture = false;
+};
+
 class Mesh : public Renderable
 {
     public:
@@ -17,8 +35,6 @@ class Mesh : public Renderable
         virtual void upload();
         virtual void bind();
         virtual void draw();
-
-        struct UVCoord { float u, v; };
 
         // Local storage
         std::vector< Vector4 >  vertices;
