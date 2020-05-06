@@ -19,6 +19,7 @@ uniform int numLights;
  
 void main()
 {
+    vec3 normal = normalize(vNormal.xyz);
     vec3 baseColor = vec3(0.5, 0.5, 0.5);
 
     if(useTexture) {
@@ -31,7 +32,8 @@ void main()
 
     for(int i = 0; i < numLights; i++) {
         vec3 toLight = normalize(lightPositions[i] - vWorldPosition.xyz);
-        lighting += lightIntensities[i] * max(dot(vNormal.xyz, toLight), 0);
+        float NdL = max(dot(normal, toLight), 0);
+        lighting += lightIntensities[i] * NdL;
     }
 
     color.rgb *= lighting;
