@@ -63,7 +63,7 @@ void Mesh::upload()
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, isize, &indices[0], GL_STATIC_DRAW );
     GL_WARN_IF_ERROR();
 
-    num_vertices = vertices.size();
+    numVertices = vertices.size();
     is_uploaded = true;
 }
 

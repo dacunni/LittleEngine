@@ -27,7 +27,7 @@ void PointCloud::upload()
     glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, 0 );
     glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
 
-    num_vertices = vertices.size();
+    numVertices = vertices.size();
     is_uploaded = true;
 }
 
@@ -41,7 +41,7 @@ void PointCloud::draw()
     if( vao ) {
         // Enable gl_PointSize in VS
         glEnable( GL_PROGRAM_POINT_SIZE );
-        glDrawArrays( GL_POINTS, 0, num_vertices );
+        glDrawArrays( GL_POINTS, 0, numVertices );
         GL_WARN_IF_ERROR();
     }
 }

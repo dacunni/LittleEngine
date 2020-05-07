@@ -259,6 +259,8 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
 
     for(auto obj : gameObjects) {
         for(auto & renderable : obj->renderables) {
+            if(!renderable->visible)
+                continue;
             renderable->useProgram();
             renderable->setWorldMatrix( obj->worldTransform.fwd );
             renderable->setViewMatrix( view );
@@ -330,6 +332,27 @@ void Engine::drawEngineWindow()
         for(GameObject * obj : gameObjects) {
             ImGui::PushID(obj);
             if(ImGui::TreeNode("Game Object")) {
+                if(ImGui::TreeNode("Renderables")) {
+                    for(auto & renderable : obj->renderables) {
+                        ImGui::PushID(renderable.get());
+                        if(ImGui::TreeNode("Renderable")) {
+                            ImGui::PushItemWidth(100);
+                            ImGui::Checkbox("Visible", &renderable->visible);
+                            ImGui::LabelText("Num Vertices", "%llu", renderable->numVertices);
+                            ImGui::LabelText("Has Texture", "%s", renderable->hasTexture ? "YES" : "NO");
+                            ImGui::LabelText("Texture ID", "%u", renderable->textureId);
+                            if(ImGui::TreeNode("Material")) {
+                                ImGui::SliderFloat("Fresnel F0", &renderable->F0, 0.0f, 1.0f);
+                                ImGui::SliderFloat("Roughness", &renderable->roughness, 0.0f, 1.0f);
+                                ImGui::TreePop();
+                            }
+                            ImGui::PopItemWidth();
+                            ImGui::TreePop();
+                        }
+                        ImGui::PopID();
+                    }
+                    ImGui::TreePop();
+                }
                 ImGui::TreePop();
             }
             ImGui::PopID();

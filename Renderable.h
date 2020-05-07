@@ -19,7 +19,6 @@ class Renderable
         virtual void bind();
         virtual void draw();
 
-        void setShaderProgram( GLuint program );
         void setShaderProgram( const std::shared_ptr<Program> & program );
         void useProgram();
         void setWorldMatrix( const Matrix4x4 & mat );
@@ -42,16 +41,17 @@ class Renderable
         VertexArrayObject vao;
         BufferObject vbo;
         BufferObject ibo;
-        unsigned long long num_vertices = 0;
+        unsigned long long numVertices = 0;
         GLuint textureId = 0;
         bool hasTexture = false;
 
         std::shared_ptr<Program> shaderProgram;
-        GLuint shader_program;
 
         // Material properties
         float roughness = 0.1;
         float F0 = 0.25;
+
+        bool visible = true;
 };
 
 

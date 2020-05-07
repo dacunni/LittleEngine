@@ -53,7 +53,7 @@ void buildPointCloud( void )
     GameObject * obj = new GameObject();
     obj->renderable = point_cloud;
 
-    engine.game_objects.push_back( obj );
+    engine.gameObjects.push_back( obj );
 }
 #endif
 
@@ -83,38 +83,38 @@ void makeSimpleScene()
                                         makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ),
                                         makeScaling( 10.0 ) );
     };
-    engine.game_objects.push_back(hero);
+    engine.gameObjects.push_back(hero);
 
     // Load shared textures
     RGBImage<unsigned char> uvGridImage;
     uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
     GLuint uvGridTextureID = uvGridImage.uploadGL();
 
-#if 0
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( -3.0, 0.0, 0.0 );
-    engine.game_objects.push_back(obj);
+    engine.gameObjects.push_back(obj);
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 0.0, 0.0, 0.0 );
     obj->setTexture( uvGridTextureID );
-    engine.game_objects.push_back(obj);
+    engine.gameObjects.push_back(obj);
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( 3.0, 0.0, 0.0 );
     obj->setRoughness( 0.3 );
     obj->setTexture( uvGridTextureID );
-    engine.game_objects.push_back(obj);
+    engine.gameObjects.push_back(obj);
 
+#if 0
     obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->setTexture( uvGridTextureID );
     obj->setRoughness( 0.1 );
     obj->position = Vector4( -1.0, 0.5, -5.0 );
-    engine.game_objects.push_back( obj );
+    engine.gameObjects.push_back( obj );
 
     int numMatTestObj = 6;
     for(int i = 0; i < numMatTestObj; i++) {
@@ -125,7 +125,7 @@ void makeSimpleScene()
         obj->setRoughness( 0.1 );
         obj->setF0( float(i + 0.5f) / float(numMatTestObj) );
         obj->setTexture( uvGridTextureID );
-        engine.game_objects.push_back(obj);
+        engine.gameObjects.push_back(obj);
     }
 
 #if 0
@@ -139,7 +139,7 @@ void makeSimpleScene()
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeScaling( 0.01 ) );
     };
-    engine.game_objects.push_back( obj );
+    engine.gameObjects.push_back( obj );
 #endif
 
 #if 0
@@ -153,7 +153,7 @@ void makeSimpleScene()
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeScaling( 1.0 ) );
     };
-    engine.game_objects.push_back( obj );
+    engine.gameObjects.push_back( obj );
 #endif
 
 #endif
@@ -164,7 +164,7 @@ void makeSimpleScene()
     ground->setShaderProgram( mesh_shader_program );
     ground->setTexture( uvGridTextureID );
     obj->renderables.push_back(ground);
-    engine.game_objects.push_back(obj);
+    engine.gameObjects.push_back(obj);
 }
 
 int main (int argc, char ** argv) 
