@@ -3,6 +3,8 @@
 
 #define USE_GLFW
 
+#include <GL/glew.h>
+
 #ifdef USE_GLFW
 
 #define GLFW_INCLUDE_GLEXT

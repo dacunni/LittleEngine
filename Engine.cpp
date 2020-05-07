@@ -6,6 +6,12 @@
 #include "Timer.h"
 #include "Engine.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+bool show_demo_window = true;
+
 Engine & Engine::instance() {
     static Engine * _instance = nullptr;
     if(!_instance) { _instance = new Engine(); }
@@ -88,11 +94,27 @@ void Engine::createWindow(int & argc, char ** argv )
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
+    if(glewInit() != GLEW_OK) {
+        printf("Error initializing GLEW\n");
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
     printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
     printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
     printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
     registerCallbacks();
+
+    // Initialize Dear Imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    //ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    const char* glsl_version = "#version 150";
+    ImGui_ImplOpenGL3_Init(glsl_version);
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -149,6 +171,9 @@ void Engine::registerCallbacks() {
 
 void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
 {
+    // Relinquish control to Dear Imgui if it wants focus
+    if(ImGui::GetIO().WantCaptureKeyboard) { return; }
+
     //printf("window %p key %d scan %d action %d mods %d\n",
     //       window, key, scancode, action, mods);
     keyState[key] = action;
@@ -168,10 +193,15 @@ void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action,
 
 void Engine::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 {
+    // Relinquish control to Dear Imgui if it wants focus
+    if(ImGui::GetIO().WantCaptureMouse) { return; }
 }
 
 void Engine::scrollCallback(GLFWwindow * window, double xoffset, double yoffset)
 {
+    // Relinquish control to Dear Imgui if it wants focus
+    if(ImGui::GetIO().WantCaptureMouse) { return; }
+
     bool shiftPressed = keyState[GLFW_KEY_LEFT_SHIFT] || keyState[GLFW_KEY_RIGHT_SHIFT];
 
     if(shiftPressed) {
@@ -187,6 +217,9 @@ void Engine::scrollCallback(GLFWwindow * window, double xoffset, double yoffset)
 
 void Engine::cursorPositionCallback(GLFWwindow * window, double x, double y)
 {
+    // Relinquish control to Dear Imgui if it wants focus
+    if(ImGui::GetIO().WantCaptureMouse) { return; }
+
     double dx = x - mouse_last_x;
     double dy = y - mouse_last_y;
 
@@ -265,6 +298,17 @@ void Engine::repaintViewport()
     glDisable( GL_DEPTH_TEST );
 
     GL_WARN_IF_ERROR();
+
+    glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow(&show_demo_window);
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window);
 }

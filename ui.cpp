@@ -85,12 +85,12 @@ void makeSimpleScene()
     };
     engine.game_objects.push_back(hero);
 
-
     // Load shared textures
     RGBImage<unsigned char> uvGridImage;
     uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
     GLuint uvGridTextureID = uvGridImage.uploadGL();
 
+#if 0
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( -3.0, 0.0, 0.0 );
@@ -154,6 +154,8 @@ void makeSimpleScene()
                                         makeScaling( 1.0 ) );
     };
     engine.game_objects.push_back( obj );
+#endif
+
 #endif
 
     obj = new GameObject();
