@@ -67,7 +67,7 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
     if( keyState[GLFW_KEY_J] && !anyMod) { hero->position.x -= heroSpeed * deltaTime; }
     if( keyState[GLFW_KEY_L] && !anyMod) { hero->position.x += heroSpeed * deltaTime; }
 
-    for(auto obj : game_objects ) {
+    for(auto obj : gameObjects) {
         obj->updateAnimation(timeNow, deltaTime);
     }
 }
@@ -145,6 +145,10 @@ void Engine::start()
         glfwSetWindowTitle(window, std::to_string(fps).c_str());
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glfwDestroyWindow(window);
 
     glfwTerminate();
@@ -182,7 +186,7 @@ void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action,
     }
 
     if(key == GLFW_KEY_W && mods & GLFW_MOD_SHIFT && action == GLFW_PRESS) {
-        draw_wireframes = !draw_wireframes;
+        drawWireframes = !drawWireframes;
     }
     if(key == GLFW_KEY_SPACE && !mods && action == GLFW_PRESS) {
         if( hero->position.y < 0.01 ) {
@@ -253,7 +257,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
         { 0.6, 1.2, 0.6 }
     };
 
-    for(auto obj : game_objects ) {
+    for(auto obj : gameObjects) {
         for(auto & renderable : obj->renderables) {
             renderable->useProgram();
             renderable->setWorldMatrix( obj->worldTransform.fwd );
@@ -283,7 +287,7 @@ void Engine::repaintViewport()
     Transform camera = cameraTransform();
     Matrix4x4 & view = camera.rev;
 
-    if( draw_wireframes ) {
+    if( drawWireframes ) {
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
         glFrontFace( GL_CCW );
         glEnable( GL_CULL_FACE );
@@ -301,18 +305,66 @@ void Engine::repaintViewport()
 
     glfwPollEvents();
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::ShowDemoWindow(&show_demo_window);
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    drawUserInterface();
 
     glfwSwapBuffers(window);
 }
 
+void Engine::drawUserInterface()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    drawEngineWindow();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Engine::drawEngineWindow()
+{
+    ImGui::Begin("Engine");
+
+    if(ImGui::TreeNode("Game Objects")) {
+        for(GameObject * obj : gameObjects) {
+            ImGui::PushID(obj);
+            if(ImGui::TreeNode("Game Object")) {
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
+        ImGui::TreePop();
+    }
+
+    if(ImGui::TreeNode("Options")) {
+        ImGui::Checkbox("Draw Wireframes", &drawWireframes);
+        ImGui::TreePop();
+    }
+
+    if(ImGui::TreeNode("Controls")) {
+        if(ImGui::TreeNode("Hero")) {
+            ImGui::SliderFloat("Hero Speed", &heroSpeed, 0.0f, 30.0f);
+            ImGui::TreePop();
+        }
+        if(ImGui::TreeNode("Camera")) {
+            if(ImGui::TreeNode("Keyboard")) {
+                ImGui::SliderFloat("Translate Speed", &cameraKeyboardSpeed, 0.0f, 100.0f);
+                ImGui::SliderFloat("Rotate Speed", &cameraKeyboardRotationSpeed, 0.0f, 10.0f);
+                ImGui::TreePop();
+            }
+            if(ImGui::TreeNode("Scroll")) {
+                ImGui::SliderFloat("Translate Speed", &cameraScrollSpeed, 0.0f, 5.0f);
+                ImGui::SliderFloat("Rotate Speed", &cameraScrollRotationSpeed, 0.0f, 2.0f);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+}
 
 
 

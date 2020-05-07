@@ -10,14 +10,14 @@ class Engine
         ~Engine() {}
 
         GameObject * hero = nullptr;
-        std::vector<GameObject*> game_objects;
+        std::vector<GameObject*> gameObjects;
 
         std::string modelPath = "models";
         std::string texturePath = "textures";
         std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";
         std::string bunnyPath = modelPath + "/stanford/bunny/reconstruction";
 
-        bool draw_wireframes = false;
+        bool drawWireframes = false;
 
         Vector4 cameraPosition = Vector4( 0.0, 2.0, 5.0 );
         float cameraXRotation = 0.0;
@@ -25,7 +25,7 @@ class Engine
         float cameraKeyboardSpeed = 10.0;
         float cameraScrollSpeed = 1.0;
         float cameraKeyboardRotationSpeed = 2.0;
-        float cameraScrollRotationSpeed = 2.0;
+        float cameraScrollRotationSpeed = 0.5;
 
         float heroSpeed =  5.0;
 
@@ -66,6 +66,8 @@ class Engine
     protected:
         void setViewport( int width, int height );
         void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
+        void drawUserInterface();
+        void drawEngineWindow();
 
         Timer gameTimer;
         float gameTime = 0.0f;
