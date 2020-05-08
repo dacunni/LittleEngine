@@ -83,7 +83,7 @@ void Renderable::setAnimTime( float t )
     glUniform1f( loc, t );
 }
 
-void Renderable::setLights( float pos[][3], float intensity[][3], int numLights )
+void Renderable::setLights( float * pos, float * intensity, int numLights )
 {
     GLint loc;
 
@@ -91,10 +91,10 @@ void Renderable::setLights( float pos[][3], float intensity[][3], int numLights 
     glUniform1i( loc, numLights );
 
     loc = glGetUniformLocation( shaderProgram->id, "lightPositions" );
-    glUniform3fv( loc, numLights, (float*)pos );
+    glUniform3fv( loc, numLights, pos );
 
     loc = glGetUniformLocation( shaderProgram->id, "lightIntensities" );
-    glUniform3fv( loc, numLights, (float*)intensity );
+    glUniform3fv( loc, numLights, intensity );
 }
 
 void Renderable::setTexture( GLuint texId )

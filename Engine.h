@@ -1,16 +1,18 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
+#include <vector>
 #include "Timer.h"
 
 class Engine
 {
     public:
-        Engine() {}
-        ~Engine() {}
+        Engine();
+        ~Engine() = default;
 
         GameObject * hero = nullptr;
         std::vector<GameObject*> gameObjects;
+        std::vector<GLuint> textureIds;
 
         std::string modelPath = "models";
         std::string texturePath = "textures";
@@ -48,6 +50,14 @@ class Engine
 
         void repaintViewport();
 
+        // Returns index of texture into texture array
+        unsigned int loadTexture(const std::string & texturePath);
+        GLuint textureIdAtIndex(unsigned int index) { return textureIds[index]; }
+
+        // Lights
+        void addLight(float x, float y, float z,
+                      float r, float g, float b);
+
         // Callbacks
         void registerCallbacks();
         void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
@@ -76,6 +86,11 @@ class Engine
 
         int mouse_last_x = -1;
         int mouse_last_y = -1;
+
+        struct LightPosition { float x, y, z; };
+        struct LightColor { float r, g, b; };
+        std::vector<LightPosition> lightPositions;
+        std::vector<LightColor> lightColors;
 };
 
 #endif

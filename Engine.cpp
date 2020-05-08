@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "Engine.h"
+#include "Image.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -16,6 +17,13 @@ Engine & Engine::instance() {
     static Engine * _instance = nullptr;
     if(!_instance) { _instance = new Engine(); }
     return *_instance;
+}
+
+Engine::Engine()
+{
+    addLight(10.0, 6.0, 6.0, 1.0, 0.6, 0.6);
+    addLight(-10.0, 6.0, 6.0, 0.6, 0.6, 1.0);
+    addLight(0.0, 6.0, -6.0, 0.6, 1.2, 0.6);
 }
 
 Transform Engine::cameraTranslation()
@@ -243,20 +251,6 @@ void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
 {
-    const int numLights = 3;
-
-    float lightPositions[numLights][3] = { 
-        { 10.0, 6.0, 6.0 },
-        { -10.0, 6.0, 6.0 },
-        { 0.0, 6.0, -6.0 }
-    };
-
-    float lightColors[numLights][3] = { 
-        { 1.0, 0.6, 0.6 },
-        { 0.6, 0.6, 1.0 },
-        { 0.6, 1.2, 0.6 }
-    };
-
     for(auto obj : gameObjects) {
         for(auto & renderable : obj->renderables) {
             if(!renderable->visible)
@@ -267,7 +261,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
             renderable->setProjection( projection );
             renderable->setCameraPosition( cameraPosition );
             renderable->setAnimTime( gameTime );
-            renderable->setLights( lightPositions, lightColors, numLights );
+            renderable->setLights( (float*)lightPositions.data(), (float*)lightColors.data(), lightPositions.size() );
             renderable->bind();
             renderable->draw();
         }
@@ -389,5 +383,21 @@ void Engine::drawEngineWindow()
     ImGui::End();
 }
 
+unsigned int Engine::loadTexture(const std::string & texturePath)
+{
+    RGBImage<unsigned char> image;
+    image.loadImage(texturePath);
+    GLuint id = image.uploadGL();
+    unsigned int index = textureIds.size();
+    textureIds.push_back(id);
+    return index;
+}
+
+void Engine::addLight(float x, float y, float z,
+                      float r, float g, float b)
+{
+    lightPositions.push_back({x, y, z});
+    lightColors.push_back({r, g, b});
+}
 
 

@@ -86,12 +86,20 @@ void makeSimpleScene()
     engine.gameObjects.push_back(hero);
 
     // Load shared textures
+#if 0
     RGBImage<unsigned char> uvGridImage;
     uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
     GLuint uvGridTextureID = uvGridImage.uploadGL();
+#endif
+    auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
+    GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
+
+    auto rustPaintTextureIndex = engine.loadTexture(engine.texturePath + "/Rust_Paint_03_UV_H_CM_1.jpg");
+    GLuint rustPaintTextureID = engine.textureIdAtIndex(rustPaintTextureIndex);
 
     obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->setShaderProgram( mesh_shader_program );
+    //obj->setShaderProgram( mesh_shader_program );
+    obj->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( -3.0, 0.0, 0.0 );
     engine.gameObjects.push_back(obj);
 
@@ -105,7 +113,8 @@ void makeSimpleScene()
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( 3.0, 0.0, 0.0 );
     obj->setRoughness( 0.3 );
-    obj->setTexture( uvGridTextureID );
+    //obj->setTexture( uvGridTextureID );
+    obj->setTexture( rustPaintTextureID );
     engine.gameObjects.push_back(obj);
 
 #if 0

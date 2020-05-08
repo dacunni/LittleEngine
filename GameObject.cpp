@@ -46,7 +46,6 @@ GameObject::~GameObject()
 void GameObject::draw()
 {
     for(auto & renderable : renderables) {
-        printf("here %d\n", (int)renderable->visible);
         if(!renderable->visible)
             continue;
         renderable->bind();
