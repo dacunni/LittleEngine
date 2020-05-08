@@ -17,6 +17,14 @@ struct MeshData
     std::vector<Vector4>  normals;
     std::vector<UVCoord>  textureUVCoords;
     std::vector<uint32_t> indices;
+
+    void setTexture(GLuint id) {
+        textureId = id;
+        hasTexture = true;
+    }
+
+    GLuint textureId = 0;
+    bool hasTexture = false;
 };
 
 using MeshDataGroup = std::vector<std::shared_ptr<MeshData>>;
