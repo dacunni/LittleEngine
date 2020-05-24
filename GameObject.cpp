@@ -26,6 +26,9 @@ GameObject::GameObject( const std::string & path,
         mesh->normals.insert(mesh->normals.end(), meshData->normals.begin(), meshData->normals.end());
         mesh->textureUVCoords.insert(mesh->textureUVCoords.end(), meshData->textureUVCoords.begin(), meshData->textureUVCoords.end());
         mesh->indices.insert(mesh->indices.end(), meshData->indices.begin(), meshData->indices.end());
+        if(meshData->hasTexture) {
+            mesh->setTexture(meshData->textureId);
+        }
         mesh->upload();
         renderables.push_back(mesh);
     }

@@ -12,7 +12,13 @@ void RGBImage<unsigned char>::loadImage( const std::string & filename )
     width = w;
     height = h;
 
-    printf("Loading image %s %u x %u\n", filename.c_str(), width, height);
+    if(stbiData) {
+        printf("Loading image %s %u x %u\n", filename.c_str(), width, height);
+    }
+    else {
+        fprintf(stderr, "Error loading %s\n", filename.c_str());
+        return; // TODO - error handling
+    }
 
     const unsigned int size = width * height;
     pixels.resize(size);

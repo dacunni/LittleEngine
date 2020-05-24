@@ -57,7 +57,8 @@ bool AssetLoader::loadMeshData(const std::string & filename,
 
     // Load textures
     std::vector< std::string > diffuseTexturePaths;
-    std::map<unsigned int, GLuint> materialToDiffuseTextureID;
+    std::map<unsigned int, GLuint> materialToDiffuseTextureIndex;
+    std::map<unsigned int, GLuint> diffuseTextureIndexToTextureID;
 
     // Find paths to each texture
     for( unsigned int materialIndex = 0; materialIndex < scene->mNumMaterials; materialIndex++ ) {
@@ -69,23 +70,24 @@ bool AssetLoader::loadMeshData(const std::string & filename,
             std::string path( aipath.C_Str() );
             std::replace(path.begin(), path.end(), '\\', '/');
             printf( "  diffuse %d : %s\n", texIndex, path.c_str() );
+            materialToDiffuseTextureIndex[materialIndex] = diffuseTexturePaths.size();
             diffuseTexturePaths.push_back( path );
             texIndex++;
         }
     }
 
     // Load texture images
-    unsigned int materialIndex = 0;
+    unsigned int textureIndex = 0;
     for( const auto & path : diffuseTexturePaths ) {
         textures.emplace_back();
         RGBImage<unsigned char> & texImage = textures.back();
         texImage.loadImage( basePath + "/" + path );
         GLuint texID = texImage.uploadGL();
-        printf("  texID %u\n", texID);
+        //printf("  texID %u\n", texID);
         // FIXME - should really map material index -> texture index -> texture id
         //         because we could have multiple textures per material
-        materialToDiffuseTextureID[materialIndex] = texID;
-        materialIndex++;
+        diffuseTextureIndexToTextureID[textureIndex] = texID;
+        textureIndex++;
     }
 
     // Extra mesh features
@@ -111,7 +113,12 @@ bool AssetLoader::loadMeshData(const std::string & filename,
         meshData.indices.resize( aimesh->mNumFaces * 3 );
         if( has_uv ) {
             meshData.textureUVCoords.resize( aimesh->mNumVertices );
-            meshData.setTexture( materialToDiffuseTextureID[aimesh->mMaterialIndex] );
+        }
+        if(materialToDiffuseTextureIndex.find(aimesh->mMaterialIndex) != materialToDiffuseTextureIndex.end()) {
+            //meshData.setTexture( materialToDiffuseTextureID[aimesh->mMaterialIndex] );
+            meshData.setTexture(
+                diffuseTextureIndexToTextureID[
+                    materialToDiffuseTextureIndex[aimesh->mMaterialIndex]] );
         }
 
         for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
@@ -123,7 +130,7 @@ bool AssetLoader::loadMeshData(const std::string & filename,
 
             if( has_uv ) {
                 const auto tc = aimesh->mTextureCoords[0][vi];
-                meshData.textureUVCoords[vi] = { tc.x, tc.y };
+                meshData.textureUVCoords[vi] = { tc.x, 1.0f - tc.y };
             }
         }
 

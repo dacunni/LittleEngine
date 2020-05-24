@@ -14,7 +14,7 @@ Mesh::~Mesh()
 
 void Mesh::upload()
 {
-    printf("Mesh::upload this %p vao %u vbo %u ibo %u\n", this, (GLuint) vao, (GLuint) vbo, (GLuint) ibo);
+    //printf("Mesh::upload this %p vao %u vbo %u ibo %u\n", this, (GLuint) vao, (GLuint) vbo, (GLuint) ibo);
     vao.bind();
     GL_WARN_IF_ERROR();
 
@@ -28,10 +28,10 @@ void Mesh::upload()
     GLintptr vstart = 0;
     GLintptr nstart = vstart + vsize;
     GLintptr tcstart = nstart + nsize;
-    printf("vertices = %lu vsize = %ld vstart = %ld ", vertices.size(), vsize, vstart); // TEMP
-    printf("normals  = %lu nsize = %ld nstart = %ld ", normals.size(), nsize, nstart); // TEMP
-    printf("tcoords  = %lu tcsize = %ld tcstart = %ld ", textureUVCoords.size(), tcsize, tcstart); // TEMP
-    printf("indices  = %lu isize = %ld\n", indices.size(), isize); // TEMP
+    printf("vertices = %lu (b=%ld s=%ld) ", vertices.size(), vsize, vstart); // TEMP
+    printf("normals = %lu (b=%ld s=%ld) ", normals.size(), nsize, nstart); // TEMP
+    printf("tcoords = %lu (b=%ld s=%ld) ", textureUVCoords.size(), tcsize, tcstart); // TEMP
+    printf("indices = %lu (b=%ld)\n", indices.size(), isize); // TEMP
 
     // allocate some space for all of our attributes
     glBufferData( GL_ARRAY_BUFFER, vsize + nsize + tcsize, NULL, GL_STATIC_DRAW );

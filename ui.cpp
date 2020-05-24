@@ -68,6 +68,16 @@ void makeSimpleScene()
 
     GameObject * obj = nullptr;
 
+    // Load shared textures
+#if 0
+    RGBImage<unsigned char> uvGridImage;
+    uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
+    GLuint uvGridTextureID = uvGridImage.uploadGL();
+#endif
+    auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
+    GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
+
+#if 0
     GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->setShaderProgram( mesh_shader_program );
@@ -84,15 +94,6 @@ void makeSimpleScene()
                                         makeScaling( 10.0 ) );
     };
     engine.gameObjects.push_back(hero);
-
-    // Load shared textures
-#if 0
-    RGBImage<unsigned char> uvGridImage;
-    uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
-    GLuint uvGridTextureID = uvGridImage.uploadGL();
-#endif
-    auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
-    GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
 
     auto rustPaintTextureIndex = engine.loadTexture(engine.texturePath + "/Rust_Paint_03_UV_H_CM_1.jpg");
     GLuint rustPaintTextureID = engine.textureIdAtIndex(rustPaintTextureIndex);
@@ -116,6 +117,9 @@ void makeSimpleScene()
     //obj->setTexture( uvGridTextureID );
     obj->setTexture( rustPaintTextureID );
     engine.gameObjects.push_back(obj);
+#endif
+
+#if 1
 
 #if 0
     obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
@@ -136,6 +140,7 @@ void makeSimpleScene()
         obj->setTexture( uvGridTextureID );
         engine.gameObjects.push_back(obj);
     }
+#endif
 
 #if 0
     obj = new GameObject( engine.modelPath + "/casual-effects.com/bmw/bmw.obj" );
@@ -153,14 +158,33 @@ void makeSimpleScene()
 
 #if 0
     obj = new GameObject( engine.modelPath + "/casual-effects.com/living_room/living_room.obj" );
-    //obj->setShaderProgram( cook_torrance_shader_program );
     obj->setShaderProgram( mesh_shader_program );
-    //obj->setTexture( uvGridTextureID );
-    obj->setRoughness( 0.1 );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
     obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         self->worldTransform = compose( makeTranslation( self->position ),
                                         makeScaling( 1.0 ) );
+    };
+    engine.gameObjects.push_back( obj );
+#endif
+
+#if 1
+    obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
+    obj->setShaderProgram( mesh_shader_program );
+    obj->position = Vector4( 6.0, 0.0, -8.0 );
+    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        self->worldTransform = compose( makeTranslation( self->position ),
+                                        makeScaling( 1.0 ) );
+    };
+    engine.gameObjects.push_back( obj );
+#endif
+
+#if 0
+    obj = new GameObject( engine.modelPath + "/casual-effects.com/bedroom/iscv2.obj" );
+    obj->setShaderProgram( mesh_shader_program );
+    obj->position = Vector4( 6.0, 0.0, -8.0 );
+    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        self->worldTransform = compose( makeTranslation( self->position ),
+                                        makeScaling( 0.1 ) );
     };
     engine.gameObjects.push_back( obj );
 #endif
@@ -172,6 +196,10 @@ void makeSimpleScene()
     ground->upload();
     ground->setShaderProgram( mesh_shader_program );
     ground->setTexture( uvGridTextureID );
+    obj->position = Vector4( 0.0, -0.01, 0.0 );
+    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
+        self->worldTransform = makeTranslation( self->position );
+    };
     obj->renderables.push_back(ground);
     engine.gameObjects.push_back(obj);
 }

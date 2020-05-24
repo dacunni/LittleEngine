@@ -21,9 +21,12 @@ Engine & Engine::instance() {
 
 Engine::Engine()
 {
-    addLight(10.0, 6.0, 6.0, 1.0, 0.6, 0.6);
-    addLight(-10.0, 6.0, 6.0, 0.6, 0.6, 1.0);
-    addLight(0.0, 6.0, -6.0, 0.6, 1.2, 0.6);
+    addLight(10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
+    addLight(-10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
+    addLight(0.0, 6.0, -6.0, 1.0, 1.0, 1.0);
+    //addLight(10.0, 6.0, 6.0, 1.0, 0.6, 0.6);
+    //addLight(-10.0, 6.0, 6.0, 0.6, 0.6, 1.0);
+    //addLight(0.0, 6.0, -6.0, 0.6, 1.2, 0.6);
 }
 
 Transform Engine::cameraTranslation()
@@ -222,8 +225,16 @@ void Engine::scrollCallback(GLFWwindow * window, double xoffset, double yoffset)
     }
     else {
         // Translation
-        cameraPosition += cameraForward() * cameraScrollSpeed * yoffset
-                       -cameraRight() * cameraScrollSpeed * xoffset;
+        //cameraPosition += cameraForward() * cameraScrollSpeed * yoffset
+        //               -cameraRight() * cameraScrollSpeed * xoffset;
+        auto forward = cameraForward();
+        forward.y = 0.0f;
+        forward.normalize();
+        auto right = cameraRight();
+        right.y = 0.0f;
+        right.normalize();
+        cameraPosition += forward * cameraScrollSpeed * yoffset
+                       -right * cameraScrollSpeed * xoffset;
     }
 }
 
@@ -334,6 +345,9 @@ void Engine::drawEngineWindow()
                             ImGui::Checkbox("Visible", &renderable->visible);
                             ImGui::LabelText("Num Vertices", "%llu", renderable->numVertices);
                             ImGui::LabelText("Has Texture", "%s", renderable->hasTexture ? "YES" : "NO");
+                            if(renderable->hasTexture) {
+                                ImGui::Image((void*)(intptr_t)renderable->textureId, ImVec2(100, 100));
+                            }
                             ImGui::LabelText("Texture ID", "%u", renderable->textureId);
                             if(ImGui::TreeNode("Material")) {
                                 ImGui::SliderFloat("Fresnel F0", &renderable->F0, 0.0f, 1.0f);
