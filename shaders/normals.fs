@@ -5,7 +5,7 @@ out vec4 color;
 
 void main()
 {
-    color.rgb = normalize(vNormal).xyz * vec3(2.0) - vec3(1.0);
+    color.rgb = normalize(vNormal).xyz * vec3(0.5) + vec3(0.5);
     color.a = 1.0;
 }
 
