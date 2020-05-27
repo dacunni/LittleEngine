@@ -26,7 +26,7 @@ protected:
                         const void * data);
 };
 
-ImageBase * loadImage(const std::string & filename);
+std::shared_ptr<ImageBase> loadImage(const std::string & filename);
 
 template <typename PIXEL>
 class Image : public ImageBase
@@ -35,7 +35,7 @@ public:
     Image() = default;
     virtual ~Image() = default;
 
-    const PIXEL * data() const { return &pixels[0]; }
+    const PIXEL * data() const { return pixels.data(); }
 
     std::vector< PIXEL > pixels;
 };

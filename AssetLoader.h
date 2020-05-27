@@ -17,13 +17,13 @@ public:
 
     bool loadMeshes( const std::string & filename,
                      std::vector<std::shared_ptr<Mesh>> & meshes,
-                     std::vector<ImageBase *> & textures,
+                     std::vector<std::shared_ptr<ImageBase>> & textures,
                      bool normalizeScale = true,
                      float normScaleFactor = 1.0 );
 
     bool loadMeshData(const std::string & filename,
                       MeshDataGroup & meshDatas,
-                      std::vector<ImageBase *> & textures);
+                      std::vector<std::shared_ptr<ImageBase>> & textures);
 
     MeshDataCache meshDataCache;
 };
