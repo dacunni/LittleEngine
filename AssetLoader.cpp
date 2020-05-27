@@ -13,7 +13,7 @@
 
 bool AssetLoader::loadMeshData(const std::string & filename,
                                MeshDataGroup & meshDatas,
-                               std::vector<ImageBase *> & textures)
+                               std::vector<std::shared_ptr<ImageBase>> & textures)
 {
     if(meshDataCache.contains(filename)) {
         printf("Found mesh data cache entry for %s\n", filename.c_str());
@@ -79,11 +79,9 @@ bool AssetLoader::loadMeshData(const std::string & filename,
     // Load texture images
     unsigned int textureIndex = 0;
     for( const auto & path : diffuseTexturePaths ) {
-        textures.emplace_back();
-        ImageBase * texImage = loadImage(basePath + "/" + path);
+        std::shared_ptr<ImageBase> texImage = loadImage(basePath + "/" + path);
         textures.push_back(texImage);
         GLuint texID = texImage->uploadGL();
-        //printf("  texID %u\n", texID);
         // FIXME - should really map material index -> texture index -> texture id
         //         because we could have multiple textures per material
         diffuseTextureIndexToTextureID[textureIndex] = texID;
@@ -157,7 +155,7 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
                             bool normalizeScale, float normScaleFactor )
 {
     std::vector<std::shared_ptr<MeshData>> meshDatas;
-    std::vector<ImageBase *> textures;
+    std::vector<std::shared_ptr<ImageBase>> textures;
 
     bool ok = loadMeshData(filename, meshDatas, textures);
 
@@ -177,7 +175,7 @@ bool AssetLoader::loadMesh( const std::string & filename, Mesh & mesh,
 
 bool AssetLoader::loadMeshes( const std::string & filename,
                               std::vector<std::shared_ptr<Mesh>> & meshes,
-                              std::vector< ImageBase * > & textures,
+                              std::vector<std::shared_ptr<ImageBase>> & textures,
                               bool normalizeScale,
                               float normScaleFactor )
 {

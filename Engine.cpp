@@ -399,9 +399,8 @@ void Engine::drawEngineWindow()
 
 unsigned int Engine::loadTexture(const std::string & texturePath)
 {
-    ImageBase * image = loadImage(texturePath);
+    std::shared_ptr<ImageBase> image = loadImage(texturePath);
     GLuint id = image->uploadGL();
-    delete image;
     unsigned int index = textureIds.size();
     textureIds.push_back(id);
     return index;

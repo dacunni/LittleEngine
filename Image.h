@@ -26,7 +26,7 @@ protected:
                         const void * data);
 };
 
-ImageBase * loadImage(const std::string & filename);
+std::shared_ptr<ImageBase> loadImage(const std::string & filename);
 
 template <typename PIXEL>
 class Image : public ImageBase

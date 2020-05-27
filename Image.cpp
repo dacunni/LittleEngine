@@ -4,7 +4,7 @@
 #include <string>
 #include "Image.h"
 
-ImageBase * loadImage(const std::string & filename)
+std::shared_ptr<ImageBase> loadImage(const std::string & filename)
 {
     int w = 0, h = 0, numComponents = STBI_rgb_alpha;
     unsigned char * stbiData = stbi_load(filename.c_str(), &w, &h, &numComponents, 0);
@@ -18,7 +18,7 @@ ImageBase * loadImage(const std::string & filename)
     const unsigned int size = w * h;
 
     if(numComponents == 3) {
-        auto image = new RGBImage<uint8_t>();
+        auto image = std::make_shared<RGBImage<uint8_t>>();
         image->width = w;
         image->height = h;
 
@@ -35,7 +35,7 @@ ImageBase * loadImage(const std::string & filename)
         return image;
     }
     else if(numComponents == 4) {
-        auto image = new RGBAImage<uint8_t>();
+        auto image = std::make_shared<RGBAImage<uint8_t>>();
         image->width = w;
         image->height = h;
 
@@ -53,7 +53,7 @@ ImageBase * loadImage(const std::string & filename)
         return image;
     }
     else if(numComponents == 1) {
-        auto image = new RGBImage<uint8_t>();
+        auto image = std::make_shared<RGBImage<uint8_t>>();
         image->width = w;
         image->height = h;
 
