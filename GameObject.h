@@ -34,6 +34,7 @@ class GameObject
         Transform worldTransform;
         Vector4 position;
         Vector4 velocity;
+        float scaleFactor = 1.0f;
 
         AnimationFunction animFunc;
 };

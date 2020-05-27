@@ -115,10 +115,9 @@ bool AssetLoader::loadMeshData(const std::string & filename,
             meshData.textureUVCoords.resize( aimesh->mNumVertices );
         }
         if(materialToDiffuseTextureIndex.find(aimesh->mMaterialIndex) != materialToDiffuseTextureIndex.end()) {
-            //meshData.setTexture( materialToDiffuseTextureID[aimesh->mMaterialIndex] );
-            meshData.setTexture(
-                diffuseTextureIndexToTextureID[
-                    materialToDiffuseTextureIndex[aimesh->mMaterialIndex]] );
+            auto textureIndex = materialToDiffuseTextureIndex[aimesh->mMaterialIndex];
+            auto textureId = diffuseTextureIndexToTextureID[textureIndex];
+            meshData.setTexture(textureId);
         }
 
         for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
@@ -137,6 +136,11 @@ bool AssetLoader::loadMeshData(const std::string & filename,
         uint32_t index = 0;
         for( unsigned int ti = 0; ti < aimesh->mNumFaces; ++ti ) {
             const auto t = aimesh->mFaces[ti];
+
+            if(t.mNumIndices != 3) {
+                printf("WARNING: Face is not a triangle!\n");
+            }
+
             meshData.indices[index++] = t.mIndices[0];
             meshData.indices[index++] = t.mIndices[1];
             meshData.indices[index++] = t.mIndices[2];

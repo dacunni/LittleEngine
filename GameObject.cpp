@@ -5,7 +5,8 @@
 static AssetLoader loader;
 
 static GameObject::AnimationFunction defaultAnimation = [](GameObject * self, float gameTime, float deltaTime) {
-    self->worldTransform = makeTranslation( self->position );
+    self->worldTransform = compose(makeTranslation(self->position),
+                                   makeScaling(self->scaleFactor));
 };
 
 GameObject::GameObject( const std::string & path,

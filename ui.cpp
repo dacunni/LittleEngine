@@ -69,15 +69,10 @@ void makeSimpleScene()
     GameObject * obj = nullptr;
 
     // Load shared textures
-#if 0
-    RGBImage<unsigned char> uvGridImage;
-    uvGridImage.loadImage( engine.texturePath + "/uvgrid.jpg" );
-    GLuint uvGridTextureID = uvGridImage.uploadGL();
-#endif
     auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
     GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
 
-#if 0
+#if 1
     GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->setShaderProgram( mesh_shader_program );
@@ -119,6 +114,13 @@ void makeSimpleScene()
     engine.gameObjects.push_back(obj);
 #endif
 
+#if 0
+    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba.obj" );
+    obj->setShaderProgram( mesh_shader_program );
+    //obj->setShaderProgram( cook_torrance_shader_program );
+    engine.gameObjects.push_back(obj);
+#endif
+
 #if 1
 
 #if 0
@@ -142,17 +144,14 @@ void makeSimpleScene()
     }
 #endif
 
-#if 0
+#if 1
     obj = new GameObject( engine.modelPath + "/casual-effects.com/bmw/bmw.obj" );
     //obj->setShaderProgram( cook_torrance_shader_program );
     obj->setShaderProgram( mesh_shader_program );
-    //obj->setTexture( uvGridTextureID );
+    obj->setTexture( uvGridTextureID );
     obj->setRoughness( 0.1 );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
-    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
-        self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeScaling( 0.01 ) );
-    };
+    obj->scaleFactor = 0.01f;
     engine.gameObjects.push_back( obj );
 #endif
 
@@ -160,48 +159,28 @@ void makeSimpleScene()
     obj = new GameObject( engine.modelPath + "/casual-effects.com/living_room/living_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
-    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
-        self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeScaling( 1.0 ) );
-    };
-    engine.gameObjects.push_back( obj );
-#endif
-
-#if 1
-    obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
-    obj->setShaderProgram( mesh_shader_program );
-    obj->position = Vector4( 6.0, 0.0, -8.0 );
-    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
-        self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeScaling( 1.0 ) );
-    };
     engine.gameObjects.push_back( obj );
 #endif
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/casual-effects.com/bedroom/iscv2.obj" );
+    obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
-    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
-        self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeScaling( 0.1 ) );
-    };
     engine.gameObjects.push_back( obj );
 #endif
 
 #endif
 
+#if 1
     obj = new GameObject();
     auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
     ground->upload();
     ground->setShaderProgram( mesh_shader_program );
     ground->setTexture( uvGridTextureID );
     obj->position = Vector4( 0.0, -0.01, 0.0 );
-    obj->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
-        self->worldTransform = makeTranslation( self->position );
-    };
     obj->renderables.push_back(ground);
     engine.gameObjects.push_back(obj);
+#endif
 }
 
 int main (int argc, char ** argv) 
