@@ -14,7 +14,7 @@ GameObject::GameObject( const std::string & path,
                         float normScaleFactor )
 {
     MeshDataGroup meshDataGroup;
-    std::vector< RGBImage<unsigned char> > textures;
+    std::vector<ImageBase *> textures;
 
     if(!loader.loadMeshData(path, meshDataGroup, textures)) {
         fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );

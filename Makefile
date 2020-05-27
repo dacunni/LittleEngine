@@ -57,7 +57,7 @@ INC += -Iextern/imgui/examples
 CXXFLAGS = -std=c++11
 CXXFLAGS += -mmacosx-version-min=10.10
 CXXFLAGS += -Wno-deprecated
-CXXFLAGS += -O2
+#CXXFLAGS += -O2
 CXXFLAGS += -g
 LDXXFLAGS = -e _main -lassimp -lglew -lm -lc++ -lc -macosx_version_min 10.10
 

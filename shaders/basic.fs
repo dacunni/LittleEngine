@@ -20,13 +20,17 @@ uniform int numLights;
 void main()
 {
     vec3 normal = normalize(vNormal.xyz);
-    vec3 baseColor = vec3(0.5, 0.5, 0.5);
+    vec4 baseColor = vec4(0.5, 0.5, 0.5, 1.0);
 
     if(useTexture) {
-        baseColor = texture( tex, vUV ).rgb;
+        baseColor = texture( tex, vUV ).rgba;
     }
 
-    color = vec4(baseColor, 1.0);
+    color = baseColor;
+
+    if(color.a < 0.01) {
+        discard;
+    }
 
     vec3 lighting = vec3(0.0);
 

@@ -144,7 +144,7 @@ void makeSimpleScene()
     }
 #endif
 
-#if 1
+#if 0
     obj = new GameObject( engine.modelPath + "/casual-effects.com/bmw/bmw.obj" );
     //obj->setShaderProgram( cook_torrance_shader_program );
     obj->setShaderProgram( mesh_shader_program );
@@ -162,7 +162,7 @@ void makeSimpleScene()
     engine.gameObjects.push_back( obj );
 #endif
 
-#if 0
+#if 1
     obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
@@ -185,32 +185,42 @@ void makeSimpleScene()
 
 int main (int argc, char ** argv) 
 {
-    Engine & engine = Engine::instance();
-    engine.createWindow(argc, argv);
+    try {
+        Engine & engine = Engine::instance();
+        engine.createWindow(argc, argv);
 
-    // Parse command line arguments
-    const char * options = "v:f:";
-    int opt = 0;
+        // Parse command line arguments
+        const char * options = "v:f:";
+        int opt = 0;
 
-    while( (opt = getopt( argc, argv, options )) > -1 ) {
-        if( opt == '?' ) { exit(-1); }
-        switch( opt ) {
-            case 'v': vertex_shader_filename = optarg; break;
-            case 'f': fragment_shader_filename = optarg; break;
-            default:
-                fprintf( stderr, "Unsupported option '-%c'\n", opt );
+        while( (opt = getopt( argc, argv, options )) > -1 ) {
+            if( opt == '?' ) { exit(-1); }
+            switch( opt ) {
+                case 'v': vertex_shader_filename = optarg; break;
+                case 'f': fragment_shader_filename = optarg; break;
+                default:
+                          fprintf( stderr, "Unsupported option '-%c'\n", opt );
+            }
         }
+
+        // Make a scene
+        makeSimpleScene();
+        //makeCookTorranceScene();
+        //makeSponzaScene();
+        //makeLotsOfThings();
+
+        //buildPointCloud();
+
+        engine.start();
     }
-
-    // Make a scene
-    makeSimpleScene();
-    //makeCookTorranceScene();
-    //makeSponzaScene();
-    //makeLotsOfThings();
-
-    //buildPointCloud();
-
-    engine.start();
+    catch(std::exception & e) {
+        std::cerr << "Caught exception: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    catch(...) {
+        std::cerr << "Caught exception" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
