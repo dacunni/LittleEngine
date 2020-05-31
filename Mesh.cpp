@@ -137,7 +137,146 @@ Mesh * makeMeshCube()
 {
     Mesh * mesh = new Mesh();
 
-    // IMPLEMENT ME
+    const int numFaces = 6;
+
+    mesh->vertices.resize(4 * numFaces);
+    mesh->normals.resize(4 * numFaces);
+    mesh->indices.resize(6 * numFaces);
+    mesh->textureUVCoords.resize(4 * numFaces);
+
+    float s = 0.5f;
+
+    // Bottom
+    uint32_t vbase = 0;
+    uint32_t ibase = 0;
+    mesh->vertices[vbase + 0] = Vector4(-s, -s, +s);
+    mesh->vertices[vbase + 1] = Vector4(-s, -s, -s);
+    mesh->vertices[vbase + 2] = Vector4(+s, -s, -s);
+    mesh->vertices[vbase + 3] = Vector4(+s, -s, +s);
+    mesh->normals[vbase + 0] = Vector4(0, -1, 0);
+    mesh->normals[vbase + 1] = Vector4(0, -1, 0);
+    mesh->normals[vbase + 2] = Vector4(0, -1, 0);
+    mesh->normals[vbase + 3] = Vector4(0, -1, 0);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
+
+    // Top
+    vbase += 4;
+    ibase += 6;
+    mesh->vertices[vbase + 0] = Vector4(-s, +s, +s);
+    mesh->vertices[vbase + 1] = Vector4(-s, +s, -s);
+    mesh->vertices[vbase + 2] = Vector4(+s, +s, -s);
+    mesh->vertices[vbase + 3] = Vector4(+s, +s, +s);
+    mesh->normals[vbase + 0] = Vector4(0, +1, 0);
+    mesh->normals[vbase + 1] = Vector4(0, +1, 0);
+    mesh->normals[vbase + 2] = Vector4(0, +1, 0);
+    mesh->normals[vbase + 3] = Vector4(0, +1, 0);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
+
+    // Left
+    vbase += 4;
+    ibase += 6;
+    mesh->vertices[vbase + 0] = Vector4(-s, -s, +s);
+    mesh->vertices[vbase + 1] = Vector4(-s, -s, -s);
+    mesh->vertices[vbase + 2] = Vector4(-s, +s, -s);
+    mesh->vertices[vbase + 3] = Vector4(-s, +s, +s);
+    mesh->normals[vbase + 0] = Vector4(-1, 0, 0);
+    mesh->normals[vbase + 1] = Vector4(-1, 0, 0);
+    mesh->normals[vbase + 2] = Vector4(-1, 0, 0);
+    mesh->normals[vbase + 3] = Vector4(-1, 0, 0);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
+
+    // Right
+    vbase += 4;
+    ibase += 6;
+    mesh->vertices[vbase + 0] = Vector4(+s, -s, +s);
+    mesh->vertices[vbase + 1] = Vector4(+s, -s, -s);
+    mesh->vertices[vbase + 2] = Vector4(+s, +s, -s);
+    mesh->vertices[vbase + 3] = Vector4(+s, +s, +s);
+    mesh->normals[vbase + 0] = Vector4(+1, 0, 0);
+    mesh->normals[vbase + 1] = Vector4(+1, 0, 0);
+    mesh->normals[vbase + 2] = Vector4(+1, 0, 0);
+    mesh->normals[vbase + 3] = Vector4(+1, 0, 0);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
+
+    // Back
+    vbase += 4;
+    ibase += 6;
+    mesh->vertices[vbase + 0] = Vector4(-s, +s, -s);
+    mesh->vertices[vbase + 1] = Vector4(-s, -s, -s);
+    mesh->vertices[vbase + 2] = Vector4(+s, -s, -s);
+    mesh->vertices[vbase + 3] = Vector4(+s, +s, -s);
+    mesh->normals[vbase + 0] = Vector4(0, 0, -1);
+    mesh->normals[vbase + 1] = Vector4(0, 0, -1);
+    mesh->normals[vbase + 2] = Vector4(0, 0, -1);
+    mesh->normals[vbase + 3] = Vector4(0, 0, -1);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
+
+    // Front
+    vbase += 4;
+    ibase += 6;
+    mesh->vertices[vbase + 0] = Vector4(-s, +s, +s);
+    mesh->vertices[vbase + 1] = Vector4(-s, -s, +s);
+    mesh->vertices[vbase + 2] = Vector4(+s, -s, +s);
+    mesh->vertices[vbase + 3] = Vector4(+s, +s, +s);
+    mesh->normals[vbase + 0] = Vector4(0, 0, +1);
+    mesh->normals[vbase + 1] = Vector4(0, 0, +1);
+    mesh->normals[vbase + 2] = Vector4(0, 0, +1);
+    mesh->normals[vbase + 3] = Vector4(0, 0, +1);
+    mesh->textureUVCoords[vbase + 0] = { 0.0, 0.0 };
+    mesh->textureUVCoords[vbase + 1] = { 0.0, 1.0 };
+    mesh->textureUVCoords[vbase + 2] = { 1.0, 1.0 };
+    mesh->textureUVCoords[vbase + 3] = { 1.0, 0.0 };
+    mesh->indices[ibase + 0] = vbase + 0;
+    mesh->indices[ibase + 1] = vbase + 1;
+    mesh->indices[ibase + 2] = vbase + 2;
+    mesh->indices[ibase + 3] = vbase + 0;
+    mesh->indices[ibase + 4] = vbase + 2;
+    mesh->indices[ibase + 5] = vbase + 3;
 
     return mesh;
 }
