@@ -76,6 +76,7 @@ class Engine
     protected:
         void setViewport( int width, int height );
         void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
+        void drawScene();
         void drawUserInterface();
         void drawEngineWindow();
 

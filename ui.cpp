@@ -162,7 +162,7 @@ void makeSimpleScene()
     engine.gameObjects.push_back( obj );
 #endif
 
-#if 1
+#if 0
     obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );

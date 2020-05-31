@@ -96,7 +96,7 @@ void Engine::createWindow(int & argc, char ** argv )
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(800, 400, "LittleEngine", NULL, NULL);
+    window = glfwCreateWindow(1200, 600, "LittleEngine", NULL, NULL);
     if(!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -279,7 +279,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
     }
 }
 
-void Engine::repaintViewport() 
+void Engine::drawScene()
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
@@ -309,6 +309,11 @@ void Engine::repaintViewport()
     glDisable( GL_DEPTH_TEST );
 
     GL_WARN_IF_ERROR();
+}
+
+void Engine::repaintViewport() 
+{
+    drawScene();
 
     glfwPollEvents();
 
