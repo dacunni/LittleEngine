@@ -53,3 +53,18 @@ void BufferObject::bind(GLenum target)
     glBindBuffer(target, value);
 }
 
+std::string OpenGLErrorString(GLenum status)
+{
+    std::string errstr;
+
+    switch(status) {
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+            errstr += "Framebuffer incomplete attachment"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            errstr += "Framebuffer missing attachment"; break;
+        default: errstr += "OpenGL error code + " + std::to_string(status);
+    }
+
+    return errstr;
+}
+

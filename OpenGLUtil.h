@@ -1,6 +1,8 @@
 #ifndef _OPENGL_UTIL_H_
 #define _OPENGL_UTIL_H_
 
+#include <string>
+
 #define USE_GLFW
 
 #include <GL/glew.h>
@@ -51,5 +53,6 @@ struct BufferObject {
     GLuint value;
 };
 
+std::string OpenGLErrorString(GLenum status);
 
 #endif

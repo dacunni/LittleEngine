@@ -29,6 +29,11 @@ Engine::Engine()
     //addLight(0.0, 6.0, -6.0, 0.6, 1.2, 0.6);
 }
 
+Engine::~Engine()
+{
+    glDeleteFramebuffers(1, &mainCameraFBO);
+}
+
 Transform Engine::cameraTranslation()
 {
     return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z );
@@ -96,7 +101,10 @@ void Engine::createWindow(int & argc, char ** argv )
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    window = glfwCreateWindow(1200, 600, "LittleEngine", NULL, NULL);
+    fbWidth = 1200;
+    fbHeight = 600;
+
+    window = glfwCreateWindow(fbWidth, fbHeight, "LittleEngine", NULL, NULL);
     if(!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -129,6 +137,38 @@ void Engine::createWindow(int & argc, char ** argv )
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    fbAspectRatio = (float) fbWidth / fbHeight;
+
+    // Framebuffers
+
+    glGenFramebuffers(1, &mainCameraFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, mainCameraFBO);
+
+    // Color Attachment
+    glGenTextures(1, &mainCameraColorTexture);
+    glBindTexture(GL_TEXTURE_2D, mainCameraColorTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainCameraColorTexture, 0);
+
+    // Depth Attachment
+    glGenTextures(1, &mainCameraDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, mainCameraDepthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, fbWidth, fbHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mainCameraDepthTexture, 0);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        throw std::runtime_error("Main camera FBO is not complete: " + OpenGLErrorString(status));
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Engine::start()
@@ -281,8 +321,6 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
 
 void Engine::drawScene()
 {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
     glViewport(0, 0, fbWidth, fbHeight);
 
     glClearColor( 0.2, 0.2, 0.3, 1.0 );
@@ -313,7 +351,28 @@ void Engine::drawScene()
 
 void Engine::repaintViewport() 
 {
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    fbAspectRatio = (float) fbWidth / fbHeight;
+
+#if 1
+    // Draw scene to main camera FBO
+    glBindFramebuffer(GL_FRAMEBUFFER, mainCameraFBO);
     drawScene();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Blit main camera FBO to window
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, mainCameraFBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, fbWidth, fbHeight,
+                      0, 0, fbWidth, fbHeight,
+                      GL_COLOR_BUFFER_BIT,
+                      GL_NEAREST);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+#else
+    drawScene();
+#endif
 
     glfwPollEvents();
 
@@ -369,6 +428,21 @@ void Engine::drawEngineWindow()
                 ImGui::TreePop();
             }
             ImGui::PopID();
+        }
+        ImGui::TreePop();
+    }
+
+    if(ImGui::TreeNode("Renderer")) {
+        if(ImGui::TreeNode("Main Framebuffer")) {
+            if(ImGui::TreeNode("Color Texture")) {
+                ImGui::Image((void*)(intptr_t)mainCameraColorTexture, ImVec2(100 * fbAspectRatio, 100), ImVec2(0,1), ImVec2(1,0));
+                ImGui::TreePop();
+            }
+            if(ImGui::TreeNode("Depth Texture")) {
+                ImGui::Image((void*)(intptr_t)mainCameraDepthTexture, ImVec2(100 * fbAspectRatio, 100), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
         }
         ImGui::TreePop();
     }

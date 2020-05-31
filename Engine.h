@@ -8,7 +8,7 @@ class Engine
 {
     public:
         Engine();
-        ~Engine() = default;
+        ~Engine();
 
         GameObject * hero = nullptr;
         std::vector<GameObject*> gameObjects;
@@ -84,6 +84,8 @@ class Engine
         float gameTime = 0.0f;
 
         GLFWwindow * window = nullptr;
+        int fbWidth, fbHeight;
+        float fbAspectRatio = 1.0f;
 
         int mouse_last_x = -1;
         int mouse_last_y = -1;
@@ -92,6 +94,11 @@ class Engine
         struct LightColor { float r, g, b; };
         std::vector<LightPosition> lightPositions;
         std::vector<LightColor> lightColors;
+
+        // Framebuffers
+        GLuint mainCameraFBO = 0;
+        GLuint mainCameraColorTexture = 0;
+        GLuint mainCameraDepthTexture = 0;
 };
 
 #endif
