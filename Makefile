@@ -22,7 +22,6 @@ HDR = \
 	Vector4.hpp \
 	Vector2.hpp
 
-
 leOBJ = \
 	AssetLoader.o \
     Engine.o \
@@ -40,6 +39,9 @@ leOBJ = \
 	Vector.o \
 	ui.o
 
+pythonOBJ = \
+	PythonBindings.o
+
 imguiOBJ = \
     extern/imgui/imgui.o \
     extern/imgui/imgui_draw.o \
@@ -53,19 +55,25 @@ INC += -Iextern/stb
 INC += -Iextern/imgui
 INC += -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 INC += -Iextern/imgui/examples
+INC += `python3 -m pybind11 --includes`
 
 CXXFLAGS = -std=c++11
 CXXFLAGS += -mmacosx-version-min=10.10
 CXXFLAGS += -Wno-deprecated
 #CXXFLAGS += -O2
 CXXFLAGS += -g
-LDXXFLAGS = -e _main -lassimp -lglew -lm -lc++ -lc -macosx_version_min 10.10
+LDXXFLAGS = -e _main -lassimp -lglew -lm -lc++ -lc
+LDXXFLAGS += -rpath extern/build/glfw/src extern/build/glfw/src/libglfw.3.4.dylib -framework OpenGL
 
-#leLDXXFLAGS = $(LDXXFLAGS) -framework GLUT -framework OpenGL
+leLDXXFLAGS = $(LDXXFLAGS) -macosx_version_min 10.10
+leLDXXFLAGS += -rpath extern/build/glfw/src extern/build/glfw/src/libglfw.3.4.dylib -framework OpenGL
 
-leLDXXFLAGS = $(LDXXFLAGS) -rpath extern/build/glfw/src extern/build/glfw/src/libglfw.3.4.dylib -framework OpenGL
+pythonLDXXFLAGS = -undefined dynamic_lookup
 
-all: le
+#pythonMODULE = $(addsuffix le, $(shell python3-config --extension-suffix))
+pythonMODULE = le.cpython-39-darwin.so
+
+all: le $(pythonMODULE)
 
 # Stash object files away in a separate directory so we don't have 
 # to look at them
@@ -74,14 +82,17 @@ OBJDIR = objs
 leOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(leOBJ))
 $(leOBJ_IN_DIR): | $(OBJDIR)
 
-#imguiOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(imguiOBJ))
-#$(imguiOBJ_IN_DIR): | $(OBJDIR)
+pythonOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(pythonOBJ))
+$(pythonOBJ_IN_DIR): | $(OBJDIR)
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
 le: $(leOBJ_IN_DIR) $(imguiOBJ)
 	ld $(leOBJ_IN_DIR) $(imguiOBJ) -o $@ $(leLDXXFLAGS)
+
+$(pythonMODULE): $(leOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR)
+	g++ -dynamiclib $(leOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR) -o $@ $(LDXXFLAGS) $(pythonLDXXFLAGS)
 
 $(OBJDIR)/%.o : %.cpp
 	g++ -c $< -o $@ $(CXXFLAGS) $(INC)
@@ -91,5 +102,6 @@ $(OBJDIR)/%.o : %.cpp
 
 clean:
 	rm -rf $(leOBJ_IN_DIR) $(imguiOBJ) le
+	rm -rf $(pythonOBJ_IN_DIR) $(pythonMODULE)
 	rmdir $(OBJDIR)
 
