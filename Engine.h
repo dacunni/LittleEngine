@@ -45,7 +45,8 @@ class Engine
         void userTimerUpdate( double timeNow, double deltaTime );
 
         // UI init and launch
-        void createWindow(int & argc, char ** argv );
+        void createWindow(int & argc, char ** argv);
+        void createWindow();
         void start();
 
         void repaintViewport();

@@ -22,7 +22,7 @@ HDR = \
 	Vector4.hpp \
 	Vector2.hpp
 
-leOBJ = \
+coreOBJ = \
 	AssetLoader.o \
     Engine.o \
 	GameObject.o \
@@ -36,7 +36,9 @@ leOBJ = \
 	ShaderProgram.o \
 	Timer.o \
 	Transform.o \
-	Vector.o \
+	Vector.o
+
+leOBJ = \
 	ui.o
 
 pythonOBJ = \
@@ -79,6 +81,9 @@ all: le $(pythonMODULE)
 # to look at them
 OBJDIR = objs
 
+coreOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(coreOBJ))
+$(coreOBJ_IN_DIR): | $(OBJDIR)
+
 leOBJ_IN_DIR = $(addprefix $(OBJDIR)/, $(leOBJ))
 $(leOBJ_IN_DIR): | $(OBJDIR)
 
@@ -88,11 +93,11 @@ $(pythonOBJ_IN_DIR): | $(OBJDIR)
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
-le: $(leOBJ_IN_DIR) $(imguiOBJ)
-	ld $(leOBJ_IN_DIR) $(imguiOBJ) -o $@ $(leLDXXFLAGS)
+le: $(coreOBJ_IN_DIR) $(leOBJ_IN_DIR) $(imguiOBJ)
+	ld $(coreOBJ_IN_DIR) $(leOBJ_IN_DIR) $(imguiOBJ) -o $@ $(leLDXXFLAGS)
 
-$(pythonMODULE): $(leOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR)
-	g++ -dynamiclib $(leOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR) -o $@ $(LDXXFLAGS) $(pythonLDXXFLAGS)
+$(pythonMODULE): $(coreOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR)
+	g++ -dynamiclib $(coreOBJ_IN_DIR) $(imguiOBJ) $(pythonOBJ_IN_DIR) -o $@ $(LDXXFLAGS) $(pythonLDXXFLAGS)
 
 $(OBJDIR)/%.o : %.cpp
 	g++ -c $< -o $@ $(CXXFLAGS) $(INC)
@@ -101,6 +106,7 @@ $(OBJDIR)/%.o : %.cpp
 	g++ -c $< -o $@ $(CXXFLAGS) $(INC)
 
 clean:
+	rm -rf $(coreOBJ_IN_DIR) $(imguiOBJ) le
 	rm -rf $(leOBJ_IN_DIR) $(imguiOBJ) le
 	rm -rf $(pythonOBJ_IN_DIR) $(pythonMODULE)
 	rmdir $(OBJDIR)

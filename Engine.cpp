@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include "OpenGLUtil.h"
 #include "GameObject.h"
@@ -92,6 +93,9 @@ void Engine::createWindow(int & argc, char ** argv )
 {
     // TODO
     //glfwSetErrorCallback(error_callback);
+
+    // WAR: Save the working directory because GLFW changes it
+    char * workingDirectory = getwd(nullptr);
 
     if(!glfwInit()) {
         fprintf(stderr, "Error from glfwInit()\n");
@@ -193,6 +197,11 @@ void Engine::createWindow(int & argc, char ** argv )
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // WAR: Restore working directory (see above)
+    chdir(workingDirectory);
+    free(workingDirectory);
+
+#if 1
     auto mesh_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
     shadowMapCamera = new GameObject();
@@ -202,8 +211,14 @@ void Engine::createWindow(int & argc, char ** argv )
     shadowMapCamera->position = Vector4( 0.0, 0.0, 0.0 );
     shadowMapCamera->renderables.push_back(shape);
     gameObjects.push_back(shadowMapCamera);
+#endif
+}
 
-
+void Engine::createWindow()
+{
+    int argc = 1;
+    char * argv[] = { "le", nullptr };
+    createWindow(argc, argv);
 }
 
 void Engine::start()

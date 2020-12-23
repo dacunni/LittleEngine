@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <unistd.h>
 
 #include "ShaderProgram.h"
 
@@ -21,7 +22,13 @@ const char * shaderTypeAsString( GLuint type )
 void Shader::loadFile( GLuint type, const std::string filename )
 {
     printf("Loading shader from file %s\n", filename.c_str());
+
     std::ifstream ifs( filename );
+
+    if(ifs.fail()) {
+        std::cerr << strerror(errno) << '\n';
+    }
+
     std::stringstream ss;
     ss << ifs.rdbuf();
     std::string src = ss.str();
@@ -34,7 +41,7 @@ void Shader::loadSource( GLuint type, const std::string & src )
     int status = 0;
 
     id = glCreateShader( type );    
-#if 0
+#if 1
     printf( ">>>> %s id=%u >>>>\n%s<<<< %s id=%u <<<<\n", 
             type_string, id, src.c_str(), type_string, id );
 #endif
