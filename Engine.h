@@ -99,6 +99,12 @@ class Engine
         GLuint mainCameraFBO = 0;
         GLuint mainCameraColorTexture = 0;
         GLuint mainCameraDepthTexture = 0;
+
+        GLuint shadowMapFBO = 0;
+        GLuint shadowMapDepthTexture = 0;
+
+        GameObject * shadowMapCamera = nullptr;
+
 };
 
 #endif

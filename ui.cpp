@@ -17,15 +17,6 @@
 const char * vertex_shader_filename = "shaders/basic.vs";
 const char * fragment_shader_filename = "shaders/basic.fs";
 
-std::shared_ptr<Program> createShaderProgram( const char * vs, const char * fs ) 
-{
-    auto program = std::make_shared<Program>();
-    if(!program->loadVertexFragmentFiles(vs, fs)) {
-        return nullptr;
-    }
-    return program;
-}
-
 #if 0
 void buildPointCloud( void ) 
 {
@@ -183,6 +174,39 @@ void makeSimpleScene()
 #endif
 }
 
+void makeSanMiguelScene()
+{
+    Engine & engine = Engine::instance();
+
+    auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
+    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
+    auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
+    if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
+
+    GameObject * obj = nullptr;
+
+    // Load shared textures
+    auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
+    GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
+
+#if 1
+    //obj = new GameObject( engine.modelPath + "/san-miguel/san-miguel.obj" );
+    obj = new GameObject( engine.modelPath + "/san-miguel-2/san-miguel.obj" );
+    obj->setShaderProgram( mesh_shader_program );
+    engine.gameObjects.push_back(obj);
+#endif
+
+#if 1
+    obj = new GameObject();
+    auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
+    ground->upload();
+    ground->setShaderProgram( mesh_shader_program );
+    ground->setTexture( uvGridTextureID );
+    obj->position = Vector4( 0.0, -0.01, 0.0 );
+    obj->renderables.push_back(ground);
+    engine.gameObjects.push_back(obj);
+#endif
+}
 int main (int argc, char ** argv) 
 {
     try {
@@ -207,6 +231,7 @@ int main (int argc, char ** argv)
         makeSimpleScene();
         //makeCookTorranceScene();
         //makeSponzaScene();
+        //makeSanMiguelScene();
         //makeLotsOfThings();
 
         //buildPointCloud();

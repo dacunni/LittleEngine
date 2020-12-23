@@ -109,3 +109,14 @@ bool Program::loadVertexFragmentFiles(const std::string & vsFilename,
     return valid();
 }
 
+std::shared_ptr<Program> createShaderProgram(const char * vs, const char * fs) 
+{
+    auto program = std::make_shared<Program>();
+
+    if(!program->loadVertexFragmentFiles(vs, fs)) {
+        return nullptr;
+    }
+
+    return program;
+}
+

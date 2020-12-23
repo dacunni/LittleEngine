@@ -143,10 +143,11 @@ void Engine::createWindow(int & argc, char ** argv )
 
     // Framebuffers
 
+    // Main Framebuffer
     glGenFramebuffers(1, &mainCameraFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, mainCameraFBO);
 
-    // Color Attachment
+    //   Color Attachment
     glGenTextures(1, &mainCameraColorTexture);
     glBindTexture(GL_TEXTURE_2D, mainCameraColorTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -154,7 +155,7 @@ void Engine::createWindow(int & argc, char ** argv )
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainCameraColorTexture, 0);
 
-    // Depth Attachment
+    //   Depth Attachment
     glGenTextures(1, &mainCameraDepthTexture);
     glBindTexture(GL_TEXTURE_2D, mainCameraDepthTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, fbWidth, fbHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
@@ -162,6 +163,7 @@ void Engine::createWindow(int & argc, char ** argv )
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mainCameraDepthTexture, 0);
 
+    //   Validation
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if(status != GL_FRAMEBUFFER_COMPLETE) {
@@ -169,6 +171,39 @@ void Engine::createWindow(int & argc, char ** argv )
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Shadow Map Framebuffer
+    glGenFramebuffers(1, &shadowMapFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+
+    //   Depth Attachment
+    glGenTextures(1, &shadowMapDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, shadowMapDepthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, fbWidth, fbHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapDepthTexture, 0);
+
+    //   Validation
+    status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        throw std::runtime_error("Shadow map FBO is not complete: " + OpenGLErrorString(status));
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    auto mesh_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
+    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
+    shadowMapCamera = new GameObject();
+    auto shape = std::shared_ptr<Mesh>(makeMeshCube(0.1));
+    shape->upload();
+    shape->setShaderProgram( mesh_shader_program );
+    shadowMapCamera->position = Vector4( 0.0, 0.0, 0.0 );
+    shadowMapCamera->renderables.push_back(shape);
+    gameObjects.push_back(shadowMapCamera);
+
+
 }
 
 void Engine::start()

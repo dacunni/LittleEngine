@@ -38,4 +38,7 @@ class Program {
         GLuint id;
 };
 
+std::shared_ptr<Program> createShaderProgram(const char * vs, const char * fs);
+
+
 #endif

@@ -133,7 +133,7 @@ Mesh * makeMeshTetrahedron()
     return mesh;
 }
 
-Mesh * makeMeshCube()
+Mesh * makeMeshCube(float size)
 {
     Mesh * mesh = new Mesh();
 
@@ -144,7 +144,7 @@ Mesh * makeMeshCube()
     mesh->indices.resize(6 * numFaces);
     mesh->textureUVCoords.resize(4 * numFaces);
 
-    float s = 0.5f;
+    float s = 0.5f * size;
 
     // Bottom
     uint32_t vbase = 0;

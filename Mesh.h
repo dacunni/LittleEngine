@@ -78,8 +78,8 @@ class Mesh : public Renderable
 
 // Simple Shapes
 Mesh * makeMeshTetrahedron();
-Mesh * makeMeshCube();
-Mesh * makeMeshGroundPlatform( float size );
+Mesh * makeMeshCube(float size = 1.0f);
+Mesh * makeMeshGroundPlatform(float size);
 
 
 
