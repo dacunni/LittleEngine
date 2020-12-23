@@ -41,7 +41,7 @@ void Shader::loadSource( GLuint type, const std::string & src )
     int status = 0;
 
     id = glCreateShader( type );    
-#if 1
+#if 0
     printf( ">>>> %s id=%u >>>>\n%s<<<< %s id=%u <<<<\n", 
             type_string, id, src.c_str(), type_string, id );
 #endif

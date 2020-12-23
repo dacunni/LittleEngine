@@ -1,3 +1,4 @@
+#include <memory>
 #include <pybind11/pybind11.h>
 
 #include "OpenGLUtil.h"
@@ -83,7 +84,7 @@ PYBIND11_MODULE(le, m) {
     m.doc() = "LittleEngine";
 
     py::class_<Engine>(m, "Engine")
-        .def("instance", &Engine::instance)
+        .def(py::init<>())
         .def("createWindow", [](Engine & engine) { engine.createWindow(); })
         .def("start", &Engine::start);
 

@@ -14,14 +14,20 @@
 
 bool show_demo_window = true;
 
+static Engine * _instance = nullptr;
+
 Engine & Engine::instance() {
-    static Engine * _instance = nullptr;
-    if(!_instance) { _instance = new Engine(); }
+    if(!_instance) {
+        _instance = new Engine();
+    }
     return *_instance;
 }
 
 Engine::Engine()
 {
+    assert(!_instance);
+    _instance = this;
+
     addLight(10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
     addLight(-10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
     addLight(0.0, 6.0, -6.0, 1.0, 1.0, 1.0);
