@@ -21,6 +21,8 @@ GameObject::GameObject( const std::string & path,
         exit( EXIT_FAILURE );
     }
 
+    //printf("Mesh data ground size=%lu\n", meshDataGroup.size());
+
     for(auto & meshData : meshDataGroup) {
         std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
         mesh->vertices.insert(mesh->vertices.end(), meshData->vertices.begin(), meshData->vertices.end());
@@ -90,4 +92,8 @@ void GameObject::setF0( float F0 )
     for(auto & r : renderables) {
         r->setF0(F0);
     }
+}
+void GameObject::addRenderable(std::shared_ptr<Renderable> & r)
+{
+    renderables.push_back(r);
 }

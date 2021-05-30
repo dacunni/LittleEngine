@@ -10,8 +10,8 @@ class Engine
         Engine();
         ~Engine();
 
-        GameObject * hero = nullptr;
-        std::vector<GameObject*> gameObjects;
+        std::shared_ptr<GameObject> hero;
+        std::vector<std::shared_ptr<GameObject>> gameObjects;
         std::vector<GLuint> textureIds;
 
         std::string modelPath = "models";
@@ -59,6 +59,9 @@ class Engine
         void addLight(float x, float y, float z,
                       float r, float g, float b);
 
+        // Game Objects
+        void addGameObject(const std::shared_ptr<GameObject> & obj);
+
         // Callbacks
         void registerCallbacks();
         void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
@@ -104,7 +107,7 @@ class Engine
         GLuint shadowMapFBO = 0;
         GLuint shadowMapDepthTexture = 0;
 
-        GameObject * shadowMapCamera = nullptr;
+        std::shared_ptr<GameObject> shadowMapCamera;
 
 };
 

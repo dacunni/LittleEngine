@@ -30,6 +30,8 @@ class GameObject
         void setRoughness( float roughness );
         void setF0( float F0 );
 
+        void addRenderable(std::shared_ptr<Renderable> & r);
+
         std::vector<std::shared_ptr<Renderable>> renderables;
         Transform worldTransform;
         Vector4 position;

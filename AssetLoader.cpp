@@ -15,6 +15,8 @@ bool AssetLoader::loadMeshData(const std::string & filename,
                                MeshDataGroup & meshDatas,
                                std::vector<std::shared_ptr<ImageBase>> & textures)
 {
+    printf("AssetLoader::loadMeshData(%s, ...)\n", filename.c_str());
+
     if(meshDataCache.contains(filename)) {
         printf("Found mesh data cache entry for %s\n", filename.c_str());
         meshDatas = meshDataCache.get(filename);

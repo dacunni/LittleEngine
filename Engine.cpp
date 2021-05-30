@@ -206,18 +206,6 @@ void Engine::createWindow(int & argc, char ** argv )
     // WAR: Restore working directory (see above)
     chdir(workingDirectory);
     free(workingDirectory);
-
-#if 1
-    auto mesh_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/basic.fs" ); 
-    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
-    shadowMapCamera = new GameObject();
-    auto shape = std::shared_ptr<Mesh>(makeMeshCube(0.1));
-    shape->upload();
-    shape->setShaderProgram( mesh_shader_program );
-    shadowMapCamera->position = Vector4( 0.0, 0.0, 0.0 );
-    shadowMapCamera->renderables.push_back(shape);
-    gameObjects.push_back(shadowMapCamera);
-#endif
 }
 
 void Engine::createWindow()
@@ -321,8 +309,6 @@ void Engine::scrollCallback(GLFWwindow * window, double xoffset, double yoffset)
     }
     else {
         // Translation
-        //cameraPosition += cameraForward() * cameraScrollSpeed * yoffset
-        //               -cameraRight() * cameraScrollSpeed * xoffset;
         auto forward = cameraForward();
         forward.y = 0.0f;
         forward.normalize();
@@ -454,8 +440,8 @@ void Engine::drawEngineWindow()
     ImGui::Begin("Engine");
 
     if(ImGui::TreeNode("Game Objects")) {
-        for(GameObject * obj : gameObjects) {
-            ImGui::PushID(obj);
+        for(auto & obj : gameObjects) {
+            ImGui::PushID(obj.get());
             if(ImGui::TreeNode("Game Object")) {
                 if(ImGui::TreeNode("Renderables")) {
                     for(auto & renderable : obj->renderables) {
@@ -548,4 +534,8 @@ void Engine::addLight(float x, float y, float z,
     lightColors.push_back({r, g, b});
 }
 
+void Engine::addGameObject(const std::shared_ptr<GameObject> & obj)
+{
+    gameObjects.push_back(obj);
+}
 
