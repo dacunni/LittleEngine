@@ -13,12 +13,19 @@ out vec4 color;
 uniform sampler2D tex;
 uniform bool useTexture;
 
+uniform bool highlighted;
+
 uniform vec3 lightPositions[10];
 uniform vec3 lightIntensities[10];
 uniform int numLights;
  
 void main()
 {
+    if(highlighted) {
+        color = vec4(1.0, 1.0, 0.0, 1.0);
+        return;
+    }
+
     vec3 normal = normalize(vNormal.xyz);
     vec4 baseColor = vec4(0.5, 0.5, 0.5, 1.0);
 

@@ -345,21 +345,39 @@ void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 
 void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
 {
-    for(auto obj : gameObjects) {
+    for(auto & obj : gameObjects) {
         for(auto & renderable : obj->renderables) {
-            if(!renderable->visible)
-                continue;
-            renderable->useProgram();
-            renderable->setWorldMatrix( obj->worldTransform.fwd );
-            renderable->setViewMatrix( view );
-            renderable->setProjection( projection );
-            renderable->setCameraPosition( cameraPosition );
-            renderable->setAnimTime( gameTime );
-            renderable->setLights( (float*)lightPositions.data(), (float*)lightColors.data(), lightPositions.size() );
-            renderable->bind();
-            renderable->draw();
+            drawRenderable(projection, view, obj, renderable);
         }
     }
+}
+
+void Engine::drawRenderable( const Matrix4x4 & projection, const Matrix4x4 & view,
+                             std::shared_ptr<GameObject> & obj,
+                             std::shared_ptr<Renderable> & renderable )
+{
+    if(!renderable->visible)
+        return;
+
+    bool isHighlighted = false;
+
+    if(auto hi = highlightedGameObject.lock()) {
+        isHighlighted = (hi == obj);
+    }
+    if(auto hi = highlightedRenderable.lock()) {
+        isHighlighted |= (hi == renderable);
+    }
+
+    renderable->useProgram();
+    renderable->setWorldMatrix( obj->worldTransform.fwd );
+    renderable->setViewMatrix( view );
+    renderable->setProjection( projection );
+    renderable->setCameraPosition( cameraPosition );
+    renderable->setAnimTime( gameTime );
+    renderable->setHighlighted( isHighlighted );
+    renderable->setLights( (float*)lightPositions.data(), (float*)lightColors.data(), lightPositions.size() );
+    renderable->bind();
+    renderable->draw();
 }
 
 void Engine::drawScene()
@@ -440,24 +458,20 @@ void Engine::drawEngineWindow()
 {
     ImGui::Begin("Engine");
 
+    highlightedGameObject.reset();
+    highlightedRenderable.reset();
+
     if(ImGui::TreeNode("Game Objects")) {
         for(auto & obj : gameObjects) {
             ImGui::PushID(obj.get());
             bool gameObjectNodeOpen = ImGui::TreeNode("Game Object");
-            if (ImGui::IsItemHovered()) {
-                // TODO - highlight game object
-                ImGui::SetTooltip("I am a tooltip"); // TEMP
-                //highlightedGameObject = obj;
-            }
+            if(ImGui::IsItemHovered()) { highlightedGameObject = obj; }
             if(gameObjectNodeOpen) {
                 if(ImGui::TreeNode("Renderables")) {
                     for(auto & renderable : obj->renderables) {
                         ImGui::PushID(renderable.get());
                         bool renderableNodeOpen = ImGui::TreeNode("Renderable");
-                        if (ImGui::IsItemHovered()) {
-                            // TODO - highlight renderable
-                            ImGui::SetTooltip("I am a tooltip"); // TEMP
-                        }
+                        if(ImGui::IsItemHovered()) { highlightedRenderable = renderable; }
                         if(renderableNodeOpen) {
                             ImGui::PushItemWidth(100);
                             ImGui::Checkbox("Visible", &renderable->visible);

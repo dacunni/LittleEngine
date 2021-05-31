@@ -9,6 +9,7 @@ uniform float F0;
 uniform float anim_time;
 uniform sampler2D tex;
 uniform bool useTexture;
+uniform bool highlighted;
 
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
@@ -60,6 +61,11 @@ float specularReflection(vec3 worldPos, vec3 eye, vec3 normal, PointLight light)
 
 void main()
 {
+    if(highlighted) {
+        color = vec4(1.0, 1.0, 0.0, 1.0);
+        return;
+    }
+
     vec3 eye = normalize(cameraPosition.xyz - vWorldPosition.xyz);
     vec3 normal = normalize(vNormal.xyz);
     vec3 worldPos = vWorldPosition.xyz;

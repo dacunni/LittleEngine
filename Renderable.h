@@ -26,6 +26,7 @@ class Renderable
         void setProjection( const Matrix4x4 & mat );
         void setCameraPosition( const Vector4 & pos );
         void setAnimTime( float t );
+        void setHighlighted( bool highlighted );
         void setLights( float * pos, float * intensity, int numLights );
         void setTexture( GLuint texId );
         void setRoughness( float roughness );

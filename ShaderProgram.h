@@ -17,6 +17,7 @@ class Shader {
 
         bool valid() const { return id != 0; }
 
+        std::string description;
         GLuint id;
 };
 
@@ -32,6 +33,8 @@ class Program {
 
         bool loadVertexFragmentFiles(const std::string & vsFilename,
                                      const std::string & fsFilename);
+
+        GLint uniformLocation(const char * name);
 
         Shader vertexShader;
         Shader fragmentShader;

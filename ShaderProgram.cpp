@@ -33,6 +33,7 @@ void Shader::loadFile( GLuint type, const std::string filename )
     ss << ifs.rdbuf();
     std::string src = ss.str();
     loadSource( type, src );
+    description = filename;
 }
 
 void Shader::loadSource( GLuint type, const std::string & src )
@@ -45,6 +46,7 @@ void Shader::loadSource( GLuint type, const std::string & src )
     printf( ">>>> %s id=%u >>>>\n%s<<<< %s id=%u <<<<\n", 
             type_string, id, src.c_str(), type_string, id );
 #endif
+    description = "source";
 
     // Make an array of pointers for GL
     const char * srcs[] = { src.c_str() };
@@ -114,6 +116,19 @@ bool Program::loadVertexFragmentFiles(const std::string & vsFilename,
     link();
 
     return valid();
+}
+
+GLint Program::uniformLocation(const char * name)
+{
+    GLint loc = glGetUniformLocation(id, name);
+#if 0
+    printf("Uniform(program %u %s %s): %s -> %d\n", id,
+           vertexShader.description.c_str(),
+           fragmentShader.description.c_str(),
+           name, loc); 
+#endif
+    GL_WARN_IF_ERROR();
+    return loc;
 }
 
 std::shared_ptr<Program> createShaderProgram(const char * vs, const char * fs) 
