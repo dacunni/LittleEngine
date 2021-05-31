@@ -32,6 +32,7 @@ GameObject::GameObject( const std::string & path,
         if(meshData->hasTexture) {
             mesh->setTexture(meshData->textureId);
         }
+        mesh->setDiffuseColor(meshData->diffuseColor);
         mesh->upload();
         renderables.push_back(mesh);
     }

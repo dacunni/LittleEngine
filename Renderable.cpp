@@ -119,12 +119,19 @@ void Renderable::setF0( float F0 )
     this->F0 = F0;
 }
 
+void Renderable::setDiffuseColor( const RGBColor & c )
+{
+    diffuseColor = c;
+}
+
 void Renderable::uploadMaterialUniforms()
 {
     GLint loc = shaderProgram->uniformLocation("roughness");
     shaderProgram->setUniform(loc, roughness);
     loc = shaderProgram->uniformLocation("F0");
     shaderProgram->setUniform(loc, F0);
+    loc = shaderProgram->uniformLocation("diffuseColor");
+    shaderProgram->setUniform3fv(loc, 1, &diffuseColor.r);
 }
 
 void Renderable::uploadTextureUniforms()

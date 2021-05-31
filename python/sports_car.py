@@ -5,15 +5,41 @@ from le import *
 engine = Engine()
 engine.createWindow()
 
-#cornell_path = engine.modelPath + "/cornell-box/CornellBox-Original.obj"
-cornell_path = engine.modelPath + "/casual-effects.com/sportsCar/sportsCar.obj"
+# Shaders
+#shader = createShaderProgram("shaders/basic.vs", "shaders/basic.fs")
+shader = createShaderProgram("shaders/basic.vs", "shaders/cooktorrance.fs")
 
-shader = createShaderProgram("shaders/basic.vs", "shaders/basic.fs")
-#shader = createShaderProgram("shaders/basic.vs", "shaders/cooktorrance.fs")
+# Textures
+uv_grid_texture_index = engine.loadTexture(engine.texturePath + "/uvgrid.jpg")
+uv_grid_texture_id = engine.textureIdAtIndex(uv_grid_texture_index)
 
-obj = GameObject(cornell_path)
+sports_car_path = engine.modelPath + "/casual-effects.com/sportsCar/sportsCar.obj"
+obj = GameObject(sports_car_path)
 obj.setShaderProgram(shader)
+obj.setRoughness(0.5)
+obj.scaleFactor = 1.3
+obj.position = Vector4(-3.0, 0.0, 0.0)
 engine.addGameObject(obj)
+
+bmw_path = engine.modelPath + "/casual-effects.com/bmw/bmw.obj";
+obj = GameObject(bmw_path)
+obj.setShaderProgram(shader)
+obj.setRoughness(0.5)
+obj.scaleFactor = 0.008
+obj.position = Vector4(3.0, 0.0, 0.0)
+engine.addGameObject(obj)
+
+# Ground
+
+obj = GameObject()
+ground = makeMeshGroundPlatform(30.0)
+ground.upload()
+ground.setShaderProgram(shader)
+ground.setTexture(uv_grid_texture_id)
+obj.position = Vector4(0.0, -0.01, 0.0)
+obj.addRenderable(ground)
+engine.addGameObject(obj)
+
 
 print("starting engine")
 engine.start()

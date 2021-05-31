@@ -3,6 +3,7 @@
 uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 diffuseColor;
 in vec4 vObjSpacePosition;
 in vec4 vPosition;
 in vec4 vWorldPosition;
@@ -27,7 +28,8 @@ void main()
     }
 
     vec3 normal = normalize(vNormal.xyz);
-    vec4 baseColor = vec4(0.5, 0.5, 0.5, 1.0);
+    //vec4 baseColor = vec4(0.5, 0.5, 0.5, 1.0);
+    vec4 baseColor = vec4(diffuseColor, 1.0);
 
     if(useTexture) {
         baseColor = texture( tex, vUV ).rgba;

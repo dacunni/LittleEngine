@@ -4,6 +4,7 @@ uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec4 cameraPosition;
+uniform vec3 diffuseColor;
 uniform float roughness;
 uniform float F0;
 uniform float anim_time;
@@ -79,7 +80,8 @@ void main()
         float NdL = max(dot(normal, normalize(toLight)), 0);
 
         vec3 Ka = vec3(0.0);
-        vec3 Kd = vec3(0.3);
+        //vec3 Kd = vec3(0.3);
+        vec3 Kd = diffuseColor;
         if(useTexture) {
             Kd = texture( tex, vUV ).rgb;
         }

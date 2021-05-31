@@ -9,8 +9,6 @@
 #include "Renderable.h"
 #include "Vector4.h"
 
-struct UVCoord { float u, v; };
-
 struct MeshData
 {
     std::vector<Vector4>  vertices;
@@ -25,6 +23,8 @@ struct MeshData
 
     GLuint textureId = 0;
     bool hasTexture = false;
+
+    RGBColor diffuseColor = { 0.0f, 1.0f, 0.0f };
 };
 
 using MeshDataGroup = std::vector<std::shared_ptr<MeshData>>;

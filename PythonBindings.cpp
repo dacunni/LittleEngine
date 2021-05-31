@@ -16,16 +16,6 @@ void makeSimpleScene(Engine & engine)
 
     auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
     if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
-#if 0
-    auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
-    if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
-
-    std::shared_ptr<GameObject> obj;
-
-    // Load shared textures
-    auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
-    GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
-#endif
 
 #if 1
     auto hero = std::make_shared<GameObject>( engine.bunnyPath + "/bun_zipper.ply" );
@@ -45,41 +35,6 @@ void makeSimpleScene(Engine & engine)
     };
     engine.addGameObject(hero);
 
-#if 0
-    auto rustPaintTextureIndex = engine.loadTexture(engine.texturePath + "/Rust_Paint_03_UV_H_CM_1.jpg");
-    GLuint rustPaintTextureID = engine.textureIdAtIndex(rustPaintTextureIndex);
-
-    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    //obj->setShaderProgram( mesh_shader_program );
-    obj->setShaderProgram( cook_torrance_shader_program );
-    obj->position = Vector4( -3.0, 0.0, 0.0 );
-    engine.addGameObject(obj);
-
-    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->setShaderProgram( mesh_shader_program );
-    obj->position = Vector4( 0.0, 0.0, 0.0 );
-    obj->setTexture( uvGridTextureID );
-    engine.addGameObject(obj);
-
-    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
-    obj->setShaderProgram( cook_torrance_shader_program );
-    obj->position = Vector4( 3.0, 0.0, 0.0 );
-    obj->setRoughness( 0.3 );
-    obj->setTexture( rustPaintTextureID );
-    engine.addGameObject(obj);
-#endif
-#endif
-
-
-#if 0
-    obj = std::make_shared<GameObject>();
-    auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
-    ground->upload();
-    ground->setShaderProgram( mesh_shader_program );
-    ground->setTexture( uvGridTextureID );
-    obj->position = Vector4( 0.0, -0.01, 0.0 );
-    obj->renderables.push_back(ground);
-    engine.addGameObject(obj);
 #endif
 }
 
@@ -111,6 +66,7 @@ PYBIND11_MODULE(le, m) {
                 return std::make_shared<GameObject>(path);
              }))
         .def_readwrite("position", &GameObject::position)
+        .def_readwrite("scaleFactor", &GameObject::scaleFactor)
         .def("addRenderable", &GameObject::addRenderable)
         .def("setShaderProgram", &GameObject::setShaderProgram)
         .def("setRoughness", &GameObject::setRoughness)

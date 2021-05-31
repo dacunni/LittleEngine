@@ -8,6 +8,9 @@ class Matrix4x4;
 class Program;
 class Vector4;
 
+struct UVCoord { float u, v; };
+struct RGBColor { float r, g, b; };
+
 class Renderable
 {
     public:
@@ -31,6 +34,7 @@ class Renderable
         void setTexture( GLuint texId );
         void setRoughness( float roughness );
         void setF0( float F0 );
+        void setDiffuseColor( const RGBColor & c );
         void uploadMaterialUniforms();
         void uploadTextureUniforms();
 
@@ -51,6 +55,7 @@ class Renderable
         // Material properties
         float roughness = 0.1;
         float F0 = 0.25;
+        RGBColor diffuseColor;
 
         bool visible = true;
 };

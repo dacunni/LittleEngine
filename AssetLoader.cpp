@@ -95,12 +95,17 @@ bool AssetLoader::loadMeshData(const std::string & filename,
         aiMesh * aimesh = scene->mMeshes[mesh_index];
         bool has_uv = aimesh->GetNumUVChannels() > 0 && aimesh->mNumUVComponents[0] >= 2;
 
-        printf( "Mesh[%u] Has Positions=%d(%u) Faces=%d(%u) Normals=%d Bones=%d NumUV=%d (%d) Material=%u Name='%s'\n", mesh_index, 
+        printf( "Mesh[%u] Has Positions=%d(%u) Faces=%d(%u) "
+                "Normals=%d Bones=%d NumUV=%d (%d) "
+                "HasVCols=%d "
+                "Material=%u Name='%s'\n",
+                mesh_index, 
                 (int) aimesh->HasPositions(), aimesh->mNumVertices,
                 (int) aimesh->HasFaces(), aimesh->mNumFaces,
                 (int) aimesh->HasNormals(),
                 (int) aimesh->HasBones(),
                 (int) aimesh->GetNumUVChannels(), (int) aimesh->mNumUVComponents[0],
+                (int) aimesh->HasVertexColors(0),
                 aimesh->mMaterialIndex,
                 aimesh->mName.C_Str()
               );
@@ -119,6 +124,10 @@ bool AssetLoader::loadMeshData(const std::string & filename,
             auto textureId = diffuseTextureIndexToTextureID[textureIndex];
             meshData.setTexture(textureId);
         }
+        aiColor3D diffuseColor(0.f,0.f,0.f);
+        auto & material = scene->mMaterials[aimesh->mMaterialIndex];
+        material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
+        meshData.diffuseColor = { diffuseColor.r, diffuseColor.g, diffuseColor.b };
 
         for( unsigned int vi = 0; vi < aimesh->mNumVertices; ++vi ) {
             const auto v = aimesh->mVertices[vi];
