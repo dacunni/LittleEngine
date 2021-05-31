@@ -35,6 +35,12 @@ class Program {
                                      const std::string & fsFilename);
 
         GLint uniformLocation(const char * name);
+        void setUniform(GLint loc, int value);
+        void setUniform(GLint loc, bool value);
+        void setUniform(GLint loc, float value);
+        void setUniform3fv(GLint loc, int count, const float * values);
+        void setUniform4fv(GLint loc, int count, const float * values);
+        void setUniformMatrix4fv(GLint loc, int count, const float * values);
 
         Shader vertexShader;
         Shader fragmentShader;

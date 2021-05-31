@@ -56,55 +56,37 @@ void Renderable::useProgram()
 void Renderable::setWorldMatrix( const Matrix4x4 & mat )
 {
     GLint loc = shaderProgram->uniformLocation("world");
-    if(loc > -1) {
-        glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
 void Renderable::setViewMatrix( const Matrix4x4 & mat )
 {
     GLint loc = shaderProgram->uniformLocation("view");
-    if(loc > -1) {
-        glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
 void Renderable::setProjection( const Matrix4x4 & mat )
 {
     GLint loc = shaderProgram->uniformLocation("projection");
-    if(loc > -1) {
-        glUniformMatrix4fv( loc, 1, GL_TRUE, mat.data );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
 void Renderable::setCameraPosition( const Vector4 & pos )
 {
     GLint loc = shaderProgram->uniformLocation("cameraPosition");
-    if(loc > -1) {
-        glUniform4fv( loc, 1, pos.data );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform4fv(loc, 1, pos.data);
 }
 
 void Renderable::setAnimTime( float t )
 {
     GLint loc = shaderProgram->uniformLocation("anim_time");
-    if(loc > -1) {
-        glUniform1f( loc, t );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, t);
 }
 
 void Renderable::setHighlighted( bool highlighted )
 {
     GLint loc = shaderProgram->uniformLocation("highlighted");
-    if(loc > -1) {
-        glUniform1i( loc, (int) highlighted );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, highlighted);
 }
 
 void Renderable::setLights( float * pos, float * intensity, int numLights )
@@ -112,22 +94,13 @@ void Renderable::setLights( float * pos, float * intensity, int numLights )
     GLint loc;
 
     loc = shaderProgram->uniformLocation("numLights");
-    if(loc > -1) {
-        glUniform1i( loc, numLights );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, numLights);
 
     loc = shaderProgram->uniformLocation("lightPositions");
-    if(loc > -1) {
-        glUniform3fv( loc, numLights, pos );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform3fv(loc, numLights, pos);
 
     loc = shaderProgram->uniformLocation("lightIntensities");
-    if(loc > -1) {
-        glUniform3fv( loc, numLights, intensity );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform3fv(loc, numLights, intensity);
 }
 
 void Renderable::setTexture( GLuint texId )
@@ -149,30 +122,18 @@ void Renderable::setF0( float F0 )
 void Renderable::uploadMaterialUniforms()
 {
     GLint loc = shaderProgram->uniformLocation("roughness");
-    if(loc > -1) {
-        glUniform1f( loc, roughness );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, roughness);
     loc = shaderProgram->uniformLocation("F0");
-    if(loc > -1) {
-        glUniform1f( loc, F0 );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, F0);
 }
 
 void Renderable::uploadTextureUniforms()
 {
     GLint loc;
     loc = shaderProgram->uniformLocation("useTexture");
-    if( loc > -1 ) {
-        glUniform1i( loc, (int) hasTexture );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, hasTexture);
     loc = shaderProgram->uniformLocation("tex");
     GLint textureUnit = 0;
-    if( loc > -1 ) {
-        glUniform1i( loc, textureUnit );
-        GL_WARN_IF_ERROR();
-    }
+    shaderProgram->setUniform(loc, textureUnit);
 }
 

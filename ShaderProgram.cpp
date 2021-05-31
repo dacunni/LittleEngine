@@ -131,6 +131,46 @@ GLint Program::uniformLocation(const char * name)
     return loc;
 }
 
+void Program::setUniform(GLint loc, int value)
+{
+    if(loc < 0) { return; }
+    glUniform1i(loc, value);
+    GL_WARN_IF_ERROR();
+}
+
+void Program::setUniform(GLint loc, bool value)
+{
+    setUniform(loc, (int) value);
+}
+
+void Program::setUniform(GLint loc, float value)
+{
+    if(loc < 0) { return; }
+    glUniform1f(loc, value);
+    GL_WARN_IF_ERROR();
+}
+
+void Program::setUniform3fv(GLint loc, int count, const float * values)
+{
+    if(loc < 0) { return; }
+    glUniform3fv(loc, count, values);
+    GL_WARN_IF_ERROR();
+}
+
+void Program::setUniform4fv(GLint loc, int count, const float * values)
+{
+    if(loc < 0) { return; }
+    glUniform4fv(loc, count, values);
+    GL_WARN_IF_ERROR();
+}
+
+void Program::setUniformMatrix4fv(GLint loc, int count, const float * values)
+{
+    if(loc < 0) { return; }
+    glUniformMatrix4fv(loc, count, GL_TRUE, values);
+    GL_WARN_IF_ERROR();
+}
+
 std::shared_ptr<Program> createShaderProgram(const char * vs, const char * fs) 
 {
     auto program = std::make_shared<Program>();
