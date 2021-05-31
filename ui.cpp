@@ -41,7 +41,7 @@ void buildPointCloud( void )
     point_cloud->upload();
     point_cloud->setShaderProgram(createShaderProgram( "shaders/points.vs", "shaders/points.fs"));
 
-    GameObject * obj = new GameObject();
+    auto obj = std::make_shared<GameObject>();
     obj->renderable = point_cloud;
 
     engine.gameObjects.push_back( obj );
@@ -57,14 +57,14 @@ void makeSimpleScene()
     auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
-    GameObject * obj = nullptr;
+    std::shared_ptr<GameObject> obj = nullptr;
 
     // Load shared textures
     auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
     GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
 
 #if 1
-    GameObject * hero = new GameObject( engine.bunnyPath + "/bun_zipper.ply" );
+    auto hero = std::make_shared<GameObject>( engine.bunnyPath + "/bun_zipper.ply" );
     engine.hero = hero;
     hero->setShaderProgram( mesh_shader_program );
     hero->position = Vector4( 0.0, 0.0, -5.0 );
@@ -84,19 +84,19 @@ void makeSimpleScene()
     auto rustPaintTextureIndex = engine.loadTexture(engine.texturePath + "/Rust_Paint_03_UV_H_CM_1.jpg");
     GLuint rustPaintTextureID = engine.textureIdAtIndex(rustPaintTextureIndex);
 
-    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     //obj->setShaderProgram( mesh_shader_program );
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( -3.0, 0.0, 0.0 );
     engine.gameObjects.push_back(obj);
 
-    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 0.0, 0.0, 0.0 );
     obj->setTexture( uvGridTextureID );
     engine.gameObjects.push_back(obj);
 
-    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->position = Vector4( 3.0, 0.0, 0.0 );
     obj->setRoughness( 0.3 );
@@ -106,7 +106,7 @@ void makeSimpleScene()
 #endif
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba.obj" );
     obj->setShaderProgram( mesh_shader_program );
     //obj->setShaderProgram( cook_torrance_shader_program );
     engine.gameObjects.push_back(obj);
@@ -115,7 +115,7 @@ void makeSimpleScene()
 #if 1
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/uvmonkey.ply" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/uvmonkey.ply" );
     obj->setShaderProgram( cook_torrance_shader_program );
     obj->setTexture( uvGridTextureID );
     obj->setRoughness( 0.1 );
@@ -124,7 +124,7 @@ void makeSimpleScene()
 
     int numMatTestObj = 6;
     for(int i = 0; i < numMatTestObj; i++) {
-        obj = new GameObject( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
+        obj = std::make_shared<GameObject>( engine.modelPath + "/test_objects/mitsuba/mitsuba-sphere.obj" );
         obj->position = Vector4( -6.0, 0.0, -6.0 + 3.0 * i );
         obj->setShaderProgram( cook_torrance_shader_program );
         //obj->setRoughness( float(i) / float(numMatTestObj - 1) );
@@ -136,7 +136,7 @@ void makeSimpleScene()
 #endif
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/casual-effects.com/bmw/bmw.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/casual-effects.com/bmw/bmw.obj" );
     //obj->setShaderProgram( cook_torrance_shader_program );
     obj->setShaderProgram( mesh_shader_program );
     obj->setTexture( uvGridTextureID );
@@ -147,14 +147,14 @@ void makeSimpleScene()
 #endif
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/casual-effects.com/living_room/living_room.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/casual-effects.com/living_room/living_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
     engine.gameObjects.push_back( obj );
 #endif
 
 #if 0
-    obj = new GameObject( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/casual-effects.com/fireplace_room/fireplace_room.obj" );
     obj->setShaderProgram( mesh_shader_program );
     obj->position = Vector4( 6.0, 0.0, -8.0 );
     engine.gameObjects.push_back( obj );
@@ -163,7 +163,7 @@ void makeSimpleScene()
 #endif
 
 #if 1
-    obj = new GameObject();
+    obj = std::make_shared<GameObject>();
     auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
     ground->upload();
     ground->setShaderProgram( mesh_shader_program );
@@ -183,21 +183,21 @@ void makeSanMiguelScene()
     auto cook_torrance_shader_program = createShaderProgram( "shaders/basic.vs", "shaders/cooktorrance.fs" ); 
     if( !cook_torrance_shader_program ) { exit(EXIT_FAILURE); }
 
-    GameObject * obj = nullptr;
+    std::shared_ptr<GameObject> obj = nullptr;
 
     // Load shared textures
     auto uvGridTextureIndex = engine.loadTexture(engine.texturePath + "/uvgrid.jpg");
     GLuint uvGridTextureID = engine.textureIdAtIndex(uvGridTextureIndex);
 
 #if 1
-    //obj = new GameObject( engine.modelPath + "/san-miguel/san-miguel.obj" );
-    obj = new GameObject( engine.modelPath + "/san-miguel-2/san-miguel.obj" );
+    //obj = std::make_shared<GameObject>( engine.modelPath + "/san-miguel/san-miguel.obj" );
+    obj = std::make_shared<GameObject>( engine.modelPath + "/san-miguel-2/san-miguel.obj" );
     obj->setShaderProgram( mesh_shader_program );
     engine.gameObjects.push_back(obj);
 #endif
 
 #if 1
-    obj = new GameObject();
+    obj = std::make_shared<GameObject>();
     auto ground = std::shared_ptr<Mesh>(makeMeshGroundPlatform( 30.0 ));
     ground->upload();
     ground->setShaderProgram( mesh_shader_program );

@@ -14,6 +14,8 @@ class Engine
         std::vector<std::shared_ptr<GameObject>> gameObjects;
         std::vector<GLuint> textureIds;
 
+        std::weak_ptr<GameObject> highlightedGameObject;
+
         std::string modelPath = "models";
         std::string texturePath = "textures";
         std::string dragonPath = modelPath + "/stanford/dragon/reconstruction";

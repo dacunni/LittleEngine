@@ -85,10 +85,10 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
     if( keyState[GLFW_KEY_Q] && !anyMod ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
     if( keyState[GLFW_KEY_E] && !anyMod ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
     // Hero controls
-    if( keyState[GLFW_KEY_I] && !anyMod) { hero->position.z -= heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_K] && !anyMod) { hero->position.z += heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_J] && !anyMod) { hero->position.x -= heroSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_L] && !anyMod) { hero->position.x += heroSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_I] && !anyMod) { if(hero) { hero->position.z -= heroSpeed * deltaTime; } }
+    if( keyState[GLFW_KEY_K] && !anyMod) { if(hero) { hero->position.z += heroSpeed * deltaTime; } }
+    if( keyState[GLFW_KEY_J] && !anyMod) { if(hero) { hero->position.x -= heroSpeed * deltaTime; } }
+    if( keyState[GLFW_KEY_L] && !anyMod) { if(hero) { hero->position.x += heroSpeed * deltaTime; } }
 
     for(auto obj : gameObjects) {
         obj->updateAnimation(timeNow, deltaTime);
@@ -102,6 +102,7 @@ void Engine::createWindow(int & argc, char ** argv )
 
     // WAR: Save the working directory because GLFW changes it
     char * workingDirectory = getwd(nullptr);
+    printf("Working directory: %s\n", workingDirectory);
 
     if(!glfwInit()) {
         fprintf(stderr, "Error from glfwInit()\n");
@@ -442,11 +443,22 @@ void Engine::drawEngineWindow()
     if(ImGui::TreeNode("Game Objects")) {
         for(auto & obj : gameObjects) {
             ImGui::PushID(obj.get());
-            if(ImGui::TreeNode("Game Object")) {
+            bool gameObjectNodeOpen = ImGui::TreeNode("Game Object");
+            if (ImGui::IsItemHovered()) {
+                // TODO - highlight game object
+                ImGui::SetTooltip("I am a tooltip"); // TEMP
+                //highlightedGameObject = obj;
+            }
+            if(gameObjectNodeOpen) {
                 if(ImGui::TreeNode("Renderables")) {
                     for(auto & renderable : obj->renderables) {
                         ImGui::PushID(renderable.get());
-                        if(ImGui::TreeNode("Renderable")) {
+                        bool renderableNodeOpen = ImGui::TreeNode("Renderable");
+                        if (ImGui::IsItemHovered()) {
+                            // TODO - highlight renderable
+                            ImGui::SetTooltip("I am a tooltip"); // TEMP
+                        }
+                        if(renderableNodeOpen) {
                             ImGui::PushItemWidth(100);
                             ImGui::Checkbox("Visible", &renderable->visible);
                             ImGui::LabelText("Num Vertices", "%llu", renderable->numVertices);
