@@ -28,12 +28,9 @@ Engine::Engine()
     assert(!_instance);
     _instance = this;
 
-    addLight(10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
-    addLight(-10.0, 6.0, 6.0, 1.0, 1.0, 1.0);
-    addLight(0.0, 6.0, -6.0, 1.0, 1.0, 1.0);
-    //addLight(10.0, 6.0, 6.0, 1.0, 0.6, 0.6);
-    //addLight(-10.0, 6.0, 6.0, 0.6, 0.6, 1.0);
-    //addLight(0.0, 6.0, -6.0, 0.6, 1.2, 0.6);
+    addLight(10.0, 6.0, 6.0, 50.0, 50.0, 50.0);
+    addLight(-10.0, 6.0, 6.0, 50.0, 50.0, 50.0);
+    addLight(0.0, 6.0, -6.0, 50.0, 50.0, 50.0);
 }
 
 Engine::~Engine()
@@ -493,6 +490,21 @@ void Engine::drawEngineWindow()
                     }
                     ImGui::TreePop();
                 }
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
+        ImGui::TreePop();
+    }
+
+    if(ImGui::TreeNode("Lights")) {
+        unsigned int numLights = lightPositions.size();
+        for(unsigned int lightIndex = 0; lightIndex < numLights; ++lightIndex) {
+            ImGui::PushID(lightIndex);
+            auto & lightColor = lightColors[lightIndex];
+            if(ImGui::TreeNode("Point Light")) {
+                ImGui::ColorEdit3("MyColor##1", (float*)&lightColor.r,
+                                  ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
                 ImGui::TreePop();
             }
             ImGui::PopID();

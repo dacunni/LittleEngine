@@ -73,8 +73,10 @@ void main()
 
     for(int i = 0; i < numLights; i++) {
         PointLight light = PointLight(lightPositions[i], lightIntensities[i]);
-        vec3 toLight = normalize(light.position - worldPos);
-        float NdL = max(dot(normal, toLight), 0);
+        vec3 toLight = light.position - worldPos;
+        float dist = length(toLight);
+        float distSq = dist * dist;
+        float NdL = max(dot(normal, normalize(toLight)), 0);
 
         vec3 Ka = vec3(0.0);
         vec3 Kd = vec3(0.3);
@@ -82,9 +84,10 @@ void main()
             Kd = texture( tex, vUV ).rgb;
         }
 
-        vec3 ambient = Ka * light.color;
-        vec3 diffuse = Kd * light.color;
-        vec3 specular = vec3(specularReflection(worldPos, eye, normal, light)) * light.color;
+        vec3 Li = light.color / distSq;
+        vec3 ambient = Ka * Li;
+        vec3 diffuse = Kd * Li;
+        vec3 specular = vec3(specularReflection(worldPos, eye, normal, light)) * Li;
         color.rgb += ambient + NdL * (diffuse + (1.0 - Kd) * specular);
     }
 

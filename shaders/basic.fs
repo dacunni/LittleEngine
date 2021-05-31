@@ -42,9 +42,11 @@ void main()
     vec3 lighting = vec3(0.0);
 
     for(int i = 0; i < numLights; i++) {
-        vec3 toLight = normalize(lightPositions[i] - vWorldPosition.xyz);
-        float NdL = max(dot(normal, toLight), 0);
-        lighting += lightIntensities[i] * NdL;
+        vec3 toLight = lightPositions[i] - vWorldPosition.xyz;
+        float dist = length(toLight);
+        float distSq = dist * dist;
+        float NdL = max(dot(normal, normalize(toLight)), 0);
+        lighting += lightIntensities[i] * NdL / distSq;
     }
 
     color.rgb *= lighting;
