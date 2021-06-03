@@ -17,15 +17,15 @@ void PointCloud::upload()
     vao.bind();
 
     // Upload vertex positions
-    vbo.bind( GL_ARRAY_BUFFER );
+    vbo.bind( GL_ARRAY_BUFFER);
     GLsizeiptr vsize = vertices.size() * sizeof(vertices[0]);
     // allocate some space for all of our attributes
-    glBufferData( GL_ARRAY_BUFFER, vsize, NULL, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, vsize, NULL, GL_STATIC_DRAW);
     // upload positions
-    glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &vertices[0] );
+    glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &vertices[0]);
     GL_WARN_IF_ERROR();
-    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, 0 );
-    glEnableVertexAttribArray( POSITION_ATTRIB_INDEX );
+    glVertexAttribPointer( POSITION_ATTRIB_INDEX, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray( POSITION_ATTRIB_INDEX);
 
     numVertices = vertices.size();
     is_uploaded = true;
@@ -38,10 +38,10 @@ void PointCloud::bind()
 
 void PointCloud::draw()
 {
-    if( vao ) {
+    if( vao) {
         // Enable gl_PointSize in VS
-        glEnable( GL_PROGRAM_POINT_SIZE );
-        glDrawArrays( GL_POINTS, 0, numVertices );
+        glEnable( GL_PROGRAM_POINT_SIZE);
+        glDrawArrays( GL_POINTS, 0, numVertices);
         GL_WARN_IF_ERROR();
     }
 }

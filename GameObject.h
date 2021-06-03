@@ -10,9 +10,9 @@
 class GameObject
 {
     public:
-        GameObject( const std::string & path,
+        GameObject(const std::string & path,
                     bool normalizeScale = true,
-                    float normScaleFactor = 1.0f );
+                    float normScaleFactor = 1.0f);
         GameObject();
         ~GameObject();
 
@@ -25,10 +25,10 @@ class GameObject
         void updateAnimation(float gameTime, float deltaTime);
 
         // Pass-through setters. Call the equivalent on all renderables
-        void setShaderProgram( const std::shared_ptr<Program> & program );
-        void setTexture( GLuint texId );
-        void setRoughness( float roughness );
-        void setF0( float F0 );
+        void setShaderProgram(const std::shared_ptr<Program> & program);
+        void setTexture(GLuint texId);
+        void setRoughness(float roughness);
+        void setF0(float F0);
 
         void addRenderable(std::shared_ptr<Renderable> & r);
 

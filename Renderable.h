@@ -22,19 +22,19 @@ class Renderable
         virtual void bind();
         virtual void draw();
 
-        void setShaderProgram( const std::shared_ptr<Program> & program );
+        void setShaderProgram(const std::shared_ptr<Program> & program);
         void useProgram();
-        void setWorldMatrix( const Matrix4x4 & mat );
-        void setViewMatrix( const Matrix4x4 & mat );
-        void setProjection( const Matrix4x4 & mat );
-        void setCameraPosition( const Vector4 & pos );
-        void setAnimTime( float t );
-        void setHighlighted( bool highlighted );
-        void setLights( float * pos, float * intensity, int numLights );
-        void setTexture( GLuint texId );
-        void setRoughness( float roughness );
-        void setF0( float F0 );
-        void setDiffuseColor( const RGBColor & c );
+        void setWorldMatrix(const Matrix4x4 & mat);
+        void setViewMatrix(const Matrix4x4 & mat);
+        void setProjection(const Matrix4x4 & mat);
+        void setCameraPosition(const Vector4 & pos);
+        void setAnimTime(float t);
+        void setHighlighted(bool highlighted);
+        void setLights(float * pos, float * intensity, int numLights);
+        void setTexture(GLuint texId);
+        void setRoughness(float roughness);
+        void setF0(float F0);
+        void setDiffuseColor(const RGBColor & c);
         void uploadMaterialUniforms();
         void uploadTextureUniforms();
 

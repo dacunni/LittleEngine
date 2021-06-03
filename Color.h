@@ -12,11 +12,11 @@ typedef unsigned char RGBColorMask;
 
 class RGBColor {
     public:
-    RGBColor( float red, float green, float blue ) : r(red), g(green), b(blue) {}
+    RGBColor(float red, float green, float blue) : r(red), g(green), b(blue) {}
     RGBColor() : r(0.0f), g(0.0f), b(0.0f) {}
     ~RGBColor() {}
 
-    void setRGB( float red, float green, float blue ) { r = red; g = green; b = blue; }
+    void setRGB(float red, float green, float blue) { r = red; g = green; b = blue; }
 
     union {
         struct {

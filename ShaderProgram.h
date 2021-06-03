@@ -5,15 +5,15 @@
 
 #include "OpenGLUtil.h"
 
-const char * shaderTypeAsString( GLuint type );
+const char * shaderTypeAsString(GLuint type);
 
 class Shader {
     public:
         Shader() : id(0) {}
         ~Shader() {}
 
-        void loadFile( GLuint type, const std::string filename );
-        void loadSource( GLuint type, const std::string & src );
+        void loadFile(GLuint type, const std::string filename);
+        void loadSource(GLuint type, const std::string & src);
 
         bool valid() const { return id != 0; }
 
@@ -27,7 +27,7 @@ class Program {
         ~Program() {}
 
         void create();
-        void attach( Shader & shader );
+        void attach(Shader & shader);
         void link();
         bool valid() const { return id != 0; }
 

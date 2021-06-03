@@ -30,19 +30,19 @@ void Renderable::bind()
 
 void Renderable::draw()
 {
-    if( vao ) {
-        if( ibo ) {
-            glDrawElements( GL_TRIANGLES, numVertices, GL_UNSIGNED_INT, NULL );
+    if( vao) {
+        if( ibo) {
+            glDrawElements( GL_TRIANGLES, numVertices, GL_UNSIGNED_INT, NULL);
         }
         else {
             // If we don't have an index buffer object, just assume we can use the vertices in order
-            glDrawArrays( GL_TRIANGLES, 0, numVertices );
+            glDrawArrays( GL_TRIANGLES, 0, numVertices);
         }
         GL_WARN_IF_ERROR();
     }
 }
 
-void Renderable::setShaderProgram( const std::shared_ptr<Program> & program )
+void Renderable::setShaderProgram( const std::shared_ptr<Program> & program)
 {
     shaderProgram = program;
     glUseProgram(shaderProgram->id);
@@ -50,46 +50,46 @@ void Renderable::setShaderProgram( const std::shared_ptr<Program> & program )
 
 void Renderable::useProgram()
 {
-    glUseProgram( shaderProgram->id );
+    glUseProgram( shaderProgram->id);
 }
 
-void Renderable::setWorldMatrix( const Matrix4x4 & mat )
+void Renderable::setWorldMatrix( const Matrix4x4 & mat)
 {
     GLint loc = shaderProgram->uniformLocation("world");
     shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
-void Renderable::setViewMatrix( const Matrix4x4 & mat )
+void Renderable::setViewMatrix( const Matrix4x4 & mat)
 {
     GLint loc = shaderProgram->uniformLocation("view");
     shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
-void Renderable::setProjection( const Matrix4x4 & mat )
+void Renderable::setProjection( const Matrix4x4 & mat)
 {
     GLint loc = shaderProgram->uniformLocation("projection");
     shaderProgram->setUniformMatrix4fv(loc, 1, mat.data);
 }
 
-void Renderable::setCameraPosition( const Vector4 & pos )
+void Renderable::setCameraPosition( const Vector4 & pos)
 {
     GLint loc = shaderProgram->uniformLocation("cameraPosition");
     shaderProgram->setUniform4fv(loc, 1, pos.data);
 }
 
-void Renderable::setAnimTime( float t )
+void Renderable::setAnimTime( float t)
 {
     GLint loc = shaderProgram->uniformLocation("anim_time");
     shaderProgram->setUniform(loc, t);
 }
 
-void Renderable::setHighlighted( bool highlighted )
+void Renderable::setHighlighted( bool highlighted)
 {
     GLint loc = shaderProgram->uniformLocation("highlighted");
     shaderProgram->setUniform(loc, highlighted);
 }
 
-void Renderable::setLights( float * pos, float * intensity, int numLights )
+void Renderable::setLights( float * pos, float * intensity, int numLights)
 {
     GLint loc;
 
@@ -103,23 +103,23 @@ void Renderable::setLights( float * pos, float * intensity, int numLights )
     shaderProgram->setUniform3fv(loc, numLights, intensity);
 }
 
-void Renderable::setTexture( GLuint texId )
+void Renderable::setTexture( GLuint texId)
 {
     textureId = texId;
     hasTexture = true;
 }
 
-void Renderable::setRoughness( float roughness )
+void Renderable::setRoughness( float roughness)
 {
     this->roughness = std::max(roughness, 0.05f);
 }
 
-void Renderable::setF0( float F0 )
+void Renderable::setF0( float F0)
 {
     this->F0 = F0;
 }
 
-void Renderable::setDiffuseColor( const RGBColor & c )
+void Renderable::setDiffuseColor( const RGBColor & c)
 {
     diffuseColor = c;
 }

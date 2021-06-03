@@ -9,19 +9,19 @@ public:
 	RandomNumberGenerator();
 	~RandomNumberGenerator() {}
 	
-	inline float uniform01( void );
-	inline float uniformRange( float min, float max );
+	inline float uniform01(void);
+	inline float uniformRange(float min, float max);
     
-	void uniformSurfaceUnitSphere( float & x, float & y, float & z );
-    void uniformSurfaceUnitSphere( Vector4 & v );
-    void uniformSurfaceUnitHalfSphere( const Vector4 & half_space, Vector4 & v );
+	void uniformSurfaceUnitSphere(float & x, float & y, float & z);
+    void uniformSurfaceUnitSphere(Vector4 & v);
+    void uniformSurfaceUnitHalfSphere(const Vector4 & half_space, Vector4 & v);
     
-    void uniformVolumeUnitSphere( float & x, float & y, float & z );
+    void uniformVolumeUnitSphere(float & x, float & y, float & z);
     
 	void seedCurrentTime();
 
 private:
-	inline float uniform01Impl( void );
+	inline float uniform01Impl(void);
     void buildCache();
 	
     static const unsigned int CACHE_SIZE = 1000;

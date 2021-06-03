@@ -11,15 +11,15 @@ public:
     AssetLoader() = default;
     ~AssetLoader() = default;
     
-    bool loadMesh( const std::string & filename, Mesh & mesh,
+    bool loadMesh(const std::string & filename, Mesh & mesh,
                    bool normalizeScale = true,
-                   float normScaleFactor = 1.0 );
+                   float normScaleFactor = 1.0);
 
-    bool loadMeshes( const std::string & filename,
+    bool loadMeshes(const std::string & filename,
                      std::vector<std::shared_ptr<Mesh>> & meshes,
                      std::vector<std::shared_ptr<ImageBase>> & textures,
                      bool normalizeScale = true,
-                     float normScaleFactor = 1.0 );
+                     float normScaleFactor = 1.0);
 
     bool loadMeshData(const std::string & filename,
                       MeshDataGroup & meshDatas,

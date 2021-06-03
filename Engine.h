@@ -24,7 +24,7 @@ class Engine
 
         bool drawWireframes = false;
 
-        Vector4 cameraPosition = Vector4( 0.0, 2.0, 5.0 );
+        Vector4 cameraPosition = Vector4(0.0, 2.0, 5.0);
         float cameraXRotation = 0.0;
         float cameraYRotation = 0.0;
         float cameraKeyboardSpeed = 10.0;
@@ -45,7 +45,7 @@ class Engine
         Vector4 cameraForward();
         Vector4 cameraRight();
 
-        void userTimerUpdate( double timeNow, double deltaTime );
+        void userTimerUpdate(double timeNow, double deltaTime);
 
         // UI init and launch
         void createWindow(int & argc, char ** argv);
@@ -81,11 +81,11 @@ class Engine
         static void sFramebufferSizeCallback(GLFWwindow * window, int width, int height);
 
     protected:
-        void setViewport( int width, int height );
-        void drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view );
-        void drawRenderable( const Matrix4x4 & projection, const Matrix4x4 & view,
+        void setViewport(int width, int height);
+        void drawGameObjects(const Matrix4x4 & projection, const Matrix4x4 & view);
+        void drawRenderable(const Matrix4x4 & projection, const Matrix4x4 & view,
                              std::shared_ptr<GameObject> & obj,
-                             std::shared_ptr<Renderable> & renderable );
+                             std::shared_ptr<Renderable> & renderable);
         void drawScene();
         void drawUserInterface();
         void drawEngineWindow();

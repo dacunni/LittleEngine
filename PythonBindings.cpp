@@ -14,24 +14,24 @@ void makeSimpleScene(Engine & engine)
     const char * vertex_shader_filename = "shaders/basic.vs";
     const char * fragment_shader_filename = "shaders/basic.fs";
 
-    auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename );
-    if( !mesh_shader_program ) { exit(EXIT_FAILURE); }
+    auto mesh_shader_program = createShaderProgram( vertex_shader_filename, fragment_shader_filename);
+    if( !mesh_shader_program) { exit(EXIT_FAILURE); }
 
 #if 1
-    auto hero = std::make_shared<GameObject>( engine.bunnyPath + "/bun_zipper.ply" );
+    auto hero = std::make_shared<GameObject>( engine.bunnyPath + "/bun_zipper.ply");
     engine.hero = hero;
-    hero->setShaderProgram( mesh_shader_program );
-    hero->position = Vector4( 0.0, 0.0, -5.0 );
+    hero->setShaderProgram( mesh_shader_program);
+    hero->position = Vector4( 0.0, 0.0, -5.0);
     hero->animFunc = [](GameObject * self, float gameTime, float deltaTime) {
         Engine & engine = Engine::instance();
-        const Vector4 gravity( 0.0, -15.0, 0.0 );
+        const Vector4 gravity( 0.0, -15.0, 0.0);
         Vector4 acceleration = gravity;
         self->position += self->velocity * deltaTime;
         self->velocity += acceleration * deltaTime;
-        if( self->position.y < 0.0 ) self->position.y = 0.0;
-        self->worldTransform = compose( makeTranslation( self->position ),
-                                        makeRotation( gameTime * 0.4, Vector4( 0, 1, 0 ) ),
-                                        makeScaling( 10.0 ) );
+        if( self->position.y < 0.0) self->position.y = 0.0;
+        self->worldTransform = compose( makeTranslation( self->position),
+                                        makeRotation( gameTime * 0.4, Vector4( 0, 1, 0)),
+                                        makeScaling( 10.0));
     };
     engine.addGameObject(hero);
 

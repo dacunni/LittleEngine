@@ -20,7 +20,7 @@ protected:
     bool valid;
 };
 
-double timeAsDouble( const struct timeval & tm );
+double timeAsDouble(const struct timeval & tm);
 double timeNowAsDouble();
 
 #endif

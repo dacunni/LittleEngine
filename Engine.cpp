@@ -40,18 +40,18 @@ Engine::~Engine()
 
 Transform Engine::cameraTranslation()
 {
-    return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z );
+    return makeTranslation( cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
 Transform Engine::cameraRotation()
 {
-    return compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0 ) ),
-                    makeRotation( cameraXRotation, Vector4( 1, 0, 0 ) ) );
+    return compose( makeRotation( cameraYRotation, Vector4( 0, 1, 0)),
+                    makeRotation( cameraXRotation, Vector4( 1, 0, 0)));
 }
 
 Transform Engine::cameraTransform()
 {
-    return compose( cameraTranslation(), cameraRotation() );
+    return compose( cameraTranslation(), cameraRotation());
 }
 
 Vector4 Engine::cameraForward()
@@ -64,7 +64,7 @@ Vector4 Engine::cameraRight()
     return cameraRotation().fwd * Vector4(1, 0, 0);
 }
 
-void Engine::userTimerUpdate( double timeNow, double deltaTime )
+void Engine::userTimerUpdate( double timeNow, double deltaTime)
 {
     bool shiftPressed = keyState[GLFW_KEY_LEFT_SHIFT] || keyState[GLFW_KEY_RIGHT_SHIFT];
     bool controlPressed = keyState[GLFW_KEY_LEFT_CONTROL] || keyState[GLFW_KEY_RIGHT_CONTROL];
@@ -79,8 +79,8 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
     if( keyState[GLFW_KEY_A] && !anyMod) { cameraPosition -= cameraRight() * cameraKeyboardSpeed * deltaTime; }
     if( keyState[GLFW_KEY_D] && !anyMod) { cameraPosition += cameraRight() * cameraKeyboardSpeed * deltaTime; }
     //   Rotation
-    if( keyState[GLFW_KEY_Q] && !anyMod ) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
-    if( keyState[GLFW_KEY_E] && !anyMod ) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_Q] && !anyMod) { cameraYRotation += cameraKeyboardRotationSpeed * deltaTime; }
+    if( keyState[GLFW_KEY_E] && !anyMod) { cameraYRotation -= cameraKeyboardRotationSpeed * deltaTime; }
     // Hero controls
     if( keyState[GLFW_KEY_I] && !anyMod) { if(hero) { hero->position.z -= heroSpeed * deltaTime; } }
     if( keyState[GLFW_KEY_K] && !anyMod) { if(hero) { hero->position.z += heroSpeed * deltaTime; } }
@@ -92,7 +92,7 @@ void Engine::userTimerUpdate( double timeNow, double deltaTime )
     }
 }
 
-void Engine::createWindow(int & argc, char ** argv )
+void Engine::createWindow(int & argc, char ** argv)
 {
     // TODO
     //glfwSetErrorCallback(error_callback);
@@ -127,9 +127,9 @@ void Engine::createWindow(int & argc, char ** argv )
         exit(EXIT_FAILURE);
     }
 
-    printf( "Renderer: %s\n", glGetString( GL_RENDERER ) );
-    printf( "GL Version: %s\n", glGetString( GL_VERSION ) );
-    printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+    printf( "Renderer: %s\n", glGetString( GL_RENDERER));
+    printf( "GL Version: %s\n", glGetString( GL_VERSION));
+    printf( "GLSL Version: %s\n", glGetString( GL_SHADING_LANGUAGE_VERSION));
 
     registerCallbacks();
 
@@ -143,8 +143,8 @@ void Engine::createWindow(int & argc, char ** argv )
     const char* glsl_version = "#version 150";
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_BLEND);
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
     fbAspectRatio = (float) fbWidth / fbHeight;
@@ -282,7 +282,7 @@ void Engine::keyCallback(GLFWwindow * window, int key, int scancode, int action,
         drawWireframes = !drawWireframes;
     }
     if(key == GLFW_KEY_SPACE && !mods && action == GLFW_PRESS) {
-        if( hero->position.y < 0.01 ) {
+        if( hero->position.y < 0.01) {
             hero->velocity.y = 5.0;
         }
     }
@@ -340,7 +340,7 @@ void Engine::framebufferSizeCallback(GLFWwindow * window, int width, int height)
 {
 }
 
-void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view )
+void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & view)
 {
     for(auto & obj : gameObjects) {
         for(auto & renderable : obj->renderables) {
@@ -351,7 +351,7 @@ void Engine::drawGameObjects( const Matrix4x4 & projection, const Matrix4x4 & vi
 
 void Engine::drawRenderable( const Matrix4x4 & projection, const Matrix4x4 & view,
                              std::shared_ptr<GameObject> & obj,
-                             std::shared_ptr<Renderable> & renderable )
+                             std::shared_ptr<Renderable> & renderable)
 {
     if(!renderable->visible)
         return;
@@ -366,13 +366,13 @@ void Engine::drawRenderable( const Matrix4x4 & projection, const Matrix4x4 & vie
     }
 
     renderable->useProgram();
-    renderable->setWorldMatrix( obj->worldTransform.fwd );
-    renderable->setViewMatrix( view );
-    renderable->setProjection( projection );
-    renderable->setCameraPosition( cameraPosition );
-    renderable->setAnimTime( gameTime );
-    renderable->setHighlighted( isHighlighted );
-    renderable->setLights( (float*)lightPositions.data(), (float*)lightColors.data(), lightPositions.size() );
+    renderable->setWorldMatrix( obj->worldTransform.fwd);
+    renderable->setViewMatrix( view);
+    renderable->setProjection( projection);
+    renderable->setCameraPosition( cameraPosition);
+    renderable->setAnimTime( gameTime);
+    renderable->setHighlighted( isHighlighted);
+    renderable->setLights( (float*)lightPositions.data(), (float*)lightColors.data(), lightPositions.size());
     renderable->bind();
     renderable->draw();
 }
@@ -381,28 +381,28 @@ void Engine::drawScene()
 {
     glViewport(0, 0, fbWidth, fbHeight);
 
-    glClearColor( 0.2, 0.2, 0.3, 1.0 );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    glEnable( GL_DEPTH_TEST );
+    glClearColor( 0.2, 0.2, 0.3, 1.0);
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable( GL_DEPTH_TEST);
 
     Matrix4x4 projection;
-    projection.glProjectionSymmetric( 0.20 * (float) fbWidth / fbHeight, 0.20, 0.25, 200.0 );
+    projection.glProjectionSymmetric( 0.20 * (float) fbWidth / fbHeight, 0.20, 0.25, 200.0);
     Transform camera = cameraTransform();
     Matrix4x4 & view = camera.rev;
 
-    if( drawWireframes ) {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );  // Draw polygons as wireframes
-        glFrontFace( GL_CCW );
-        glEnable( GL_CULL_FACE );
+    if( drawWireframes) {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);  // Draw polygons as wireframes
+        glFrontFace( GL_CCW);
+        glEnable( GL_CULL_FACE);
         drawGameObjects(projection, view);
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );  // Draw polygons filled
-        glDisable( GL_CULL_FACE );
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);  // Draw polygons filled
+        glDisable( GL_CULL_FACE);
     }
     else {
         drawGameObjects(projection, view);
     }
 
-    glDisable( GL_DEPTH_TEST );
+    glDisable( GL_DEPTH_TEST);
 
     GL_WARN_IF_ERROR();
 }

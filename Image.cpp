@@ -23,7 +23,7 @@ std::shared_ptr<ImageBase> loadImage(const std::string & filename)
         auto & pixels = image->pixels;
         pixels.resize(size);
 
-        for( unsigned int i = 0 ; i < size; i++ ) {
+        for( unsigned int i = 0 ; i < size; i++) {
             pixels[i].r = stbiData[i * 3 + 0];
             pixels[i].g = stbiData[i * 3 + 1];
             pixels[i].b = stbiData[i * 3 + 2];
@@ -40,7 +40,7 @@ std::shared_ptr<ImageBase> loadImage(const std::string & filename)
         auto & pixels = image->pixels;
         pixels.resize(size);
 
-        for( unsigned int i = 0 ; i < size; i++ ) {
+        for( unsigned int i = 0 ; i < size; i++) {
             pixels[i].r = stbiData[i * 4 + 0];
             pixels[i].g = stbiData[i * 4 + 1];
             pixels[i].b = stbiData[i * 4 + 2];
@@ -59,7 +59,7 @@ std::shared_ptr<ImageBase> loadImage(const std::string & filename)
         pixels.resize(size);
 
         // Convert to RGB
-        for( unsigned int i = 0 ; i < size; i++ ) {
+        for( unsigned int i = 0 ; i < size; i++) {
             auto value = stbiData[i];
             pixels[i].r = value;
             pixels[i].g = value;

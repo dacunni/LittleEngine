@@ -23,9 +23,9 @@
 #   endif
 #endif // USE_GLFW
 
-#define GL_WARN_IF_ERROR() warnIfError( __FUNCTION__, __LINE__ )
+#define GL_WARN_IF_ERROR() warnIfError(__FUNCTION__, __LINE__)
 
-GLenum warnIfError( const char * func, int line );
+GLenum warnIfError(const char * func, int line);
 
 struct VertexArrayObject {
     VertexArrayObject();

@@ -11,14 +11,14 @@ static GameObject::AnimationFunction defaultAnimation = [](GameObject * self, fl
 
 GameObject::GameObject( const std::string & path,
                         bool normalizeScale,
-                        float normScaleFactor )
+                        float normScaleFactor)
 {
     MeshDataGroup meshDataGroup;
     std::vector<std::shared_ptr<ImageBase>> textures;
 
     if(!loader.loadMeshData(path, meshDataGroup, textures)) {
-        fprintf( stderr, "Error loading mesh '%s'\n", path.c_str() );
-        exit( EXIT_FAILURE );
+        fprintf( stderr, "Error loading mesh '%s'\n", path.c_str());
+        exit( EXIT_FAILURE);
     }
 
     //printf("Mesh data ground size=%lu\n", meshDataGroup.size());
@@ -62,33 +62,33 @@ void GameObject::draw()
 
 void GameObject::updateAnimation(float gameTime, float deltaTime)
 {
-    if( animFunc ) {
+    if( animFunc) {
         animFunc(this, gameTime, deltaTime);
     }
 }
 
-void GameObject::setShaderProgram( const std::shared_ptr<Program> & program )
+void GameObject::setShaderProgram( const std::shared_ptr<Program> & program)
 {
     for(auto & r : renderables) {
         r->setShaderProgram(program);
     }
 }
 
-void GameObject::setTexture( GLuint texId )
+void GameObject::setTexture( GLuint texId)
 {
     for(auto & r : renderables) {
         r->setTexture(texId);
     }
 }
 
-void GameObject::setRoughness( float roughness )
+void GameObject::setRoughness( float roughness)
 {
     for(auto & r : renderables) {
         r->setRoughness(roughness);
     }
 }
 
-void GameObject::setF0( float F0 )
+void GameObject::setF0( float F0)
 {
     for(auto & r : renderables) {
         r->setF0(F0);
