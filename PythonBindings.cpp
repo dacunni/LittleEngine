@@ -70,6 +70,7 @@ PYBIND11_MODULE(le, m) {
         .def("addRenderable", &GameObject::addRenderable)
         .def("setShaderProgram", &GameObject::setShaderProgram)
         .def("setRoughness", &GameObject::setRoughness)
+        .def("setF0", &GameObject::setF0)
         .def("setTexture", &GameObject::setTexture)
         ;
 
